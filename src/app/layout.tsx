@@ -88,16 +88,22 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const maintenance = process.env.MAINTENANCE_MODE === "true";
+
 	return (
 		<html lang="fr" className="font-serif">
 			<head>
 				<JsonLd data={organizationJsonLd} />
 			</head>
 			<body className="flex flex-col justify-between min-h-screen max-w-screen bg-support overflow-x-hidden">
-				<ConditionalHeader />
+				{!maintenance && <ConditionalHeader />}
 				<div className="bg-support">{children}</div>
-				<CookieBanner />
-				<AnalyticsGate />
+				{!maintenance && (
+					<>
+						<CookieBanner />
+						<AnalyticsGate />
+					</>
+				)}
 			</body>
 		</html>
 	);
