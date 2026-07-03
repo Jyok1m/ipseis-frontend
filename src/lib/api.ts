@@ -102,7 +102,7 @@ export async function getTrainingById(trainingId: string): Promise<Training | nu
 
 		return await response.json();
 	} catch (error) {
-		console.error("Error fetching training by id:", error);
+		console.error(`Error fetching training by id (${trainingId}):`, error);
 		return null;
 	}
 }
