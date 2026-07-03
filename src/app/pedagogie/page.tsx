@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
 import Footer from "@/components/global/Footer";
@@ -8,6 +9,7 @@ import { PedagogyMethodologySection } from "@/components/sections/PedagogyMethod
 import { PedagogyProcessSection } from "@/components/sections/PedagogyProcess";
 import { ApproachSection } from "@/components/sections/Approach";
 import { PedagogyFollowUpSection } from "@/components/sections/PedagogyFollowUp";
+import { PedagogyTrainersSection } from "@/components/sections/PedagogyTrainers";
 import { QualiopiSection } from "@/components/sections/Qualiopi";
 import { PedagogyQualityOutcomeSection } from "@/components/sections/PedagogyQualityOutcomes";
 import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
@@ -29,31 +31,61 @@ export default function Pedagogie() {
 		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
 
-			<TitlePage title="Notre pédagogie" descriptionNode={<span>Une démarche pédagogique pour former autrement et transformer durablement</span>} />
+			<TitlePage
+				title="Pour former autrement et transformer durablement"
+				descriptionNode="Notre démarche pédagogique"
+			/>
+
+			{/* Introduction de la démarche pédagogique (approche expérientielle & SEGAP™) */}
+			<div className="mx-auto max-w-3xl px-6 lg:px-8">
+				<p className="text-base sm:text-lg text-univers text-center">
+					Notre approche expérientielle repose sur l&apos;activité, la coopération, la participation et l&apos;anticipation,
+					avec des outils innovants tels que les SEGAP™, des «&nbsp;Sérieux Escape Games Apprenants &amp; Pédagogiques&nbsp;»
+					adaptés à votre contexte.
+				</p>
+			</div>
 
 			{/* Section "Nos formations" */}
 
+			<Divider />
 			<PedagogyUSPSection />
 
-			{/* Section Méthode */}
-
-			<Divider />
-			<PedagogyMethodologySection />
-
-			{/* Processus pédagogiques */}
+			{/* 1. Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité */}
 
 			<Divider />
 			<PedagogyProcessSection />
+
+			{/* 2. Une méthode participative qui engage et transforme */}
+
+			<Divider />
+			<PedagogyMethodologySection />
 
 			{/* Notre approche */}
 
 			<Divider />
 			<ApproachSection />
 
-			{/* Évaluation et suivi + Qualiopi */}
+			{/* 3. Un dispositif d'évaluation mobilisant des moyens permettant de mesurer les acquis */}
 
 			<Divider />
 			<PedagogyFollowUpSection />
+			<div className="mx-auto max-w-5xl px-6 lg:px-8 -mt-2 text-center">
+				<Link
+					href="/glossaire"
+					className="inline-flex items-center gap-2 text-base sm:text-lg font-bold text-cohesion underline underline-offset-4 hover:text-univers transition-colors"
+				>
+					Consulter le glossaire
+				</Link>
+			</div>
+
+			{/* 4. Des formateurs sélectionnés pour leurs valeurs et expertise */}
+
+			<Divider />
+			<PedagogyTrainersSection />
+
+			{/* Qualiopi */}
+
+			<Divider />
 			<QualiopiSection />
 
 			<Divider />

@@ -4,60 +4,64 @@ import { useRouter } from "next/navigation";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Modal, ConfigProvider, Spin } from "antd";
 import clsx from "clsx";
-import Image from "next/image";
 import axios from "axios";
-import starOrange from "@/_images/logo/star_orange.svg";
+import { getThemes } from "@/lib/api";
 import type { Theme } from "@/lib/api";
 
 interface CatalogueClientProps {
 	initialThemes?: Theme[];
 }
 
-const ThemeBubble = memo(({ theme, index, onClick }: any) => {
-	const positions = [
-		"col-start-2 row-start-1 justify-self-center w-[130px] sm:w-full",
-		"col-start-3 row-start-2 justify-self-center w-[130px] sm:w-full",
-		"col-start-2 row-start-3 justify-self-center w-[130px] sm:w-full",
-		"col-start-1 row-start-2 justify-self-center w-[130px] sm:w-full",
-	];
+// Un thème relève du secteur santé si son type mentionne « santé », sinon il est transversal.
+const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
 
+const ThemeBubble = memo(({ theme, loading, onClick }: { theme?: Theme; loading?: boolean; onClick?: () => void }) => {
 	return (
 		<div
-			key={theme ? theme._id : index}
 			onClick={onClick}
 			className={clsx(
-				theme
-					? index === 0
-						? "sm:hover:-translate-y-5"
-						: index === 1
-						? "sm:hover:translate-x-5"
-						: index === 2
-						? "sm:hover:translate-y-5"
-						: index === 3
-						? "sm:hover:-translate-x-5"
-						: ""
-					: "cursor-wait",
-				`${
-					positions[index % positions.length]
-				} flex justify-center items-center aspect-1 ring-2 ring-cohesion/30  cursor-pointer rounded-full shadow-2xl p-2 ${
-					theme ? "hover:ring-cohesion hover:transform hover:scale-110" : ""
-				} duration-500`
+				"flex justify-center items-center aspect-1 w-[130px] sm:w-[160px] ring-2 ring-cohesion/30 rounded-full shadow-2xl p-3 duration-500",
+				loading ? "cursor-wait" : "cursor-pointer hover:ring-cohesion hover:transform hover:scale-110"
 			)}
 		>
-			{theme ? (
-				<h2 className="text-univers text-xs sm:text-base font-semibold text-center">{theme.title}</h2>
+			{loading ? (
+				<Spin indicator={<LoadingOutlined spin />} size="large" className="text-cohesion" />
 			) : (
-				<div className="col-start-2 row-start-2 flex justify-center items-center w-full">
-					<Spin indicator={<LoadingOutlined spin />} size="large" className="text-cohesion" />
-				</div>
+				<h2 className="text-univers text-xs sm:text-base font-semibold text-center">{theme?.title}</h2>
 			)}
 		</div>
 	);
 });
+ThemeBubble.displayName = "ThemeBubble";
 
-const BubbleContainer = ({ children }: { children: React.ReactNode }) => (
-	<div className="grid grid-cols-3 grid-rows-3 gap-2 items-center justify-center max-w-2xl mb-10">{children}</div>
-);
+function ThemeColumn({
+	title,
+	themes,
+	loading,
+	onSelect,
+}: {
+	title: string;
+	themes: Theme[];
+	loading: boolean;
+	onSelect: (theme: Theme) => void;
+}) {
+	return (
+		<div className="flex flex-col items-center">
+			<h2 className="text-lg sm:text-2xl font-bold text-univers text-center mb-8 uppercase tracking-wider">{title}</h2>
+			<div className="flex flex-wrap justify-center gap-5 sm:gap-6">
+				{loading ? (
+					[0, 1, 2, 3].map((i) => <ThemeBubble key={i} loading />)
+				) : themes.length > 0 ? (
+					themes.map((theme) => <ThemeBubble key={theme._id} theme={theme} onClick={() => onSelect(theme)} />)
+				) : (
+					<p className="text-sm sm:text-base text-univers/60 text-center max-w-xs py-8">
+						Catalogue en cours d’enrichissement. De nouvelles thématiques seront bientôt disponibles.
+					</p>
+				)}
+			</div>
+		</div>
+	);
+}
 
 export default function CatalogueClient({ initialThemes = [] }: CatalogueClientProps) {
 	const router = useRouter();
@@ -73,17 +77,14 @@ export default function CatalogueClient({ initialThemes = [] }: CatalogueClientP
 		if (initialThemes.length > 0) return; // Pas besoin de fetch si données déjà présentes
 
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/themes/list`);
-			if (response.status === 200) {
-				setThemes(response.data);
-			}
+			const data = await getThemes();
+			setThemes(data);
 		} catch (error) {
 			console.error("Erreur lors de la récupération des thématiques :", error);
 		}
 	}, [initialThemes.length]);
 
 	useEffect(() => {
-		// Si on a des themes initiaux, pas besoin de fetch
 		if (initialThemes.length > 0) {
 			setThemesLoading(false);
 			return;
@@ -131,26 +132,22 @@ export default function CatalogueClient({ initialThemes = [] }: CatalogueClientP
 		router.push(`/catalogue/formation/${trainingId}`);
 	};
 
+	const onSelect = (theme: Theme) => fetchCatalogue(theme._id, theme.title);
+
+	const transversalThemes = themes.filter((t) => !isSante(t));
+	const santeThemes = themes.filter(isSante);
+
 	return (
 		<>
-			<div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col items-center mt-10">
-				<BubbleContainer>
-					<div className="col-start-2 row-start-2 flex justify-center items-center w-full">
-						<Image
-							src={starOrange}
-							alt="Logo Ipseis"
-							title="Logo Ipseis"
-							height={200}
-							width={200}
-							className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56"
-						/>
+			<div className="mx-auto max-w-7xl px-6 lg:px-8 mt-10">
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 lg:divide-x lg:divide-univers/15">
+					<div className="lg:pr-8">
+						<ThemeColumn title="Formations transversales" themes={transversalThemes} loading={themesLoading} onSelect={onSelect} />
 					</div>
-					{themesLoading
-						? [1, 2, 3, 4].map((theme: any, index: number) => <ThemeBubble index={index} />)
-						: themes.map((theme: any, index: number) => (
-								<ThemeBubble key={theme._id} theme={theme} index={index} onClick={() => fetchCatalogue(theme._id, theme.title)} />
-						  ))}
-				</BubbleContainer>
+					<div className="lg:pl-8">
+						<ThemeColumn title="Professionnels de la santé" themes={santeThemes} loading={themesLoading} onSelect={onSelect} />
+					</div>
+				</div>
 			</div>
 			<ConfigProvider
 				theme={{

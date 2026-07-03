@@ -80,6 +80,10 @@ export const PedagogyMethodologySection = () => {
 							/>
 						</div>
 					</div>
+					<p className="mx-auto max-w-3xl mt-10 md:mt-16 text-center text-base sm:text-lg text-univers">
+						En combinant ces moyens pédagogiques, nous assurons un apprentissage significatif et durable, solidement enraciné
+						dans la pratique professionnelle.
+					</p>
 				</div>
 			</div>
 		</>

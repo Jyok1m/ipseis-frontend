@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import AnalyticsGate from "@/components/global/AnalyticsGate";
 import ConditionalHeader from "@/components/global/ConditionalHeader";
 import CookieBanner from "@/components/global/CookieBanner";
 import JsonLd from "@/components/utils/JsonLd";
@@ -94,12 +93,11 @@ export default function RootLayout({
 			<head>
 				<JsonLd data={organizationJsonLd} />
 			</head>
-			<Analytics />
-			<SpeedInsights/>
 			<body className="flex flex-col justify-between min-h-screen max-w-screen bg-support overflow-x-hidden">
 				<ConditionalHeader />
 				<div className="bg-support">{children}</div>
 				<CookieBanner />
+				<AnalyticsGate />
 			</body>
 		</html>
 	);

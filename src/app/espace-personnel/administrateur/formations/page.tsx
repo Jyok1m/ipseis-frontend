@@ -35,6 +35,7 @@ interface Theme {
 interface Training {
 	_id: string;
 	title: string;
+	introduction?: string;
 	pedagogical_objectives: string[];
 	program: string[];
 	pedagogical_methods: string[];
@@ -45,6 +46,7 @@ interface Training {
 	number_of_trainees: string;
 	duration: string;
 	quote: string;
+	accessibility?: string;
 	isVisible: boolean;
 	themeId: string;
 	themeName: string;
@@ -53,6 +55,7 @@ interface Training {
 const emptyForm = {
 	themeId: "",
 	title: "",
+	introduction: "",
 	pedagogical_objectives: [""],
 	program: [""],
 	pedagogical_methods: [""],
@@ -63,6 +66,7 @@ const emptyForm = {
 	number_of_trainees: "",
 	duration: "",
 	quote: "",
+	accessibility: "",
 };
 
 // Input styling constants
@@ -208,6 +212,7 @@ export default function FormationsPage() {
 		setForm({
 			themeId: training.themeId || "",
 			title: training.title,
+			introduction: training.introduction || "",
 			pedagogical_objectives: training.pedagogical_objectives.length > 0 ? [...training.pedagogical_objectives] : [""],
 			program: training.program.length > 0 ? [...training.program] : [""],
 			pedagogical_methods: training.pedagogical_methods.length > 0 ? [...training.pedagogical_methods] : [""],
@@ -218,6 +223,7 @@ export default function FormationsPage() {
 			number_of_trainees: training.number_of_trainees,
 			duration: training.duration,
 			quote: training.quote,
+			accessibility: training.accessibility || "",
 		});
 		setModalOpen(true);
 	};
@@ -492,6 +498,19 @@ export default function FormationsPage() {
 							</div>
 						</div>
 
+						{/* Introduction */}
+						<div>
+							<label className={labelClass}>Introduction</label>
+							<textarea
+								value={form.introduction}
+								onChange={(e) => setForm((prev) => ({ ...prev, introduction: e.target.value }))}
+								placeholder="Texte d'introduction affiché en tête de la fiche formation"
+								disabled={saving}
+								rows={3}
+								className={inputClass}
+							/>
+						</div>
+
 						{/* Champs texte simples */}
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div>
@@ -621,6 +640,20 @@ export default function FormationsPage() {
 							placeholder="Méthode d'évaluation"
 							disabled={saving}
 						/>
+
+						{/* Accessibilité Handicap */}
+						<div>
+							<label className={labelClass}>Accessibilité Handicap</label>
+							<textarea
+								value={form.accessibility}
+								onChange={(e) => setForm((prev) => ({ ...prev, accessibility: e.target.value }))}
+								placeholder="Laisser vide pour utiliser la mention standard d'accessibilité."
+								disabled={saving}
+								rows={3}
+								className={inputClass}
+							/>
+							<p className="mt-1 text-xs text-gray-400">Si ce champ est vide, la mention standard d&apos;accessibilité est affichée automatiquement.</p>
+						</div>
 
 						{/* Submit */}
 						<div className="flex justify-end gap-3 pt-4 border-t border-gray-200 sticky bottom-0 bg-white py-3">
