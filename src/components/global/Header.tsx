@@ -5,6 +5,7 @@ import Button from "@/components/global/Button";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, EnvelopeIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { Modal, ConfigProvider, Spin } from "antd";
+import logoBeige from "@/_images/logo/logo_beige.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,7 +29,7 @@ const Header = () => {
 				<div className="flex-shrink-0">
 					<Link href="/" className="-m-1.5 p-1.5">
 						<span className="sr-only">Ipseis</span>
-						<Image src={require("/src/_images/logo/logo_beige.svg")} alt="Logo Ipseis" title="Logo Ipseis" height={40} />
+						<Image src={logoBeige} alt="Logo Ipseis" title="Logo Ipseis" height={40} />
 					</Link>
 				</div>
 				<div className="hidden md:flex md:gap-x-6 lg:gap-x-10">
@@ -86,7 +87,7 @@ const Header = () => {
 					<div className="flex items-center justify-between">
 						<Link href="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)} tabIndex={-1}>
 							<span className="sr-only">Ipseis</span>
-							<Image src={require("/src/_images/logo/logo_beige.svg")} alt="Logo Ipseis" title="Logo Ipseis" height={40} />
+							<Image src={logoBeige} alt="Logo Ipseis" title="Logo Ipseis" height={40} />
 						</Link>
 
 						<div className="flex items-center gap-x-3">
