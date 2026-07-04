@@ -5,12 +5,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:40
 export interface Theme {
 	_id: string;
 	title: string;
+	type?: string;
 }
 
 export interface Training {
 	_id: string;
 	title: string;
 	description?: string;
+	introduction?: string;
 	theme?: string;
 	themeId?: string;
 	pedagogical_objectives: string[];
@@ -23,7 +25,12 @@ export interface Training {
 	number_of_trainees: string;
 	duration: string;
 	quote: string;
+	accessibility?: string;
 }
+
+// Mention standard d'accessibilité (repli pour les fiches créées avant l'ajout du champ).
+export const DEFAULT_ACCESSIBILITY =
+	"IPSEIS demande à être informé sur les situations de handicap des stagiaires afin d'adapter les modalités pédagogiques aux objectifs de la formation, et de prendre en compte les moyens de compensation du handicap.";
 
 // Cache et revalidation pour les thèmes (données assez statiques)
 export async function getThemes(): Promise<Theme[]> {
@@ -95,7 +102,7 @@ export async function getTrainingById(trainingId: string): Promise<Training | nu
 
 		return await response.json();
 	} catch (error) {
-		console.error("Error fetching training by id:", error);
+		console.error(`Error fetching training by id (${trainingId}):`, error);
 		return null;
 	}
 }

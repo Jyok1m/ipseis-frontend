@@ -18,12 +18,15 @@ import {
 	faUsersMedical,
 	faCalendarClock,
 	faCircleEuro,
+	faUniversalAccess,
 } from "@fortawesome/pro-regular-svg-icons";
 import Image from "next/image";
+import Link from "next/link";
 import axios from "axios";
 import starOrange from "@/_images/logo/star_orange.svg";
 import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
 import type { Training } from "@/lib/api";
+import { DEFAULT_ACCESSIBILITY } from "@/lib/api";
 
 interface TrainingClientProps {
 	id?: string;
@@ -73,6 +76,9 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 				<>
 					<div className="mx-auto max-w-3xl text-univers mb-10">
 						<TitleSection tag={trainingData?.theme} title={trainingData?.title} paddingSide={false} noPaddingVertical />
+						{trainingData?.introduction && (
+							<p className="mt-6 text-base sm:text-lg leading-relaxed text-univers/90">{trainingData.introduction}</p>
+						)}
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
 								<FontAwesomeIcon icon={faBullseyePointer} /> Objectifs pédagogiques
@@ -107,7 +113,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 						</div>
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
-								<FontAwesomeIcon icon={faHeadSideBrain} /> Méthodologie
+								<FontAwesomeIcon icon={faHeadSideBrain} /> Méthodes pédagogiques
 							</h2>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 								{trainingData?.pedagogical_methods.map((el: string, index: number) => (
@@ -132,7 +138,13 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										</div>
 										<h3 className="font-semibold">Méthodes d'évaluation</h3>
 									</div>
-									{trainingData?.evaluation_methods.map((el: string, index: number) => (
+									{[
+										...(trainingData?.evaluation_methods ?? []),
+										// Garantit la présence de l'évaluation de la satisfaction (exigence Qualiopi).
+										...(trainingData?.evaluation_methods?.some((m) => /satisfaction/i.test(m))
+											? []
+											: ["Évaluation de la satisfaction"]),
+									].map((el: string, index: number) => (
 										<div key={index} className="flex">
 											<div className="h-10 min-w-10 flex justify-center">
 												<FontAwesomeIcon icon={faCheck} className="flex-none mt-1" />
@@ -140,6 +152,12 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 											<span>{el}</span>
 										</div>
 									))}
+									<Link
+										href="/glossaire"
+										className="ml-3 mt-1 inline-flex w-fit text-sm font-semibold text-cohesion underline underline-offset-4 hover:text-univers transition-colors"
+									>
+										Consulter le glossaire
+									</Link>
 								</div>
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
@@ -194,6 +212,15 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										<h3 className="font-semibold">Tarification</h3>
 									</div>
 									<span className="flex items-center ml-3">Devis {trainingData?.quote}</span>
+								</div>
+								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2 col-span-full">
+									<div className="flex items-center">
+										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
+											<FontAwesomeIcon icon={faUniversalAccess} className="flex-none" />
+										</div>
+										<h3 className="font-semibold">Accessibilité Handicap</h3>
+									</div>
+									<span className="flex items-start ml-3">{trainingData?.accessibility || DEFAULT_ACCESSIBILITY}</span>
 								</div>
 							</div>
 						</div>

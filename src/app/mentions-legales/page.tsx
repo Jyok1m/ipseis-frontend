@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import TitlePage from "@/components/global/TitlePage";
 import { buildMetadata } from "@/components/utils/seo";
 import type { Metadata } from "next";
 
@@ -16,12 +17,10 @@ export default function MentionsLegalesPage() {
 	return (
 		<main className="bg-support text-univers min-h-screen">
 			{/* Hero */}
-			<section className="mx-auto max-w-7xl px-6 lg:px-8 pt-16 pb-8">
-				<div className="text-2xl sm:text-4xl font-bold tracking-wider text-univers">
-					<h1 className="mt-2 font-bold tracking-wider uppercase">Mentions légales & RGPD</h1>
-					<div className="border border-univers w-12 my-8"></div>
-				</div>
-				<p className="mt-3 text-sm text-univers/70">Dernière mise à jour : {lastUpdate}</p>
+			<TitlePage title="Mentions légales & RGPD" centered={false} paddingBottom={false} />
+			<section className="mx-auto max-w-7xl px-6 lg:px-8 pb-8">
+				<div className="border border-univers w-12 my-8"></div>
+				<p className="text-sm text-univers/70">Dernière mise à jour : {lastUpdate}</p>
 			</section>
 
 			{/* TOC */}

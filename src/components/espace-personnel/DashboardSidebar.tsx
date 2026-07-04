@@ -1,5 +1,6 @@
 "use client";
 
+import logoBeige from "@/_images/logo/logo_beige.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,7 +30,7 @@ export default function DashboardSidebar({ navItems, mobileOpen, onMobileClose }
 		<>
 			<div className="p-6">
 				<Link href="/espace-personnel" onClick={onMobileClose}>
-					<Image src={require("/src/_images/logo/logo_beige.svg")} alt="Logo IPSEIS" height={50} />
+					<Image src={logoBeige} alt="Logo IPSEIS" height={50} />
 				</Link>
 			</div>
 

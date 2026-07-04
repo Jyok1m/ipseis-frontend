@@ -29,8 +29,8 @@ export async function generateStaticParams() {
 	}
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-	const id = params.id;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+	const { id } = await params;
 
 	try {
 		const training = await getTrainingById(id);
@@ -96,11 +96,13 @@ async function FormationServer({ id }: { id: string }) {
 	);
 }
 
-export default function FormationPage({ params }: { params: { id: string } }) {
+export default async function FormationPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
+
 	return (
 		<>
 			<Suspense fallback={<TrainingSkeleton />}>
-				<FormationServer id={params.id} />
+				<FormationServer id={id} />
 			</Suspense>
 			<Footer />
 		</>
