@@ -1,23 +1,14 @@
-import React from "react";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiploma } from "@fortawesome/pro-regular-svg-icons";
 import { TitleSection } from "@/components/TitleSection";
 
-type ApproachItem = {
-	name: string;
-	src?: string;
-	icon?: typeof faDiploma;
-};
-
-const dataList: ApproachItem[] = [
+const dataList = [
 	{
 		name: "Une pédagogie impactante, active et immersive",
 		src: "/images/sante_features/1.png",
 	},
 	{
 		name: "Une approche de proximité, humaine et coopérative",
-		src: "/images/sante_features/2.png",
+		src: "/images/pedagogy_outcomes/2.png",
 	},
 	{
 		name: "Des formations innovantes & sur mesure de qualité",
@@ -29,11 +20,11 @@ const dataList: ApproachItem[] = [
 	},
 	{
 		name: "Des intervenants experts et engagés",
-		src: "/images/sante_features/5.png",
+		src: "/images/sante_features/2.png",
 	},
 	{
 		name: "Une qualité certifiée, exigeante et reconnue",
-		icon: faDiploma,
+		src: "/images/sante_features/5.png",
 	},
 ];
 
@@ -41,7 +32,9 @@ type ApproachSectionProps = {
 	showWheel?: boolean;
 };
 
-export const ApproachSection = ({ showWheel = false }: ApproachSectionProps) => {
+export const ApproachSection = ({
+	showWheel = false,
+}: ApproachSectionProps) => {
 	return (
 		<>
 			<TitleSection
@@ -54,13 +47,14 @@ export const ApproachSection = ({ showWheel = false }: ApproachSectionProps) => 
 					{dataList.map((data) => (
 						<div key={data.name} className="relative">
 							<dt className="flex items-center gap-x-2 font-medium">
-								{data.icon ? (
-									<span className="flex w-[50px] justify-center">
-										<FontAwesomeIcon icon={data.icon} className="text-cohesion text-[44px]" />
-									</span>
-								) : (
-									<Image src={data.src!} alt={`Image de ${data.name}`} width={50} height={50} sizes="(max-width: 640px) 50px, 50px" />
-								)}
+								<Image
+									src={data.src}
+									alt={`Image de ${data.name}`}
+									width={50}
+									height={50}
+									sizes="(max-width: 640px) 50px, 50px"
+									className="h-[50px] w-[50px] object-contain"
+								/>
 								{data.name}
 							</dt>
 						</div>
@@ -75,6 +69,7 @@ export const ApproachSection = ({ showWheel = false }: ApproachSectionProps) => 
 							height={632}
 							sizes="(max-width: 768px) 100vw, 640px"
 							className="w-full max-w-2xl h-auto"
+							priority
 						/>
 					</div>
 				)}

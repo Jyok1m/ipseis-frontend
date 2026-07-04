@@ -23,7 +23,9 @@ export const metadata: Metadata = buildMetadata({
 	path: "/pedagogie",
 });
 
-const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Pédagogie", path: "/pedagogie" }]);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+	{ name: "Pédagogie", path: "/pedagogie" },
+]);
 
 export default function Pedagogie() {
 	return (
@@ -38,15 +40,16 @@ export default function Pedagogie() {
 			{/* Introduction de la démarche pédagogique (approche expérientielle & SEGAP™) */}
 			<div className="mx-auto max-w-3xl px-6 lg:px-8">
 				<p className="text-base sm:text-lg text-univers text-center">
-					Notre approche expérientielle repose sur l&apos;activité, la coopération, la participation et l&apos;anticipation,
-					avec des outils innovants tels que les SEGAP™, des «&nbsp;Sérieux Escape Games Apprenants &amp; Pédagogiques&nbsp;»
-					adaptés à votre contexte.
+					Notre approche expérientielle repose sur l&apos;activité, la
+					coopération, la participation et l&apos;anticipation, avec des outils
+					innovants tels que les SEGAP™, des «&nbsp;Sérieux Escape Games
+					Apprenants &amp; Pédagogiques&nbsp;» adaptés à votre contexte.
 				</p>
 			</div>
 
 			{/* Notre approche */}
 
-			<Divider />
+			{/* <Divider /> */}
 			<ApproachSection />
 
 			{/* 1. Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité */}
