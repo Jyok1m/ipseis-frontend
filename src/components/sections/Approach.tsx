@@ -1,8 +1,16 @@
 import React from "react";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiploma } from "@fortawesome/pro-regular-svg-icons";
 import { TitleSection } from "@/components/TitleSection";
 
-const dataList = [
+type ApproachItem = {
+	name: string;
+	src?: string;
+	icon?: typeof faDiploma;
+};
+
+const dataList: ApproachItem[] = [
 	{
 		name: "Une pédagogie impactante, active et immersive",
 		src: "/images/sante_features/1.png",
@@ -25,11 +33,15 @@ const dataList = [
 	},
 	{
 		name: "Une qualité certifiée, exigeante et reconnue",
-		src: "/images/Qualiopi_logo.png",
+		icon: faDiploma,
 	},
 ];
 
-export const ApproachSection = () => {
+type ApproachSectionProps = {
+	showWheel?: boolean;
+};
+
+export const ApproachSection = ({ showWheel = false }: ApproachSectionProps) => {
 	return (
 		<>
 			<TitleSection
@@ -42,12 +54,30 @@ export const ApproachSection = () => {
 					{dataList.map((data) => (
 						<div key={data.name} className="relative">
 							<dt className="flex items-center gap-x-2 font-medium">
-								<Image src={data.src} alt={`Image de ${data.name}`} width={50} height={50} sizes="(max-width: 640px) 50px, 50px" />
+								{data.icon ? (
+									<span className="flex w-[50px] justify-center">
+										<FontAwesomeIcon icon={data.icon} className="text-cohesion text-[44px]" />
+									</span>
+								) : (
+									<Image src={data.src!} alt={`Image de ${data.name}`} width={50} height={50} sizes="(max-width: 640px) 50px, 50px" />
+								)}
 								{data.name}
 							</dt>
 						</div>
 					))}
 				</dl>
+				{showWheel && (
+					<div className="mt-12 flex justify-center">
+						<Image
+							src="/images/roue-formation-ipseis.svg"
+							alt="Roue de la démarche de formation IPSEIS"
+							width={640}
+							height={632}
+							sizes="(max-width: 768px) 100vw, 640px"
+							className="w-full max-w-2xl h-auto"
+						/>
+					</div>
+				)}
 			</div>
 		</>
 	);

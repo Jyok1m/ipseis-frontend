@@ -3,7 +3,6 @@ import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
 import Footer from "@/components/global/Footer";
 import { ApproachSection } from "@/components/sections/Approach";
-import { QualiopiSection } from "@/components/sections/Qualiopi";
 import { HealthMissionSection } from "@/components/sections/HealthMissions";
 import { HealthVisionSection } from "@/components/sections/HealthVision";
 import { HealthPromiseSection } from "@/components/sections/HealthPromise";
@@ -40,10 +39,9 @@ export default function SecteurSante() {
 				}
 			/>
 
-			{/* Section approche + Qualiopi */}
+			{/* Section approche */}
 
-			<ApproachSection />
-			<QualiopiSection />
+			<ApproachSection showWheel />
 
 			{/* Section Mission */}
 

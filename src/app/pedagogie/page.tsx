@@ -4,7 +4,6 @@ import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
 import Footer from "@/components/global/Footer";
 
-import { PedagogyUSPSection } from "@/components/sections/PedagogyUSPSection";
 import { PedagogyMethodologySection } from "@/components/sections/PedagogyMethodology";
 import { PedagogyProcessSection } from "@/components/sections/PedagogyProcess";
 import { ApproachSection } from "@/components/sections/Approach";
@@ -45,10 +44,10 @@ export default function Pedagogie() {
 				</p>
 			</div>
 
-			{/* Section "Nos formations" */}
+			{/* Notre approche */}
 
 			<Divider />
-			<PedagogyUSPSection />
+			<ApproachSection />
 
 			{/* 1. Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité */}
 
@@ -59,11 +58,6 @@ export default function Pedagogie() {
 
 			<Divider />
 			<PedagogyMethodologySection />
-
-			{/* Notre approche */}
-
-			<Divider />
-			<ApproachSection />
 
 			{/* 3. Un dispositif d'évaluation mobilisant des moyens permettant de mesurer les acquis */}
 
