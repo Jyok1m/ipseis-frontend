@@ -36,7 +36,7 @@ export default function Accueil() {
 
 				<div className="text-xl sm:text-4xl font-bold tracking-widest text-cohesion leading-snug">
 					<h1>Vous êtes unique, nos formations et accompagnements aussi.</h1>
-					<Image src={tiretHome} alt="tiret" height={50} width={75} className="my-2 sm:my-5" />
+					<Image src={tiretHome} alt="tiret" className="my-2 sm:my-5 w-[75px] h-auto" />
 				</div>
 
 				{/* Description */}

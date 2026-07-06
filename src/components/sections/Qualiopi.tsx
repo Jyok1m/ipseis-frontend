@@ -18,8 +18,8 @@ export const QualiopiSection = () => {
 							title="Logo Qualiopi"
 							alt="Logo Qualiopi"
 							src="/images/qualiopi_logo_bg_removed.png"
-							width={320}
-							height={140}
+							width={789}
+							height={316}
 							sizes="(max-width: 640px) 240px, 320px"
 							className="w-full h-auto object-contain"
 						/>

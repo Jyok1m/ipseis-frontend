@@ -38,7 +38,14 @@ export const PedagogyQualityOutcomeSection = () => {
 					{dataList.map((data) => (
 						<div key={data.name} className="relative">
 							<dt className="flex items-center gap-x-2 font-medium">
-								<Image src={data.src} alt={`Image de ${data.name}`} width={50} height={50} sizes="(max-width: 640px) 50px, 50px" />
+								<Image
+									src={data.src}
+									alt={`Image de ${data.name}`}
+									width={50}
+									height={50}
+									sizes="(max-width: 640px) 50px, 50px"
+									className="h-[50px] w-[50px] object-contain"
+								/>
 								{data.name}
 							</dt>
 						</div>

@@ -21,7 +21,7 @@ const interactionList = [
 ];
 
 const approachList = [
-	"Simulations, SEGAPTM, jeux de rôles, scénarios pédagogiques, quizz",
+	"Simulations, jeux de rôles, scénarios pédagogiques, quizz",
 	"L’apprentissage devient une expérience concrète et collective, favorisant l’ancrage et la transférabilité",
 ];
 

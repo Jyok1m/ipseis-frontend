@@ -30,36 +30,42 @@ const dataList = [
 
 type ApproachSectionProps = {
 	showWheel?: boolean;
+	hideList?: boolean;
+	tag?: string;
+	title?: string;
+	description?: string;
 };
 
 export const ApproachSection = ({
 	showWheel = false,
+	hideList = false,
+	tag = "Notre approche",
+	title = "Choisir Ipseis c’est apprendre autrement pour progresser durablement",
+	description = "Participer à nos formations vous permettra d’acquérir, d’assimiler et de mettre en œuvre plus facilement les compétences clés pour exercer votre métier de soignant de manière plus efficace et plus sereine.",
 }: ApproachSectionProps) => {
 	return (
 		<>
-			<TitleSection
-				tag="Notre approche"
-				title="Choisir Ipseis c’est apprendre autrement pour progresser durablement"
-				description="Participer à nos formations vous permettra d’acquérir, d’assimiler et de mettre en œuvre plus facilement les compétences clés pour exercer votre métier de soignant de manière plus efficace et plus sereine."
-			/>
+			<TitleSection tag={tag} title={title} description={description} />
 			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider">
-				<dl className="mx-auto grid grid-cols-1 gap-8 text-base sm:text-lg text-univers sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
-					{dataList.map((data) => (
-						<div key={data.name} className="relative">
-							<dt className="flex items-center gap-x-2 font-medium">
-								<Image
-									src={data.src}
-									alt={`Image de ${data.name}`}
-									width={50}
-									height={50}
-									sizes="(max-width: 640px) 50px, 50px"
-									className="h-[50px] w-[50px] object-contain"
-								/>
-								{data.name}
-							</dt>
-						</div>
-					))}
-				</dl>
+				{!hideList && (
+					<dl className="mx-auto grid grid-cols-1 gap-8 text-base sm:text-lg text-univers sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
+						{dataList.map((data) => (
+							<div key={data.name} className="relative">
+								<dt className="flex items-center gap-x-2 font-medium">
+									<Image
+										src={data.src}
+										alt={`Image de ${data.name}`}
+										width={50}
+										height={50}
+										sizes="(max-width: 640px) 50px, 50px"
+										className="h-[50px] w-[50px] object-contain"
+									/>
+									{data.name}
+								</dt>
+							</div>
+						))}
+					</dl>
+				)}
 				{showWheel && (
 					<div className="mt-12 flex justify-center">
 						<Image

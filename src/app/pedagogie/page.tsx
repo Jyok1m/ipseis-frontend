@@ -5,7 +5,6 @@ import Divider from "@/components/global/Divider";
 import Footer from "@/components/global/Footer";
 
 import { PedagogyMethodologySection } from "@/components/sections/PedagogyMethodology";
-import { PedagogyProcessSection } from "@/components/sections/PedagogyProcess";
 import { ApproachSection } from "@/components/sections/Approach";
 import { PedagogyFollowUpSection } from "@/components/sections/PedagogyFollowUp";
 import { PedagogyTrainersSection } from "@/components/sections/PedagogyTrainers";
@@ -37,27 +36,25 @@ export default function Pedagogie() {
 				descriptionNode="Notre démarche pédagogique"
 			/>
 
-			{/* Introduction de la démarche pédagogique (approche expérientielle & SEGAP™) */}
+			{/* Introduction de la démarche pédagogique (approche expérientielle) */}
 			<div className="mx-auto max-w-3xl px-6 lg:px-8">
 				<p className="text-base sm:text-lg text-univers text-center">
 					Notre approche expérientielle repose sur l&apos;activité, la
-					coopération, la participation et l&apos;anticipation, avec des outils
-					innovants tels que les SEGAP™, des «&nbsp;Sérieux Escape Games
-					Apprenants &amp; Pédagogiques&nbsp;» adaptés à votre contexte.
+					coopération, la participation et l&apos;anticipation.
 				</p>
 			</div>
 
-			{/* Notre approche */}
+			{/* Notre approche : la démarche d'élaboration de projet (roue) */}
 
 			{/* <Divider /> */}
-			<ApproachSection />
+			<ApproachSection
+				hideList
+				showWheel
+				title="Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité"
+				description=""
+			/>
 
-			{/* 1. Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité */}
-
-			<Divider />
-			<PedagogyProcessSection />
-
-			{/* 2. Une méthode participative qui engage et transforme */}
+			{/* Une méthode participative qui engage et transforme */}
 
 			<Divider />
 			<PedagogyMethodologySection />
