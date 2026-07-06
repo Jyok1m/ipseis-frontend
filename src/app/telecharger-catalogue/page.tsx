@@ -1,5 +1,4 @@
 import React from "react";
-import Footer from "@/components/global/Footer";
 import TitlePage from "@/components/global/TitlePage";
 import CatalogueDownloadForm from "./CatalogueDownloadForm";
 import JsonLd from "@/components/utils/JsonLd";
@@ -17,7 +16,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Télécharger le catalo
 
 export default function TelechargerCatalogue() {
 	return (
-		<div className="bg-support min-h-full flex flex-col items-center justify-between">
+		<div className="bg-support min-h-full flex flex-col items-center pb-10">
 			<JsonLd data={breadcrumbJsonLd} />
 			<TitlePage
 				title="Télécharger notre catalogue"
@@ -30,7 +29,6 @@ export default function TelechargerCatalogue() {
 				}
 			/>
 			<CatalogueDownloadForm />
-			<Footer />
 		</div>
 	);
 }

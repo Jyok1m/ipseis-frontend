@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import TitlePage from "@/components/global/TitlePage";
 import ContentHeading from "@/components/global/ContentHeading";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
@@ -95,7 +94,6 @@ export default function APropos() {
 					</dl>
 				</section>
 			</div>
-			<Footer />
 		</div>
 	);
 }

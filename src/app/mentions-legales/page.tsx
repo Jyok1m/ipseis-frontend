@@ -15,7 +15,7 @@ export default function MentionsLegalesPage() {
 	const lastUpdate = "18 février 2026";
 
 	return (
-		<main className="bg-support text-univers min-h-screen">
+		<div className="bg-support text-univers min-h-full">
 			{/* Hero */}
 			<TitlePage title="Mentions légales & RGPD" centered={false} paddingBottom={false} />
 			<section className="mx-auto max-w-7xl px-6 lg:px-8 pb-8">
@@ -328,6 +328,6 @@ export default function MentionsLegalesPage() {
 					</Link>
 				</div>
 			</article>
-		</main>
+		</div>
 	);
 }

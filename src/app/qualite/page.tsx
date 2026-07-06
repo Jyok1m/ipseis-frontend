@@ -1,7 +1,6 @@
 import React from "react";
 import TitlePage from "@/components/global/TitlePage";
 import ContentHeading from "@/components/global/ContentHeading";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import QualiopiCertificate from "@/components/sections/QualiopiCertificate";
 import type { Metadata } from "next";
@@ -90,7 +89,6 @@ export default function Qualite() {
 					</section>
 				</div>
 			</div>
-			<Footer />
 		</div>
 	);
 }

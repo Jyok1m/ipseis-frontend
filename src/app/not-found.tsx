@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
 	return (
-		<main className="bg-support min-h-screen flex flex-col items-center justify-center px-6 text-center">
+		<div className="bg-support min-h-full flex flex-col items-center justify-center px-6 text-center">
 			<h1 className="text-6xl font-bold text-univers mb-4">404</h1>
 			<p className="text-xl text-univers/70 mb-8">La page que vous recherchez n&apos;existe pas ou a été déplacée.</p>
 			<Link
@@ -18,6 +18,6 @@ export default function NotFound() {
 			>
 				Retour à l&apos;accueil
 			</Link>
-		</main>
+		</div>
 	);
 }

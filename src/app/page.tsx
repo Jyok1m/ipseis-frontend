@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import Button from "@/components/global/Button";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/components/utils/seo";
@@ -29,7 +28,7 @@ const webSiteJsonLd = {
 
 export default function Accueil() {
 	return (
-		<div className="w-full h-dvh relative flex flex-col bg-univers overflow-hidden scrollbar-hide">
+		<div className="relative flex min-h-full flex-col bg-univers overflow-hidden">
 			<JsonLd data={webSiteJsonLd} />
 			<div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-y-1 sm:gap-y-5 px-5 py-4 sm:px-10 sm:w-5/6 lg:w-3/5 self-center">
 				{/* Gros titre */}
@@ -66,7 +65,6 @@ export default function Accueil() {
 				height={500}
 				className="absolute z-10 opacity-10 top-5 -right-28 sm:-top-5 md:w-[750px] md:-top-20 md:-right-44 lg:w-[1000px] lg:-top-36 lg:-right-60"
 			/>
-			<Footer background="bg-univers" />
 		</div>
 	);
 }

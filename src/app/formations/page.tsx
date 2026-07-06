@@ -1,7 +1,6 @@
 import React, { Suspense } from "react";
 import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
-import Footer from "@/components/global/Footer";
 import { HealthPerimeterSection } from "@/components/sections/HealthPerimeter";
 import CatalogueClient from "@/app/catalogue/CatalogueClient";
 import CatalogueSkeleton from "@/app/catalogue/CatalogueSkeleton";
@@ -54,8 +53,6 @@ export default function Formations() {
 			<Suspense fallback={<CatalogueSkeleton />}>
 				<CatalogueServer />
 			</Suspense>
-
-			<Footer />
 		</div>
 	);
 }

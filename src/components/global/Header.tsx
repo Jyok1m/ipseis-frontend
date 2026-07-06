@@ -32,7 +32,7 @@ const Header = () => {
 	const [showModal, setShowModal] = useState(false);
 
 	return (
-		<header className="bg-univers z-20 w-full">
+		<header className="bg-univers z-20 w-full shrink-0">
 			{/* Desktop */}
 
 			<nav

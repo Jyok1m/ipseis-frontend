@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import TitlePage from "@/components/global/TitlePage";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
 import { getThemes } from "@/lib/api";
@@ -26,7 +25,7 @@ async function CatalogueServer() {
 
 export default function CataloguePage() {
 	return (
-		<div className="bg-support min-h-screen">
+		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
 			<TitlePage
 				title="Catalogue de formations"
@@ -39,7 +38,6 @@ export default function CataloguePage() {
 			<Suspense fallback={<CatalogueSkeleton />}>
 				<CatalogueServer />
 			</Suspense>
-			<Footer />
 		</div>
 	);
 }

@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
-import Footer from "@/components/global/Footer";
 
 import { PedagogyMethodologySection } from "@/components/sections/PedagogyMethodology";
 import { ApproachSection } from "@/components/sections/Approach";
@@ -95,7 +94,6 @@ export default function Pedagogie() {
 				/>
 			</div>
 
-			<Footer />
 		</div>
 	);
 }

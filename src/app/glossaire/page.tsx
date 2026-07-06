@@ -1,6 +1,5 @@
 import React from "react";
 import TitlePage from "@/components/global/TitlePage";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
@@ -74,7 +73,6 @@ export default function Glossaire() {
 					))}
 				</dl>
 			</div>
-			<Footer />
 		</div>
 	);
 }

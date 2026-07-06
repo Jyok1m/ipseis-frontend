@@ -5,10 +5,10 @@ import Link from "next/link";
 
 const Footer = ({ background = "bg-support" }) => {
 	return (
-		<div className={`mx-auto w-full text-sm sm:text-base ${background === "bg-univers" ? "text-support" : "text-univers"} mt-4 sm:mt-10 ${background}`}>
+		<div className={`mx-auto w-full shrink-0 text-xs sm:text-base ${background === "bg-univers" ? "text-support" : "text-univers"} ${background}`}>
 			<footer
 				aria-labelledby="footer-heading"
-				className="relative border-t border-gray-900/10 flex flex-col gap-y-2 sm:flex-row items-center justify-evenly py-5"
+				className="relative border-t border-gray-900/10 flex flex-col gap-y-1.5 sm:flex-row items-center justify-evenly py-3 sm:py-5 px-4"
 			>
 				<span>
 					Site web par{" "}

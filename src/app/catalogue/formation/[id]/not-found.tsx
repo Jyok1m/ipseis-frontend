@@ -4,7 +4,7 @@ import { faExclamationTriangle } from "@fortawesome/pro-regular-svg-icons";
 
 export default function NotFound() {
 	return (
-		<div className="bg-support min-h-screen flex items-center justify-center px-6 lg:px-8">
+		<div className="bg-support min-h-full flex items-center justify-center px-6 lg:px-8">
 			<div className="text-center">
 				<div className="flex justify-center mb-6">
 					<FontAwesomeIcon icon={faExclamationTriangle} className="text-6xl text-cohesion" />

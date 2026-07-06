@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
 import { getTrainingById, getAllTrainings } from "@/lib/api";
@@ -100,11 +99,8 @@ export default async function FormationPage({ params }: { params: Promise<{ id: 
 	const { id } = await params;
 
 	return (
-		<>
-			<Suspense fallback={<TrainingSkeleton />}>
-				<FormationServer id={id} />
-			</Suspense>
-			<Footer />
-		</>
+		<Suspense fallback={<TrainingSkeleton />}>
+			<FormationServer id={id} />
+		</Suspense>
 	);
 }

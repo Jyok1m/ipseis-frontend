@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AnalyticsGate from "@/components/global/AnalyticsGate";
 import ConditionalHeader from "@/components/global/ConditionalHeader";
+import LayoutShell from "@/components/global/LayoutShell";
 import CookieBanner from "@/components/global/CookieBanner";
 import JsonLd from "@/components/utils/JsonLd";
 import { defaultOpenGraph, defaultTwitter } from "@/components/utils/seo";
@@ -95,9 +96,13 @@ export default function RootLayout({
 			<head>
 				<JsonLd data={organizationJsonLd} />
 			</head>
-			<body className="flex flex-col justify-between min-h-screen max-w-screen bg-support overflow-x-hidden">
+			<body className="flex h-dvh flex-col overflow-hidden bg-support">
 				{!maintenance && <ConditionalHeader />}
-				<div className="bg-support">{children}</div>
+				{maintenance ? (
+					<main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+				) : (
+					<LayoutShell>{children}</LayoutShell>
+				)}
 				{!maintenance && (
 					<>
 						<CookieBanner />
