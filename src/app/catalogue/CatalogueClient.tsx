@@ -48,7 +48,7 @@ function ThemeColumn({
 	return (
 		<div className="flex flex-col items-center">
 			<h2 className="text-lg sm:text-2xl font-bold text-univers text-center mb-8 uppercase tracking-wider">{title}</h2>
-			<div className="flex flex-wrap justify-center gap-5 sm:gap-6">
+			<div className="flex flex-wrap justify-center gap-5 sm:gap-6 mb-20">
 				{loading ? (
 					[0, 1, 2, 3].map((i) => <ThemeBubble key={i} loading />)
 				) : themes.length > 0 ? (
