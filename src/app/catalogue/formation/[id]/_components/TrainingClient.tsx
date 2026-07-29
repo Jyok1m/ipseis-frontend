@@ -5,21 +5,21 @@ import { TitleSection } from "@/components/TitleSection";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import {
-	faBullseyePointer,
+	faBullseye,
 	faListCheck,
-	faHeadSideBrain,
+	faBrain,
 	faCheck,
-	faHandBackPointRight,
+	faHandPointRight,
 	faCircleInfo,
-	faScreenUsers,
+	faUsers,
 	faStairs,
 	faGraduationCap,
 	faPersonChalkboard,
-	faUsersMedical,
-	faCalendarClock,
-	faCircleEuro,
+	faUserDoctor,
+	faCalendarDays,
+	faEuroSign,
 	faUniversalAccess,
-} from "@fortawesome/pro-regular-svg-icons";
+} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
@@ -81,7 +81,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 						)}
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
-								<FontAwesomeIcon icon={faBullseyePointer} /> Objectifs pédagogiques
+								<FontAwesomeIcon icon={faBullseye} /> Objectifs pédagogiques
 							</h2>
 							{trainingData?.pedagogical_objectives.map((el: string, index: number) => (
 								<div key={index} className="flex mb-2">
@@ -113,13 +113,13 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 						</div>
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
-								<FontAwesomeIcon icon={faHeadSideBrain} /> Méthodes pédagogiques
+								<FontAwesomeIcon icon={faBrain} /> Méthodes pédagogiques
 							</h2>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 								{trainingData?.pedagogical_methods.map((el: string, index: number) => (
 									<div key={index} className="flex rounded-lg p-0 sm:p-2 mb-2 sm:mb-0">
 										<div className="h-10 min-w-10 flex justify-center text-cohesion">
-											<FontAwesomeIcon icon={faHandBackPointRight} className="flex-none mt-1" />
+											<FontAwesomeIcon icon={faHandPointRight} className="flex-none mt-1" />
 										</div>
 										<span>{el}</span>
 									</div>
@@ -162,7 +162,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
 										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
-											<FontAwesomeIcon icon={faScreenUsers} className="flex-none" />
+											<FontAwesomeIcon icon={faUsers} className="flex-none" />
 										</div>
 										<h3 className="font-semibold">Public</h3>
 									</div>
@@ -189,7 +189,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
 										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
-											<FontAwesomeIcon icon={faUsersMedical} className="flex-none" />
+											<FontAwesomeIcon icon={faUserDoctor} className="flex-none" />
 										</div>
 										<h3 className="font-semibold">Capacité</h3>
 									</div>
@@ -198,7 +198,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
 										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
-											<FontAwesomeIcon icon={faCalendarClock} className="flex-none" />
+											<FontAwesomeIcon icon={faCalendarDays} className="flex-none" />
 										</div>
 										<h3 className="font-semibold">Durée</h3>
 									</div>
@@ -207,7 +207,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
 										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
-											<FontAwesomeIcon icon={faCircleEuro} className="flex-none" />
+											<FontAwesomeIcon icon={faEuroSign} className="flex-none" />
 										</div>
 										<h3 className="font-semibold">Tarification</h3>
 									</div>
