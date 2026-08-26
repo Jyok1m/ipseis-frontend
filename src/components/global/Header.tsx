@@ -37,12 +37,12 @@ const Header = () => {
 
 			<nav
 				aria-label="Global"
-				className="mx-auto flex max-w-4xl items-center justify-between gap-x-4 px-5 py-2 sm:px-6 lg:py-2.5 lg:gap-x-6 lg:px-8"
+				className="mx-auto flex max-w-6xl items-center justify-between gap-x-4 px-5 py-2 sm:px-6 lg:py-2.5 lg:gap-x-6 lg:px-8"
 			>
 				<div className="flex-shrink-0">
 					<Link href="/" className="-m-1.5 p-1.5">
 						<span className="sr-only">Ipseis</span>
-						<Image src={logoBeige} alt="Logo Ipseis" title="Logo Ipseis" height={32} className="h-8 w-auto" />
+						<Image src={logoBeige} alt="Logo Ipseis" title="Logo Ipseis" height={32} className="h-9 w-auto" />
 					</Link>
 				</div>
 				<div className="hidden md:flex md:gap-x-6 lg:gap-x-10">
