@@ -1,25 +1,43 @@
+import { bubbleDiameter, polarPosition, WHEEL_RADIUS } from "./wheelGeometry";
+
 /**
  * Fallback du Suspense du catalogue.
  *
- * Il calque la mise en page réelle — deux colonnes, mêmes titres, bulles aux
- * mêmes diamètres — pour que le remplacement ne provoque aucun saut. L'ancienne
- * version dessinait une grille 3×3 avec une étoile centrale, sans rapport avec
- * ce qui s'affichait ensuite.
+ * Il calque la mise en page réelle — deux colonnes, mêmes titres, même roue aux
+ * mêmes proportions — pour que le remplacement ne provoque aucun saut.
  *
  * Server Component sans antd : cet écran n'embarque aucun JavaScript.
  */
 
-const BUBBLE_SIZE = "w-[min(9.5rem,40vw)] sm:w-[9.75rem] lg:w-[10.5rem]";
+function SkeletonWheel({ count }: { count: number }) {
+	const diameter = bubbleDiameter(count);
+
+	return (
+		<div className="relative mx-auto aspect-1 w-full max-w-[24rem] lg:max-w-[27rem]">
+			<svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
+				<circle cx="50" cy="50" r={WHEEL_RADIUS} fill="none" stroke="#FF4E00" strokeOpacity="0.12" strokeWidth="0.3" strokeDasharray="1.6 2.2" />
+			</svg>
+			<div className="absolute left-1/2 top-1/2 h-[18%] w-[18%] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-univers/5" />
+			{Array.from({ length: count }, (_, index) => {
+				const position = polarPosition(index, count);
+				return (
+					<div
+						key={index}
+						style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${diameter}%`, height: `${diameter}%` }}
+						className="absolute -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-univers/5 ring-2 ring-cohesion/15"
+					/>
+				);
+			})}
+		</div>
+	);
+}
 
 function SkeletonColumn({ title, count }: { title: string; count: number }) {
 	return (
 		<div className="flex flex-col items-center">
 			<h2 className="mb-6 text-center text-base font-bold uppercase tracking-wider text-univers/30 sm:mb-8 sm:text-xl lg:text-2xl">{title}</h2>
-			<div className="flex max-w-[19.5rem] flex-wrap items-center justify-center gap-4 sm:max-w-[21.5rem] sm:gap-6">
-				{Array.from({ length: count }, (_, i) => (
-					<div key={i} className={`${BUBBLE_SIZE} aspect-1 animate-pulse rounded-full bg-univers/5 ring-2 ring-cohesion/15`} />
-				))}
-			</div>
+
+			<SkeletonWheel count={count} />
 		</div>
 	);
 }

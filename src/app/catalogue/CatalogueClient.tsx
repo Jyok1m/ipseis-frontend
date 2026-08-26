@@ -1,12 +1,13 @@
 "use client";
 
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingOutlined } from "@ant-design/icons";
 import { ConfigProvider, Modal, Spin } from "antd";
 import clsx from "clsx";
 import Image from "next/image";
 import starOrange from "@/_images/logo/star_orange.svg";
+import ThemeWheel from "./ThemeWheel";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
 /** Thématique du catalogue, formations incluses. */
@@ -16,43 +17,20 @@ type CatalogueTheme = Theme & ThemeWithTrainings;
 const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
 
 /**
- * Diamètre des bulles, partagé avec la pastille « bientôt » pour aligner les
- * colonnes. Fluide en dessous de sm : 40vw garantit deux bulles par ligne même
- * sur un écran de 320 px (2 × 128 + 16 de gouttière = 272 pour 280 utiles),
- * tout en laissant grandir jusqu'à 9.5rem sur les téléphones larges.
- */
-const BUBBLE_SIZE = "w-[min(9.5rem,40vw)] sm:w-[9.75rem] lg:w-[10.5rem]";
-
-const ThemeBubble = memo(({ theme, onClick }: { theme: CatalogueTheme; onClick: () => void }) => (
-	<button
-		type="button"
-		onClick={onClick}
-		className={clsx(
-			BUBBLE_SIZE,
-			"flex aspect-1 cursor-pointer items-center justify-center rounded-full bg-support px-3 shadow-lg ring-2 ring-cohesion/30 transition duration-300 sm:px-4",
-			"hover:scale-105 hover:shadow-xl hover:ring-cohesion focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cohesion"
-		)}
-	>
-		<span className="text-balance text-center text-[0.8rem] font-semibold leading-snug text-univers sm:text-sm lg:text-base">{theme.title}</span>
-	</button>
-));
-ThemeBubble.displayName = "ThemeBubble";
-
-/**
  * Occupe la place d'une bulle quand une colonne n'a pas encore de thématique.
  * Sans elle, la colonne se réduisait à un paragraphe gris flottant dans le vide
  * et les deux moitiés du catalogue n'avaient plus rien de comparable.
  */
 function EmptyThemePlaceholder() {
 	return (
-		<div className="flex flex-col items-center gap-5">
+		<div className="flex w-full flex-col items-center justify-center gap-5 sm:aspect-1 sm:max-w-[24rem] lg:max-w-[27rem]">
 			<div
 				className={clsx(
-					BUBBLE_SIZE,
-					"flex aspect-1 items-center justify-center rounded-full border-2 border-dashed border-cohesion/35 bg-support/40"
+					"flex aspect-1 items-center justify-center rounded-full border-2 border-dashed border-cohesion/35 bg-support/40",
+					"w-[9.5rem] sm:w-[36%]"
 				)}
 			>
-				<Image src={starOrange} alt="" aria-hidden className="h-10 w-10 opacity-50 lg:h-12 lg:w-12" />
+				<Image src={starOrange} alt="" aria-hidden className="h-1/3 w-1/3 opacity-50" />
 			</div>
 			<p className="max-w-[17rem] text-pretty text-center text-sm text-univers/60 lg:text-base">
 				Catalogue en cours d’enrichissement. De nouvelles thématiques seront bientôt disponibles.
@@ -66,15 +44,7 @@ function ThemeColumn({ title, themes, onSelect }: { title: string; themes: Catal
 		<div className="flex flex-col items-center">
 			<h2 className="mb-6 text-center text-base font-bold uppercase tracking-wider text-univers sm:mb-8 sm:text-xl lg:text-2xl">{title}</h2>
 
-			{/* La largeur maximale force deux bulles par ligne : flex-wrap centre
-			    alors la dernière ligne, au lieu du 3 + 1 orphelin d'avant. */}
-			<div className="flex max-w-[19.5rem] flex-wrap items-center justify-center gap-4 sm:max-w-[21.5rem] sm:gap-6">
-				{themes.length > 0 ? (
-					themes.map((theme) => <ThemeBubble key={theme._id} theme={theme} onClick={() => onSelect(theme)} />)
-				) : (
-					<EmptyThemePlaceholder />
-				)}
-			</div>
+			{themes.length === 0 ? <EmptyThemePlaceholder /> : <ThemeWheel themes={themes} onSelect={onSelect} />}
 		</div>
 	);
 }
@@ -135,14 +105,14 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 					width="min(600px, 95vw)"
 					onCancel={handleClose}
 				>
-					{/* Pas d'aspect-1 : des tuiles carrées de 250 px pour deux lignes de
-					    texte laissaient un vide énorme au centre de chacune. Et une seule
-					    formation reste sur une colonne, plutôt que d'occuper la moitié
-					    gauche d'une grille en deux colonnes. */}
+					{/* Deux colonnes dès qu'il y a plusieurs formations, y compris sur
+					    mobile : la modale fait 95 vw et une colonne unique donnait une
+					    liste à faire défiler longuement. Pas d'aspect-1 non plus, des
+					    tuiles carrées laissaient un vide énorme en leur centre. */}
 					<div
 						className={clsx(
 							"mx-auto grid gap-3 py-3 sm:gap-4 sm:py-4",
-							(selectedTheme?.trainings.length ?? 0) > 1 ? "sm:grid-cols-2" : "max-w-sm"
+							(selectedTheme?.trainings.length ?? 0) > 1 ? "grid-cols-2" : "max-w-sm"
 						)}
 					>
 						{selectedTheme?.trainings.map((training) => {

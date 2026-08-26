@@ -30,17 +30,21 @@ export default function Accueil() {
 	return (
 		<div className="relative flex min-h-full flex-col bg-univers overflow-hidden">
 			<JsonLd data={webSiteJsonLd} />
-			<div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-y-1 sm:gap-y-5 px-5 py-4 sm:px-10 sm:w-5/6 lg:w-3/5 self-center">
+			{/* Centrage vertical seulement à partir de sm : sur un téléphone haut,
+			    justify-center dans une hauteur plein écran laissait près de 380 px
+			    de vide au-dessus du titre et autant en dessous du bouton. Le contenu
+			    part désormais du haut, le fond continuant de remplir l'écran. */}
+			<div className="flex min-h-0 flex-1 flex-col items-center justify-start gap-y-3 self-center px-5 pb-10 pt-8 sm:justify-center sm:gap-y-5 sm:px-10 sm:py-4 sm:w-5/6 lg:w-3/5">
 				{/* Gros titre */}
 
-				<div className="text-xl sm:text-4xl font-bold tracking-widest text-cohesion leading-snug">
+				<div className="text-2xl sm:text-4xl font-bold tracking-widest text-cohesion leading-snug">
 					<h1>Vous êtes unique, nos formations et accompagnements aussi.</h1>
 					<Image src={tiretHome} alt="tiret" className="my-2 sm:my-5 w-[75px] h-auto" />
 				</div>
 
 				{/* Description */}
 
-				<div className="flex flex-col text-sm sm:text-xl text-support gap-y-1 sm:gap-y-5">
+				<div className="flex flex-col gap-y-3 text-sm leading-relaxed text-support sm:gap-y-5 sm:text-xl">
 					<p>
 						Chez IPSEIS, nous croyons que l'apprentissage des professionnels passe par une alliance subtile entre théorie et pratique, transmission et
 						expérimentation. Nous concevons des expériences pédagogiques sur-mesure, ancrées dans le réel, pour faire évoluer les pratiques
