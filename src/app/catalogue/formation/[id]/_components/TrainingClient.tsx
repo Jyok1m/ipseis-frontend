@@ -211,7 +211,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										</div>
 										<h3 className="font-semibold">Tarification</h3>
 									</div>
-									<span className="flex items-center ml-3">Devis {trainingData?.quote}</span>
+									<span className="flex items-center ml-3">{trainingData?.quote}</span>
 								</div>
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2 col-span-full">
 									<div className="flex items-center">
