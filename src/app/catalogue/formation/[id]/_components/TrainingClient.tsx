@@ -28,6 +28,40 @@ import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
 import type { Training } from "@/lib/api";
 import { DEFAULT_ACCESSIBILITY } from "@/lib/api";
 
+/**
+ * Liste à puces iconographiées.
+ *
+ * Chaque ligne encadrait son icône dans une boîte de 40×40 (h-10 min-w-10) pour
+ * un glyphe de 14 px : c'est cette boîte qui imposait une hauteur de ligne de
+ * 40 px et un retrait aussi large, d'où l'impression d'items flottant loin les
+ * uns des autres. L'icône est désormais dimensionnée à sa taille réelle et
+ * l'espacement vient d'un gap, réglable au même endroit pour les quatre listes.
+ */
+function IconList({
+	items,
+	icon,
+	className,
+	itemClassName,
+}: {
+	items: string[];
+	icon: React.ReactNode;
+	className?: string;
+	itemClassName?: string;
+}) {
+	return (
+		<ul className={className ?? "space-y-2"}>
+			{items.map((item, index) => (
+				<li key={index} className={`flex items-start gap-2.5 ${itemClassName ?? ""}`}>
+					<span className="mt-[0.3em] flex-none text-cohesion" aria-hidden="true">
+						{icon}
+					</span>
+					<span>{item}</span>
+				</li>
+			))}
+		</ul>
+	);
+}
+
 interface TrainingClientProps {
 	id?: string;
 	initialTraining?: Training | null;
@@ -83,48 +117,26 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
 								<FontAwesomeIcon icon={faBullseye} /> Objectifs pédagogiques
 							</h2>
-							{trainingData?.pedagogical_objectives.map((el: string, index: number) => (
-								<div key={index} className="flex mb-2">
-									<Image
-										aria-hidden="true"
-										src={starOrange}
-										alt="Logo Ipseis"
-										title="Logo Ipseis"
-										width={40}
-										height={40}
-										className="h-10 w-10 flex-none -mt-2.5"
-									/>
-									<span>{el}</span>
-								</div>
-							))}
+							<IconList
+								items={trainingData?.pedagogical_objectives ?? []}
+								icon={<Image src={starOrange} alt="" width={20} height={20} className="h-5 w-5" />}
+							/>
 						</div>
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
 								<FontAwesomeIcon icon={faListCheck} /> Programme
 							</h2>
-							{trainingData?.program.map((el: string, index: number) => (
-								<div key={index} className="flex mb-2">
-									<div className="h-10 min-w-10 flex justify-center text-cohesion">
-										<FontAwesomeIcon icon={faCheck} className="flex-none mt-1" />
-									</div>
-									<span>{el}</span>
-								</div>
-							))}
+							<IconList items={trainingData?.program ?? []} icon={<FontAwesomeIcon icon={faCheck} className="h-3.5 w-3.5" />} />
 						</div>
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
 								<FontAwesomeIcon icon={faBrain} /> Méthodes pédagogiques
 							</h2>
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-								{trainingData?.pedagogical_methods.map((el: string, index: number) => (
-									<div key={index} className="flex rounded-lg p-0 sm:p-2 mb-2 sm:mb-0">
-										<div className="h-10 min-w-10 flex justify-center text-cohesion">
-											<FontAwesomeIcon icon={faHandPointRight} className="flex-none mt-1" />
-										</div>
-										<span>{el}</span>
-									</div>
-								))}
-							</div>
+							<IconList
+								items={trainingData?.pedagogical_methods ?? []}
+								icon={<FontAwesomeIcon icon={faHandPointRight} className="h-4 w-4" />}
+								className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2"
+							/>
 						</div>
 						<div>
 							<h2 className="mt-10 mb-3 sm:mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
@@ -138,20 +150,17 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										</div>
 										<h3 className="font-semibold">Méthodes d'évaluation</h3>
 									</div>
-									{[
+									<IconList
+										items={[
 										...(trainingData?.evaluation_methods ?? []),
 										// Garantit la présence de l'évaluation de la satisfaction (exigence Qualiopi).
 										...(trainingData?.evaluation_methods?.some((m) => /satisfaction/i.test(m))
 											? []
 											: ["Évaluation de la satisfaction"]),
-									].map((el: string, index: number) => (
-										<div key={index} className="flex">
-											<div className="h-10 min-w-10 flex justify-center">
-												<FontAwesomeIcon icon={faCheck} className="flex-none mt-1" />
-											</div>
-											<span>{el}</span>
-										</div>
-									))}
+									]}
+										icon={<FontAwesomeIcon icon={faCheck} className="h-3.5 w-3.5" />}
+										className="mt-1 space-y-1.5 ml-1"
+									/>
 									<Link
 										href="/glossaire"
 										className="ml-3 mt-1 inline-flex w-fit text-sm font-semibold text-cohesion underline underline-offset-4 hover:text-univers transition-colors"
