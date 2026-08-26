@@ -17,7 +17,7 @@ export const PedagogyTrainersSection = () => {
 		<>
 			<TitleSection tag="Nos formateurs" title="Des formateurs sélectionnés pour leurs valeurs et expertise" />
 			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider">
-				<div className="mx-auto max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+				<div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
 					{trainersList.map((item, index) => (
 						<StarBulletPoint key={index} dataNode={item} />
 					))}

@@ -40,7 +40,7 @@ export default function APropos() {
 				<section>
 					<div className="border border-univers w-12 my-8"></div>
 					<div>
-						<p className="space-y-7 text-base sm:text-lg text-univers">
+						<p className="max-w-3xl space-y-7 text-base sm:text-lg text-univers">
 							<Image
 								src="/images/about-image-hélène.jpg"
 								alt="Photo d'Hélène de Montabert"

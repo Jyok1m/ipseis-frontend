@@ -43,7 +43,7 @@ export default function CatalogueCtaSection({ variant = "default", title, descri
 	return (
 		<section className={`py-6 mt-10 mb-20 rounded-2xl border border-cohesion ${className}`}>
 			<div className="mx-auto max-w-7xl px-6 lg:px-8">
-				<div className="mx-auto max-w-4xl text-center">
+				<div className="mx-auto max-w-7xl text-center">
 					<div className="flex justify-center mb-6">
 						<div className="flex items-center justify-center w-16 h-16 bg-white/80 rounded-full shadow-lg">
 							<AcademicCapIcon className="w-8 h-8 text-cohesion" />
@@ -53,7 +53,7 @@ export default function CatalogueCtaSection({ variant = "default", title, descri
 					<TitleSection noPaddingTop centered title={title || defaultTitle} description={description || defaultDescription} />
 
 					{/* Options d'action avec descriptions */}
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto mb-8">
 						{/* Option Téléchargement */}
 						<div className="bg-white/60 sm:text-lg backdrop-blur-sm rounded-xl p-6 border border-cohesion/20 hover:border-cohesion/40 transition-colors flex flex-col justify-between">
 							<div>

@@ -108,10 +108,10 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 				</div>
 			) : (
 				<>
-					<div className="mx-auto max-w-3xl text-univers mb-10">
-						<TitleSection tag={trainingData?.theme} title={trainingData?.title} paddingSide={false} noPaddingVertical />
+					<div className="mx-auto max-w-7xl text-univers mb-10">
+						<TitleSection tag={trainingData?.theme} title={trainingData?.title} titleAs="h1" paddingSide={false} noPaddingVertical />
 						{trainingData?.introduction && (
-							<p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-univers/90">{trainingData.introduction}</p>
+							<p className="mt-4 max-w-3xl text-base leading-relaxed text-univers/90 sm:mt-6 sm:text-lg">{trainingData.introduction}</p>
 						)}
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">
@@ -135,7 +135,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 							<IconList
 								items={trainingData?.pedagogical_methods ?? []}
 								icon={<FontAwesomeIcon icon={faHandPointRight} className="h-4 w-4" />}
-								className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2"
+								className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3"
 							/>
 						</div>
 						<div>
@@ -235,7 +235,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 						</div>
 					</div>
 					{/* <Divider /> */}
-					<div className="mx-auto max-w-3xl">
+					<div className="mx-auto max-w-7xl">
 						<CatalogueCtaSection
 							title="Vous souhaitez en savoir plus ou nous contacter ?"
 							description="Téléchargez notre catalogue PDF complet avec toutes les formations détaillées, les modalités et les tarifs."

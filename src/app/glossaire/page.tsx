@@ -48,7 +48,7 @@ export default function Glossaire() {
 	return (
 		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
-			<div className="mx-auto max-w-4xl px-6 lg:px-8 pb-10">
+			<div className="mx-auto max-w-7xl px-5 pb-10 sm:px-6 lg:px-8">
 				<TitlePage
 					title="Glossaire des évaluations"
 					descriptionNode="Les dispositifs mobilisés pour mesurer les acquis"
@@ -60,7 +60,7 @@ export default function Glossaire() {
 					IPSEIS.
 				</div>
 
-				<dl className="mt-10 space-y-8 text-base sm:text-lg text-univers">
+				<dl className="mt-10 max-w-3xl space-y-8 text-base sm:text-lg text-univers">
 					{evaluations.map(({ term, definition }) => (
 						<div
 							key={term}

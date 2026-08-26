@@ -36,7 +36,7 @@ export default function Pedagogie() {
 			/>
 
 			{/* Introduction de la démarche pédagogique (approche expérientielle) */}
-			<div className="mx-auto max-w-3xl px-6 lg:px-8">
+			<div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
 				<p className="text-base sm:text-lg text-univers text-center">
 					Notre approche expérientielle repose sur l&apos;activité, la
 					coopération, la participation et l&apos;anticipation.
@@ -62,7 +62,7 @@ export default function Pedagogie() {
 
 			<Divider />
 			<PedagogyFollowUpSection />
-			<div className="mx-auto max-w-5xl px-6 lg:px-8 -mt-2 text-center">
+			<div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 -mt-2 text-center">
 				<Link
 					href="/glossaire"
 					className="inline-flex items-center gap-2 text-base sm:text-lg font-bold text-cohesion underline underline-offset-4 hover:text-univers transition-colors"

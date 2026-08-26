@@ -19,7 +19,7 @@ export default function Qualite() {
 	return (
 		<div className="bg-support min-h-full overflow-x-hidden">
 			<JsonLd data={breadcrumbJsonLd} />
-			<div className="mx-auto max-w-4xl px-6 lg:px-8 pb-10">
+			<div className="mx-auto max-w-7xl px-5 pb-10 sm:px-6 lg:px-8">
 				<TitlePage
 					title="Qualité"
 					descriptionNode="Notre engagement, le cadre réglementaire et nos certifications"
@@ -28,7 +28,7 @@ export default function Qualite() {
 					paddingBottom={false}
 				/>
 
-				<div className="mt-10 space-y-14 text-base sm:text-lg text-univers">
+				<div className="mt-10 max-w-3xl space-y-14 text-base sm:text-lg text-univers">
 					{/* 1. Notre engagement qualité */}
 					<section>
 						<ContentHeading className="mb-4">1. Notre engagement qualité</ContentHeading>

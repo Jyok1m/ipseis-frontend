@@ -16,8 +16,35 @@ export const metadata: Metadata = buildMetadata({
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Catalogue", path: "/catalogue" }]);
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
+
+/** Liste ordonnée des formations visibles, pour que les moteurs les indexent depuis le catalogue. */
+function buildCatalogueJsonLd(themes: Awaited<ReturnType<typeof getCatalogue>>) {
+	const trainings = themes.flatMap((theme) => theme.trainings.map((training) => ({ theme: theme.title, ...training })));
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: "Catalogue de formations IPSEIS",
+		numberOfItems: trainings.length,
+		itemListElement: trainings.map((training, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			name: training.title,
+			url: `${SITE_URL}/catalogue/formation/${training._id}`,
+		})),
+	};
+}
+
 async function CatalogueServer() {
-	return <CatalogueClient themes={await getCatalogue()} />;
+	const themes = await getCatalogue();
+
+	return (
+		<>
+			<JsonLd data={buildCatalogueJsonLd(themes)} />
+			<CatalogueClient themes={themes} />
+		</>
+	);
 }
 
 export default function CataloguePage() {

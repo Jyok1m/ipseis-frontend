@@ -9,7 +9,7 @@ export const HealthValueSection = () => {
 		<>
 			<TitleSection tag="Nos valeurs" title="Des valeurs et des formateurs qui nous ressemblent et vous rassemblent" />
 			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider">
-				<div className="mx-auto max-w-5xl">
+				<div className="mx-auto max-w-7xl">
 					{/* Grille 3x3 — cartes rapprochées de l’étoile */}
 					<div className="relative grid grid-cols-1 gap-4 sm:gap-2 sm:[grid-template-columns:0.9fr_1fr_0.9fr] sm:[grid-template-rows:0.9fr_1fr_0.9fr] place-items-stretch">
 						{/* (1,2) — haut centre */}

@@ -17,13 +17,13 @@ export default function PolitiqueDeConfidentialitePage() {
 		<div className="bg-support text-univers min-h-full">
 			{/* Hero */}
 			<TitlePage title="Politique de confidentialité" centered={false} paddingBottom={false} />
-			<section className="mx-auto max-w-7xl px-6 lg:px-8 pb-8">
+			<section className="mx-auto max-w-7xl px-5 pb-8 sm:px-6 lg:px-8">
 				<div className="border border-univers w-12 my-8"></div>
 				<p className="text-sm text-univers/70">Dernière mise à jour : {lastUpdate}</p>
 			</section>
 
 			{/* TOC */}
-			<nav aria-label="Sommaire" className="mx-auto max-w-7xl px-6 lg:px-8 pb-6">
+			<nav aria-label="Sommaire" className="mx-auto max-w-7xl px-5 pb-6 sm:px-6 lg:px-8">
 				<div className="rounded-2xl border border-univers/20 bg-white/50 p-4 sm:p-6">
 					<h2 className="text-lg font-bold text-cohesion mb-4">Sommaire</h2>
 					<ul className="mt-3 grid gap-3 sm:grid-cols-2 text-sm">
@@ -51,7 +51,7 @@ export default function PolitiqueDeConfidentialitePage() {
 			</nav>
 
 			{/* Content */}
-			<article className="mx-auto max-w-7xl px-6 lg:px-8 pb-20 space-y-8">
+			<article className="mx-auto max-w-7xl px-5 pb-20 space-y-8 sm:px-6 lg:px-8 [&>section]:max-w-3xl">
 				{/* Intro */}
 				<section className="bg-white/30 rounded-2xl p-6">
 					<div className="text-base leading-relaxed space-y-3">
