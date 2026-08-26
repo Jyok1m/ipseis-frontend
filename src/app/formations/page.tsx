@@ -4,7 +4,7 @@ import Divider from "@/components/global/Divider";
 import { HealthPerimeterSection } from "@/components/sections/HealthPerimeter";
 import CatalogueClient from "@/app/catalogue/CatalogueClient";
 import CatalogueSkeleton from "@/app/catalogue/CatalogueSkeleton";
-import { getThemes } from "@/lib/api";
+import { getCatalogue } from "@/lib/api";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
@@ -22,9 +22,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 
 // Server Component pour les données pré-chargées du catalogue
 async function CatalogueServer() {
-	const themes = await getThemes();
-
-	return <CatalogueClient initialThemes={themes} />;
+	return <CatalogueClient themes={await getCatalogue()} />;
 }
 
 export default function Formations() {

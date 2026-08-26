@@ -4,6 +4,7 @@ import CatalogueDownloadForm from "./CatalogueDownloadForm";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
+import { getAllTrainings } from "@/lib/api";
 
 export const metadata: Metadata = buildMetadata({
 	title: "Télécharger le catalogue IPSEIS - Formations Santé",
@@ -14,7 +15,9 @@ export const metadata: Metadata = buildMetadata({
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Télécharger le catalogue", path: "/telecharger-catalogue" }]);
 
-export default function TelechargerCatalogue() {
+export default async function TelechargerCatalogue() {
+	const { themes } = await getAllTrainings();
+
 	return (
 		<div className="bg-support min-h-full flex flex-col items-center pb-10">
 			<JsonLd data={breadcrumbJsonLd} />
@@ -28,7 +31,7 @@ export default function TelechargerCatalogue() {
 					</>
 				}
 			/>
-			<CatalogueDownloadForm />
+			<CatalogueDownloadForm themes={themes} />
 		</div>
 	);
 }

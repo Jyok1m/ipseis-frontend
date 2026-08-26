@@ -1,223 +1,57 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import clsx from "clsx";
-import axios from "axios";
-import { LoadingOutlined } from "@ant-design/icons";
-import { CheckCircleIcon, XCircleIcon, DocumentArrowDownIcon } from "@heroicons/react/24/outline";
-import { Spin, notification, ConfigProvider } from "antd";
-
-type NotificationType = "success" | "info" | "warning" | "error";
+import React, { useActionState, useRef } from "react";
+import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
+import { requestCatalogueAction } from "@/lib/server/actions/public";
+import { idle } from "@/lib/server/actions/types";
+import { useActionFeedback } from "@/components/utils/useActionFeedback";
+import TrainingMultiSelect from "@/components/global/TrainingMultiSelect";
+import SubmitButton from "@/components/espace-personnel/SubmitButton";
+import type { ThemeWithTrainings } from "@/lib/types";
 
 const InputWrapper = ({
 	label,
+	htmlFor,
 	children,
 	className,
 	required = false,
 }: {
 	label: string;
+	htmlFor: string;
 	children: React.ReactNode;
 	className?: string;
 	required?: boolean;
 }) => (
 	<div className={className}>
-		<label htmlFor={label} className="text-lg sm:text-xl leading-7 text-support font-bold mb-1 block">
+		<label htmlFor={htmlFor} className="text-base sm:text-lg leading-7 text-support font-bold block">
 			{label}
 			{required && <span className="text-cohesion ml-1">*</span>}
 		</label>
-		<div className="mt-3">{children}</div>
+		<div className="mt-2">{children}</div>
 	</div>
 );
 
-const TextInput = ({ onChange, value, id, name, type, autoComplete, placeholder, disabled }: any) => (
-	<input
-		onChange={onChange}
-		value={value}
-		disabled={disabled}
-		id={id}
-		name={name}
-		type={type}
-		autoComplete={autoComplete}
-		placeholder={placeholder}
-		className="block w-full rounded-lg px-4 py-3 sm:py-4 text-univers bg-white border-2 border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-base sm:text-lg font-medium transition-all duration-200"
-	/>
-);
+const inputClass =
+	"block w-full rounded-lg px-4 py-3 text-univers bg-white border border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-base font-medium transition-all duration-200";
 
-const MultiSelectDropdown = ({
-	options = [],
-	themes = [],
-	selectedValues,
-	onChange,
-	disabled,
-}: {
-	options?: string[];
-	themes?: Array<{ _id: string; title: string; trainings: Array<{ _id: string; title: string }> }>;
-	selectedValues: string[];
-	onChange: (values: string[]) => void;
-	disabled: boolean;
-}) => {
-	const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const value = e.target.value;
-		if (value && !selectedValues.includes(value)) {
-			onChange([...selectedValues, value]);
-		}
-	};
-
-	const removeSelection = (valueToRemove: string) => {
-		onChange(selectedValues.filter((value) => value !== valueToRemove));
-	};
-
-	return (
-		<div className="space-y-3">
-			<select
-				onChange={handleSelectChange}
-				disabled={disabled}
-				value=""
-				className="block w-full rounded-lg px-4 py-3 sm:py-4 text-univers bg-white border-2 border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm text-base sm:text-lg font-medium transition-all duration-200"
-			>
-				<option value="">Sélectionnez une ou plusieurs formations</option>
-				{themes.length > 0
-					? themes.map((theme) => (
-							<optgroup key={theme._id} label={theme.title}>
-								{theme.trainings.map((training) => (
-									<option key={training._id} value={training.title} disabled={selectedValues.includes(training.title)}>
-										{training.title} {selectedValues.includes(training.title) ? "(déjà sélectionné)" : ""}
-									</option>
-								))}
-							</optgroup>
-					  ))
-					: options.map((option) => (
-							<option key={option} value={option} disabled={selectedValues.includes(option)}>
-								{option} {selectedValues.includes(option) ? "(déjà sélectionné)" : ""}
-							</option>
-					  ))}
-			</select>
-
-			{selectedValues.length > 0 && (
-				<div className="space-y-2">
-					<p className="text-base text-support/70 font-medium">Formations sélectionnées :</p>
-					<div className="flex flex-wrap gap-2">
-						{selectedValues.map((value) => (
-							<span
-								key={value}
-								className="inline-flex items-center gap-2 px-3 py-2 bg-cohesion/10 text-support border border-cohesion/30 rounded-full text-base font-medium"
-							>
-								{value}
-								<button
-									type="button"
-									onClick={() => removeSelection(value)}
-									disabled={disabled}
-									className="text-cohesion hover:text-cohesion/70 font-bold text-xl leading-none disabled:opacity-50"
-								>
-									×
-								</button>
-							</span>
-						))}
-					</div>
-				</div>
-			)}
-		</div>
-	);
-};
-
-export default function CatalogueDownloadForm() {
-	const [api, contextHolder] = notification.useNotification();
-
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [email, setEmail] = useState("");
-	const [allFormations, setAllFormations] = useState<Array<{ _id: string; title: string; trainings: Array<{ _id: string; title: string }> }>>([]);
-	const [interestedFormations, setInterestedFormations] = useState<string[]>([]);
-
-	const [isLoading, setIsLoading] = useState(false);
-
-	// Fetch formations organized by themes
-	useEffect(() => {
-		const fetchFormations = async () => {
-			try {
-				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/trainings/all`);
-				if (response.data && response.data.themes) {
-					setAllFormations(response.data.themes);
-				}
-			} catch (error) {
-				console.error("Erreur lors du chargement des formations:", error);
-			}
-		};
-
-		fetchFormations();
-	}, []);
-
-	const openNotification = (type: NotificationType, title: string, message: string) => {
-		api[type]({
-			message: title,
-			description: message,
-			icon:
-				type === "success" ? (
-					<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
-				) : (
-					<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
-				),
-		});
-	};
-
-	const handleSubmit = async () => {
-		setIsLoading(true);
-
-		const payload = { firstName, lastName, email, interestedFormations };
-
-		if ([firstName, lastName, email].some((value) => value.length === 0)) {
-			openNotification("error", "Zut...", "Veuillez remplir tous les champs obligatoires.");
-			setIsLoading(false);
-			return;
-		}
-
-		// Validation basique de l'email
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
-			openNotification("error", "Zut...", "Veuillez saisir une adresse email valide.");
-			setIsLoading(false);
-			return;
-		}
-
-		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/messages/catalogue`, {
-				params: payload,
-			});
-
-			if (response.status === 200) {
-				openNotification("success", "Parfait !", response.data.message);
-				setFirstName("");
-				setLastName("");
-				setEmail("");
-				setInterestedFormations([]);
-			} else {
-				openNotification("error", "Zut...", response.data.error || "Une erreur est survenue.");
-			}
-		} catch (error: any) {
-			const errorMessage = error.response?.data?.error || error.message || "Une erreur inattendue est survenue.";
-			openNotification("error", "Oops...", errorMessage);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+/**
+ * La demande de catalogue passe par une server action. La validation email est
+ * portée par l'action, côté serveur, plutôt que dupliquée ici.
+ */
+export default function CatalogueDownloadForm({ themes }: { themes: ThemeWithTrainings[] }) {
+	const formRef = useRef<HTMLFormElement>(null);
+	const [state, formAction] = useActionState(requestCatalogueAction, idle);
+	const feedback = useActionFeedback(state, {
+		successTitle: "Parfait !",
+		errorTitle: "Zut...",
+		onSuccess: () => formRef.current?.reset(),
+	});
 
 	return (
 		<div className="relative isolate bg-maitrise p-4 sm:p-5 w-[92%] sm:w-4/5 lg:max-w-3xl rounded-2xl">
-			<ConfigProvider
-				theme={{
-					token: {
-						colorBgElevated: "#fffce8",
-						colorTextHeading: "#263c27",
-						colorText: "#263c27",
-						fontFamily: "Halibut",
-					},
-				}}
-			>
-				{contextHolder}
-			</ConfigProvider>
+			{feedback}
 
 			<div className="mx-auto max-w-xl">
-				{/* Info Box */}
 				<div className="mb-8 p-5 sm:p-6 bg-support/15 border-2 border-support/30 rounded-xl">
 					<div className="flex items-start gap-4">
 						<DocumentArrowDownIcon className="h-7 w-7 sm:h-8 sm:w-8 text-support mt-1 flex-shrink-0" />
@@ -231,56 +65,23 @@ export default function CatalogueDownloadForm() {
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-8 sm:gap-y-20 lg:flex-row">
+				<form ref={formRef} action={formAction} className="flex flex-col gap-8 sm:gap-y-20 lg:flex-row">
 					<div className="lg:flex-auto">
 						<div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:gap-y-8 sm:grid-cols-2">
-							<InputWrapper label="Prénom" required>
-								<TextInput
-									onChange={(e: any) => setFirstName(e.target.value)}
-									value={firstName}
-									disabled={isLoading}
-									id="first-name"
-									name="first-name"
-									type="text"
-									autoComplete="given-name"
-									placeholder="ex. Jean"
-								/>
+							<InputWrapper label="Prénom" htmlFor="firstName" required>
+								<input id="firstName" name="firstName" type="text" autoComplete="given-name" placeholder="ex. Jean" className={inputClass} />
 							</InputWrapper>
-							<InputWrapper label="Nom de famille" required>
-								<TextInput
-									onChange={(e: any) => setLastName(e.target.value)}
-									value={lastName}
-									disabled={isLoading}
-									id="last-name"
-									name="last-name"
-									type="text"
-									autoComplete="family-name"
-									placeholder="ex. Dupont"
-								/>
+							<InputWrapper label="Nom de famille" htmlFor="lastName" required>
+								<input id="lastName" name="lastName" type="text" autoComplete="family-name" placeholder="ex. Dupont" className={inputClass} />
 							</InputWrapper>
-							<InputWrapper label="Email" className="col-span-full sm:col-span-2" required>
-								<TextInput
-									onChange={(e: any) => setEmail(e.target.value)}
-									value={email}
-									disabled={isLoading}
-									id="email"
-									name="email"
-									type="email"
-									autoComplete="email"
-									placeholder="ex. jean.dupont@test.fr"
-								/>
+							<InputWrapper label="Email" htmlFor="email" className="col-span-full sm:col-span-2" required>
+								<input id="email" name="email" type="email" autoComplete="email" placeholder="ex. jean.dupont@test.fr" className={inputClass} />
 							</InputWrapper>
-							<InputWrapper label="Formations d'intérêt (optionnel)" className="col-span-full sm:col-span-2">
-								<MultiSelectDropdown
-									themes={allFormations}
-									selectedValues={interestedFormations}
-									onChange={setInterestedFormations}
-									disabled={isLoading}
-								/>
+							<InputWrapper label="Formations d'intérêt (optionnel)" htmlFor="interestedFormations" className="col-span-full sm:col-span-2">
+								<TrainingMultiSelect themes={themes} />
 							</InputWrapper>
 						</div>
 
-						{/* RGPD Notice */}
 						<div className="mt-8 p-4 sm:p-5 bg-support/10 border-2 border-support/15 rounded-lg">
 							<p className="text-support/80 text-sm sm:text-base leading-relaxed font-medium">
 								En soumettant ce formulaire, vous acceptez que vos données personnelles soient utilisées pour vous envoyer le catalogue et vous tenir
@@ -293,28 +94,18 @@ export default function CatalogueDownloadForm() {
 						</div>
 
 						<div className="mt-10">
-							<button
-								onClick={() => handleSubmit()}
-								disabled={isLoading}
-								className={clsx(
-									isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-univers/90 hover:shadow-lg transform hover:scale-105",
-									"w-full rounded-xl bg-univers px-6 py-4 sm:py-5 sm:text-lg text-support font-bold shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers transition-all duration-200"
-								)}
+							<SubmitButton
+								className="w-full rounded-xl bg-univers px-6 py-4 sm:py-5 sm:text-lg text-support font-bold shadow-md hover:bg-univers/90 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers transition-all duration-200"
+								spinnerClassName="text-support"
 							>
 								<span className="flex justify-center items-center gap-3 text-support">
-									{!isLoading ? (
-										<>
-											<DocumentArrowDownIcon className="h-6 w-6 sm:h-7 sm:w-7" />
-											<span className="font-bold">Télécharger le catalogue</span>
-										</>
-									) : (
-										<Spin indicator={<LoadingOutlined spin className="text-xl" />} />
-									)}
+									<DocumentArrowDownIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+									<span className="font-bold">Télécharger le catalogue</span>
 								</span>
-							</button>
+							</SubmitButton>
 						</div>
 					</div>
-				</div>
+				</form>
 			</div>
 		</div>
 	);

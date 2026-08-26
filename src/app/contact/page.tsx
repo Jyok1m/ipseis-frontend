@@ -4,6 +4,7 @@ import ContactForm from "@/components/home/ContactForm";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
+import { getAllTrainings } from "@/lib/api";
 
 export const metadata: Metadata = buildMetadata({
 	title: "Contact IPSEIS - Demande d'information & devis",
@@ -13,7 +14,10 @@ export const metadata: Metadata = buildMetadata({
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Contact", path: "/contact" }]);
 
-export default function Contact() {
+export default async function Contact() {
+	// Les thèmes du select sont rendus au serveur (ISR) plutôt que fetchés au montage.
+	const { themes } = await getAllTrainings();
+
 	return (
 		<div className="bg-support min-h-full flex flex-col items-center pb-10">
 			<JsonLd data={breadcrumbJsonLd} />
@@ -26,7 +30,7 @@ export default function Contact() {
 					</>
 				}
 			/>
-			<ContactForm />
+			<ContactForm themes={themes} />
 		</div>
 	);
 }

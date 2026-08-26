@@ -2,11 +2,8 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4001";
 
 // Interface des données
-export interface Theme {
-	_id: string;
-	title: string;
-	type?: string;
-}
+export type { Theme } from "./types";
+import type { Theme, ThemeWithTrainings } from "./types";
 
 export interface Training {
 	_id: string;
@@ -149,4 +146,20 @@ export async function revalidateCache(tag?: string) {
 	} catch (error) {
 		console.error("Error revalidating cache:", error);
 	}
+}
+
+/**
+ * Catalogue complet : thématiques (avec leur secteur) et formations visibles.
+ *
+ * /themes/list porte le champ `type` qui distingue santé et transversal ;
+ * /trainings/all porte les formations filtrées sur isVisible. Les deux lectures
+ * sont mises en cache par l'ISR, on les recolle ici pour que le client reçoive
+ * un catalogue complet et n'ait plus rien à fetcher, y compris à l'ouverture
+ * des modales par thématique.
+ */
+export async function getCatalogue(): Promise<Array<Theme & ThemeWithTrainings>> {
+	const [themes, allTrainings] = await Promise.all([getThemes(), getAllTrainings()]);
+	const trainingsByTheme = new Map(allTrainings.themes.map((theme) => [theme._id, theme.trainings]));
+
+	return themes.map((theme) => ({ ...theme, trainings: trainingsByTheme.get(theme._id) ?? [] }));
 }

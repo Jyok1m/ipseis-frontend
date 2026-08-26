@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import TitlePage from "@/components/global/TitlePage";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
-import { getThemes } from "@/lib/api";
+import { getCatalogue } from "@/lib/api";
 import CatalogueClient from "./CatalogueClient";
 import CatalogueSkeleton from "./CatalogueSkeleton";
 
@@ -16,11 +16,8 @@ export const metadata: Metadata = buildMetadata({
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Catalogue", path: "/catalogue" }]);
 
-// Server Component pour les données pré-chargées
 async function CatalogueServer() {
-	const themes = await getThemes();
-
-	return <CatalogueClient initialThemes={themes} />;
+	return <CatalogueClient themes={await getCatalogue()} />;
 }
 
 export default function CataloguePage() {

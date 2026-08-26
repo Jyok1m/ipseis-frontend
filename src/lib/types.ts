@@ -193,3 +193,17 @@ export interface ContactMessage {
 	replies: ContactReply[];
 	createdAt: string;
 }
+
+/** Thème du catalogue public avec ses formations visibles. */
+export interface ThemeWithTrainings {
+	_id: string;
+	title: string;
+	trainings: Array<{ _id: string; title: string }>;
+}
+
+/** Thématique du catalogue. `type` porte le secteur (« Santé », transversal…). */
+export interface Theme {
+	_id: string;
+	title: string;
+	type?: string;
+}
