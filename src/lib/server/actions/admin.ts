@@ -3,6 +3,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { serverFetch } from "../fetcher";
 import { type ActionState, toErrorState } from "./types";
+import type { Checklist } from "../../types";
 
 const ADMIN = "/espace-personnel/administrateur";
 
@@ -177,15 +178,22 @@ export async function updateChecklistAction(id: string, payload: Record<string, 
 	}
 }
 
+/**
+ * Renvoie la checklist mise à jour : cocher un item est une action fréquente,
+ * l'UI l'applique en place plutôt que de recharger toute la liste.
+ */
 export async function toggleChecklistItemAction(
 	checklistId: string,
 	itemId: string,
 	payload: { isChecked?: boolean; notes?: string }
-): Promise<ActionState> {
+): Promise<ActionState & { checklist?: Checklist }> {
 	try {
-		const data = await serverFetch<{ message: string }>(`/admin/checklists/${checklistId}/items/${itemId}`, { method: "PATCH", body: payload });
+		const data = await serverFetch<{ message: string; checklist: Checklist }>(`/admin/checklists/${checklistId}/items/${itemId}`, {
+			method: "PATCH",
+			body: payload,
+		});
 		revalidatePath(`${ADMIN}/checklists`);
-		return { ok: true, message: data.message };
+		return { ok: true, message: data.message, checklist: data.checklist };
 	} catch (error) {
 		return toErrorState(error, "Erreur lors de la mise à jour de l'item.");
 	}

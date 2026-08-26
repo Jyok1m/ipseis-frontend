@@ -128,26 +128,6 @@ export async function getAllTrainings(): Promise<{ themes: Array<{ _id: string; 
 	}
 }
 
-// Fonction pour purger le cache (utile pour l'admin)
-export async function revalidateCache(tag?: string) {
-	if (typeof window !== "undefined") {
-		// Côté client, on ne peut pas faire de revalidation
-		return;
-	}
-
-	try {
-		const { revalidateTag } = await import("next/cache");
-		if (tag) {
-			revalidateTag(tag);
-		} else {
-			// Revalider tous les tags
-			["themes", "trainings", "training", "all-trainings"].forEach(revalidateTag);
-		}
-	} catch (error) {
-		console.error("Error revalidating cache:", error);
-	}
-}
-
 /**
  * Catalogue complet : thématiques (avec leur secteur) et formations visibles.
  *

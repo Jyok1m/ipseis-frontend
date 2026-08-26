@@ -112,6 +112,8 @@ export interface Resource {
 	originalFileName: string;
 	linkedTraining: { _id: string; title: string } | null;
 	targetRoles: string[];
+	/** Peuplé uniquement sur les routes admin. */
+	createdBy?: { firstName: string; lastName: string } | null;
 	createdAt: string;
 }
 
@@ -206,4 +208,24 @@ export interface Theme {
 	_id: string;
 	title: string;
 	type?: string;
+}
+
+// ─── Checklists ─────────────────────────────────────────────────────────────
+
+export interface ChecklistItem {
+	_id: string;
+	text: string;
+	isChecked: boolean;
+	notes: string;
+}
+
+export interface Checklist {
+	_id: string;
+	title: string;
+	description: string;
+	items: ChecklistItem[];
+	linkedUserId: { _id: string; firstName: string; lastName: string; email: string } | null;
+	linkedProspectId: { _id: string; firstName: string; lastName: string; email: string } | null;
+	createdBy: { _id: string; firstName: string; lastName: string } | null;
+	createdAt: string;
 }

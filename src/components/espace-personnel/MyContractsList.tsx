@@ -143,11 +143,7 @@ export default function MyContractsList({ contracts, pagination, basePath }: MyC
 			const response = await downloadContractPdf(contract._id);
 			const blob: Blob = response.data;
 			const watermark = getContractWatermark(contract);
-			let pdfBlob = blob;
-			if (watermark) {
-				const watermarkedBytes = await addWatermarkToPdf(await blob.arrayBuffer(), watermark);
-				pdfBlob = new Blob([watermarkedBytes], { type: "application/pdf" });
-			}
+			const pdfBlob = watermark ? await addWatermarkToPdf(await blob.arrayBuffer(), watermark) : blob;
 			const url = window.URL.createObjectURL(pdfBlob);
 			const link = document.createElement("a");
 			link.href = url;

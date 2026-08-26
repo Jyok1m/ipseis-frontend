@@ -577,7 +577,7 @@ export default function MessagesPage({ user, canComposeNew = false }: MessagesPa
 						<div className="divide-y divide-gray-100">
 							{messages.map((msg) => {
 								const person = msg.senderUser?._id === user._id ? msg.recipientUser : msg.senderUser;
-								const isUnread = msg.unreadInThread > 0;
+								const isUnread = (msg.unreadInThread ?? 0) > 0;
 								return (
 									<button
 										key={msg._id}

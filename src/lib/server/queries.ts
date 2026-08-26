@@ -1,11 +1,11 @@
 import "server-only";
 import { serverFetch } from "./fetcher";
 import { groupResourcesByTraining } from "../types";
-import type { ActivationCode, AdminTraining, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, SessionUser } from "../types";
+import type { ActivationCode, AdminTraining, Checklist, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, SessionUser } from "../types";
 
 // Réexport : les composants importent leurs types depuis ce module métier,
 // sans avoir à connaître le module neutre où ils sont déclarés.
-export type { ActivationCode, AdminTraining, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, ResourceGroup } from "../types";
+export type { ActivationCode, AdminTraining, Checklist, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, ResourceGroup } from "../types";
 export { groupResourcesByTraining };
 
 /** Le backend nomme le tableau d'après l'entité ; on normalise pour les appelants. */
@@ -52,7 +52,7 @@ export const getAdminThemes = async () =>
 
 export async function getChecklists(params: { page?: number } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/admin/checklists", { searchParams: { page: params.page ?? 1 } });
-	return normalize<Record<string, unknown>>(payload, "checklists");
+	return normalize<Checklist>(payload, "checklists");
 }
 
 // ─── Contrats ───────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { PDFDocument, rgb } from "pdf-lib";
+import { degrees, PDFDocument, rgb } from "pdf-lib";
 
 function hexToRgb(hex: string) {
 	const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -7,10 +7,12 @@ function hexToRgb(hex: string) {
 	return rgb(r, g, b);
 }
 
-export async function addWatermarkToPdf(
-	pdfBytes: ArrayBuffer,
-	watermark: { text: string; color: string }
-): Promise<Uint8Array> {
+/**
+ * Applique un filigrane et renvoie directement un Blob PDF : les deux appelants
+ * ne faisaient rien d'autre des octets, et cela évite de propager le
+ * Uint8Array<ArrayBufferLike> de pdf-lib, que BlobPart refuse.
+ */
+export async function addWatermarkToPdf(pdfBytes: ArrayBuffer, watermark: { text: string; color: string }): Promise<Blob> {
 	const pdfDoc = await PDFDocument.load(pdfBytes);
 	const pages = pdfDoc.getPages();
 	const color = hexToRgb(watermark.color);
@@ -29,9 +31,13 @@ export async function addWatermarkToPdf(
 			size: fontSize,
 			color,
 			opacity: 0.15,
-			rotate: { type: "degrees" as const, angle: -30 },
+			rotate: degrees(-30),
 		});
 	}
 
-	return pdfDoc.save();
+	const bytes = await pdfDoc.save();
+
+	// pdf-lib alloue toujours un Uint8Array adossé à un ArrayBuffer simple,
+	// jamais à un SharedArrayBuffer : le cast est sûr et cantonné ici.
+	return new Blob([bytes as Uint8Array<ArrayBuffer>], { type: "application/pdf" });
 }

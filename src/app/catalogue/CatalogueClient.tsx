@@ -7,10 +7,13 @@ import { ConfigProvider, Modal, Spin } from "antd";
 import clsx from "clsx";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
+/** Thématique du catalogue, formations incluses. */
+type CatalogueTheme = Theme & ThemeWithTrainings;
+
 /** Un thème relève du secteur santé si son type mentionne « santé », sinon il est transversal. */
 const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
 
-const ThemeBubble = memo(({ theme, onClick }: { theme: Theme; onClick: () => void }) => (
+const ThemeBubble = memo(({ theme, onClick }: { theme: CatalogueTheme; onClick: () => void }) => (
 	<div
 		onClick={onClick}
 		className="flex justify-center items-center aspect-1 w-[130px] sm:w-[160px] ring-2 ring-cohesion/30 rounded-full shadow-2xl p-3 duration-500 cursor-pointer hover:ring-cohesion hover:transform hover:scale-110"
@@ -20,7 +23,7 @@ const ThemeBubble = memo(({ theme, onClick }: { theme: Theme; onClick: () => voi
 ));
 ThemeBubble.displayName = "ThemeBubble";
 
-function ThemeColumn({ title, themes, onSelect }: { title: string; themes: Theme[]; onSelect: (theme: Theme) => void }) {
+function ThemeColumn({ title, themes, onSelect }: { title: string; themes: CatalogueTheme[]; onSelect: (theme: CatalogueTheme) => void }) {
 	return (
 		<div className="flex flex-col items-center">
 			<h2 className="text-lg sm:text-2xl font-bold text-univers text-center mb-8 uppercase tracking-wider">{title}</h2>
@@ -44,9 +47,9 @@ function ThemeColumn({ title, themes, onSelect }: { title: string; themes: Theme
  * déjà dans les props, puis faisait un GET /trainings/by-theme à chaque
  * ouverture de modale. Les deux ont disparu : l'ouverture est instantanée.
  */
-export default function CatalogueClient({ themes }: { themes: Array<Theme & ThemeWithTrainings> }) {
+export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }) {
 	const router = useRouter();
-	const [selectedTheme, setSelectedTheme] = useState<(Theme & ThemeWithTrainings) | null>(null);
+	const [selectedTheme, setSelectedTheme] = useState<CatalogueTheme | null>(null);
 	const [routingId, setRoutingId] = useState<string | null>(null);
 
 	const handleRouting = (trainingId: string) => {
