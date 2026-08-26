@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { LoadingOutlined } from "@ant-design/icons";
 import { ConfigProvider, Modal, Spin } from "antd";
 import clsx from "clsx";
+import Image from "next/image";
+import starOrange from "@/_images/logo/star_orange.svg";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
 /** Thématique du catalogue, formations incluses. */
@@ -13,27 +15,64 @@ type CatalogueTheme = Theme & ThemeWithTrainings;
 /** Un thème relève du secteur santé si son type mentionne « santé », sinon il est transversal. */
 const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
 
+/**
+ * Diamètre des bulles, partagé avec la pastille « bientôt » pour aligner les
+ * colonnes. Fluide en dessous de sm : 40vw garantit deux bulles par ligne même
+ * sur un écran de 320 px (2 × 128 + 16 de gouttière = 272 pour 280 utiles),
+ * tout en laissant grandir jusqu'à 9.5rem sur les téléphones larges.
+ */
+const BUBBLE_SIZE = "w-[min(9.5rem,40vw)] sm:w-[9.75rem] lg:w-[10.5rem]";
+
 const ThemeBubble = memo(({ theme, onClick }: { theme: CatalogueTheme; onClick: () => void }) => (
-	<div
+	<button
+		type="button"
 		onClick={onClick}
-		className="flex justify-center items-center aspect-1 w-[130px] sm:w-[160px] ring-2 ring-cohesion/30 rounded-full shadow-2xl p-3 duration-500 cursor-pointer hover:ring-cohesion hover:transform hover:scale-110"
+		className={clsx(
+			BUBBLE_SIZE,
+			"flex aspect-1 cursor-pointer items-center justify-center rounded-full bg-support px-3 shadow-lg ring-2 ring-cohesion/30 transition duration-300 sm:px-4",
+			"hover:scale-105 hover:shadow-xl hover:ring-cohesion focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cohesion"
+		)}
 	>
-		<h2 className="text-univers text-xs sm:text-base font-semibold text-center">{theme.title}</h2>
-	</div>
+		<span className="text-balance text-center text-[0.8rem] font-semibold leading-snug text-univers sm:text-sm lg:text-base">{theme.title}</span>
+	</button>
 ));
 ThemeBubble.displayName = "ThemeBubble";
+
+/**
+ * Occupe la place d'une bulle quand une colonne n'a pas encore de thématique.
+ * Sans elle, la colonne se réduisait à un paragraphe gris flottant dans le vide
+ * et les deux moitiés du catalogue n'avaient plus rien de comparable.
+ */
+function EmptyThemePlaceholder() {
+	return (
+		<div className="flex flex-col items-center gap-5">
+			<div
+				className={clsx(
+					BUBBLE_SIZE,
+					"flex aspect-1 items-center justify-center rounded-full border-2 border-dashed border-cohesion/35 bg-support/40"
+				)}
+			>
+				<Image src={starOrange} alt="" aria-hidden className="h-10 w-10 opacity-50 lg:h-12 lg:w-12" />
+			</div>
+			<p className="max-w-[17rem] text-pretty text-center text-sm text-univers/60 lg:text-base">
+				Catalogue en cours d’enrichissement. De nouvelles thématiques seront bientôt disponibles.
+			</p>
+		</div>
+	);
+}
 
 function ThemeColumn({ title, themes, onSelect }: { title: string; themes: CatalogueTheme[]; onSelect: (theme: CatalogueTheme) => void }) {
 	return (
 		<div className="flex flex-col items-center">
-			<h2 className="text-lg sm:text-2xl font-bold text-univers text-center mb-8 uppercase tracking-wider">{title}</h2>
-			<div className="flex flex-wrap justify-center gap-5 sm:gap-6 mb-20">
+			<h2 className="mb-6 text-center text-base font-bold uppercase tracking-wider text-univers sm:mb-8 sm:text-xl lg:text-2xl">{title}</h2>
+
+			{/* La largeur maximale force deux bulles par ligne : flex-wrap centre
+			    alors la dernière ligne, au lieu du 3 + 1 orphelin d'avant. */}
+			<div className="flex max-w-[19.5rem] flex-wrap items-center justify-center gap-4 sm:max-w-[21.5rem] sm:gap-6">
 				{themes.length > 0 ? (
 					themes.map((theme) => <ThemeBubble key={theme._id} theme={theme} onClick={() => onSelect(theme)} />)
 				) : (
-					<p className="text-sm sm:text-base text-univers/60 text-center max-w-xs py-8">
-						Catalogue en cours d’enrichissement. De nouvelles thématiques seront bientôt disponibles.
-					</p>
+					<EmptyThemePlaceholder />
 				)}
 			</div>
 		</div>
@@ -67,12 +106,16 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 
 	return (
 		<>
-			<div className="mx-auto max-w-7xl px-6 lg:px-8 mt-10">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 lg:divide-x lg:divide-univers/15">
-					<div className="lg:pr-8">
+			{/* Séparation par un filet plutôt que par un grand vide : trait horizontal
+			    entre les deux sections sur mobile, vertical entre les colonnes à partir
+			    de lg. L'espacement vient du padding des colonnes, pas d'un gap qui
+			    décrocherait le filet du contenu. */}
+			<div className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8">
+				<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
+					<div className="pb-10 lg:pb-0 lg:pr-10">
 						<ThemeColumn title="Formations transversales" themes={transversalThemes} onSelect={setSelectedTheme} />
 					</div>
-					<div className="lg:pl-8">
+					<div className="pt-10 lg:pl-10 lg:pt-0">
 						<ThemeColumn title="Professionnels de la santé" themes={santeThemes} onSelect={setSelectedTheme} />
 					</div>
 				</div>
@@ -92,7 +135,7 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 					width="min(600px, 95vw)"
 					onCancel={handleClose}
 				>
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center justify-center max-w-[500px] mx-auto py-5">
+					<div className="mx-auto grid max-w-[500px] grid-cols-2 items-center justify-center gap-3.5 py-4 sm:gap-5 sm:py-5">
 						{selectedTheme?.trainings.map((training) => {
 							const isLoadingThis = routingId === training._id;
 							return (
@@ -100,11 +143,16 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 									key={training._id}
 									onClick={!isLoadingThis ? () => handleRouting(training._id) : undefined}
 									className={clsx(
-										"relative flex justify-center items-center aspect-1 ring-2 ring-cohesion/30 rounded-xl shadow-2xl p-2 duration-500",
-										isLoadingThis ? "cursor-wait" : "hover:ring-cohesion cursor-pointer hover:transform hover:scale-105"
+										"relative flex aspect-1 items-center justify-center rounded-xl p-3 shadow-lg ring-2 ring-cohesion/30 transition duration-300",
+										isLoadingThis ? "cursor-wait" : "cursor-pointer hover:scale-105 hover:shadow-xl hover:ring-cohesion"
 									)}
 								>
-									<p className={clsx("text-wrap text-center text-univers text-xs sm:text-base font-semibold", isLoadingThis ? "opacity-30" : "")}>
+									<p
+										className={clsx(
+											"text-balance text-center text-[0.8rem] font-semibold leading-snug text-univers sm:text-sm lg:text-base",
+											isLoadingThis && "opacity-30"
+										)}
+									>
 										{training.title}
 									</p>
 									{isLoadingThis && (
