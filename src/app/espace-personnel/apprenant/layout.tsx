@@ -13,8 +13,8 @@ const apprenantNavItems = [
 ];
 
 export default async function ApprenantLayout({ children }: { children: React.ReactNode }) {
-	const user = await requireUser(["apprenant"]);
-	const unreadCount = await getUnreadCount().catch(() => 0);
+	// Lectures parallèles : le compteur de badge ne dépend pas de l'authentification.
+	const [user, unreadCount] = await Promise.all([requireUser(["apprenant"]), getUnreadCount().catch(() => 0)]);
 
 	return (
 		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import {
 	createTrainingAction,
 	deleteTrainingAction,
@@ -139,7 +139,6 @@ interface FormationsClientProps {
  */
 export default function FormationsClient({ trainings, themes }: FormationsClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 	const [saving, setSaving] = useState(false);
 
 	// Modal state
@@ -175,8 +174,6 @@ export default function FormationsClient({ trainings, themes }: FormationsClient
 		if (result.ok) {
 			openNotification("success", "Succès", result.message ?? successMessage);
 			onDone?.();
-			// Rejoue le rendu serveur : la liste reflète la revalidation.
-			startTransition(() => {});
 		} else {
 			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}

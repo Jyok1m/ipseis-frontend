@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { contactProspectAction, convertProspectAction, updateProspectStatusAction } from "@/lib/server/actions/admin";
 import type { ActionState } from "@/lib/server/actions/types";
 import type { Pagination, Prospect } from "@/lib/types";
@@ -58,7 +58,6 @@ interface ProspectsClientProps {
  */
 export default function ProspectsClient({ prospects, pagination, filters }: ProspectsClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 
 	// Contact modal
 	const [contactModal, setContactModal] = useState<Prospect | null>(null);
@@ -89,7 +88,6 @@ export default function ProspectsClient({ prospects, pagination, filters }: Pros
 		if (result.ok) {
 			openNotification("success", successTitle, result.message ?? successMessage);
 			onDone?.();
-			startTransition(() => {});
 		} else {
 			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}

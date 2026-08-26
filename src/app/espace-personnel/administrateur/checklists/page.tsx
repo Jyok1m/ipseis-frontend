@@ -1,4 +1,4 @@
-import { getChecklists, getProspects, getUsers } from "@/lib/server/queries";
+import { getChecklists, getProspectsForSelect, getUsersForSelect } from "@/lib/server/queries";
 import ChecklistsClient from "./ChecklistsClient";
 
 export default async function ChecklistsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
@@ -9,8 +9,8 @@ export default async function ChecklistsPage({ searchParams }: { searchParams: P
 	// maintenant avec la page.
 	const [checklists, users, prospects] = await Promise.all([
 		getChecklists({ page: Number(page) || 1 }),
-		getUsers().then((r) => r.items).catch(() => []),
-		getProspects().then((r) => r.items).catch(() => []),
+		getUsersForSelect().catch(() => []),
+		getProspectsForSelect().catch(() => []),
 	]);
 
 	return (

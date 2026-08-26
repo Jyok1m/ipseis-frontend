@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 /**
@@ -9,11 +9,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
  * C'est le serveur qui rend la liste filtrée : la vue est partageable,
  * le retour navigateur fonctionne, et il n'y a plus de re-fetch client
  * après chaque changement de filtre.
+ *
+ * La navigation est enveloppée dans une transition : `isPending` reste vrai
+ * tant que le nouveau rendu serveur n'est pas arrivé, ce qui permet aux
+ * contrôles d'afficher un état d'attente. Sans ça, changer un filtre ne
+ * produisait aucun retour visuel pendant l'aller-retour.
  */
 export function useUrlFilter() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const [isPending, startTransition] = useTransition();
 
 	const setParams = useCallback(
 		(updates: Record<string, string | undefined>) => {
@@ -26,10 +32,10 @@ export function useUrlFilter() {
 			params.delete("page");
 
 			const query = params.toString();
-			router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+			startTransition(() => router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false }));
 		},
 		[router, pathname, searchParams]
 	);
 
-	return { searchParams, setParams };
+	return { searchParams, setParams, isPending };
 }

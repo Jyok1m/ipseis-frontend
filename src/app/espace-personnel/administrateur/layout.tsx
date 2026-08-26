@@ -18,10 +18,12 @@ const adminNavItems = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-	const user = await requireUser(["administrateur"]);
-
-	// Compteurs de badges résolus en parallèle du rendu, pas après hydratation.
-	const [unreadCount, contactUnreadCount] = await Promise.all([
+	// Les trois lectures partent ensemble : les compteurs de badges ne dépendent
+	// pas du résultat de l'authentification, les enchaîner coûtait un aller-retour
+	// de plus avant le moindre octet de HTML. Un échec sur un compteur retombe à
+	// zéro sans bloquer la page ; requireUser reste seul à pouvoir rediriger.
+	const [user, unreadCount, contactUnreadCount] = await Promise.all([
+		requireUser(["administrateur"]),
 		getUnreadCount().catch(() => 0),
 		getContactUnreadCount().catch(() => 0),
 	]);

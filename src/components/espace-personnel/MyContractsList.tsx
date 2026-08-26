@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { ConfigProvider, Modal, notification } from "antd";
 import {
 	CheckCircleIcon,
@@ -67,7 +67,6 @@ interface MyContractsListProps {
  */
 export default function MyContractsList({ contracts, pagination, basePath }: MyContractsListProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 	const [previewOpen, setPreviewOpen] = useState(false);
 	const [previewLoading, setPreviewLoading] = useState(false);
 	const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
@@ -108,8 +107,6 @@ export default function MyContractsList({ contracts, pagination, basePath }: MyC
 				const result = await action(contract._id);
 				if (result.ok) {
 					notify("success", successTitle, successMessage);
-					// Rejoue le rendu serveur pour refléter la revalidation.
-					startTransition(() => {});
 				} else {
 					notify("error", "Erreur", result.error ?? "Une erreur est survenue.");
 				}

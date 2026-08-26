@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState } from "react";
 import { ConfigProvider, Modal, notification } from "antd";
 import { CheckCircleIcon, XCircleIcon, KeyIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -28,7 +28,6 @@ const headers = ["Code", "Email", "Rôle", "Statut", "Expire", "Actions"];
 
 export default function CodesActivationClient({ codes, pagination, archived }: { codes: ActivationCode[]; pagination: Pagination; archived: boolean }) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 	const [createState, createAction] = useActionState(createActivationCodeAction, idle);
 	// Notifie le résultat de la création dans un effet, jamais pendant le rendu.
 	const createFeedback = useActionFeedback(createState, { successTitle: "Code créé" });
@@ -50,7 +49,6 @@ export default function CodesActivationClient({ codes, pagination, archived }: {
 		const result = await action();
 		if (result.ok) {
 			notify("success", successTitle, result.message ?? fallback);
-			startTransition(() => {});
 		} else {
 			notify("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}
@@ -119,7 +117,7 @@ export default function CodesActivationClient({ codes, pagination, archived }: {
 							<KeyIcon className="h-5 w-5 text-maitrise" />
 							Historique des codes
 						</h2>
-						<ArchivedToggle basePath={BASE_PATH} />
+						<ArchivedToggle />
 					</div>
 
 					{codes.length > 0 ? (

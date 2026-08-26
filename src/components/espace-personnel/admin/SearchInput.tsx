@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useUrlFilter } from "./useUrlFilter";
 
 /**
@@ -10,7 +12,7 @@ import { useUrlFilter } from "./useUrlFilter";
  * à chaque frappe.
  */
 export default function SearchInput({ placeholder, paramName = "search" }: { placeholder: string; paramName?: string }) {
-	const { searchParams, setParams } = useUrlFilter();
+	const { searchParams, setParams, isPending } = useUrlFilter();
 	const currentValue = searchParams.get(paramName) ?? "";
 	const [value, setValue] = useState(currentValue);
 
@@ -28,8 +30,13 @@ export default function SearchInput({ placeholder, paramName = "search" }: { pla
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
 				placeholder={placeholder}
-				className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:border-univers focus:ring-2 focus:ring-univers/20 transition-all duration-200"
+				className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:border-univers focus:ring-2 focus:ring-univers/20 transition-all duration-200"
 			/>
+			{isPending && (
+				<span className="absolute right-3 top-1/2 -translate-y-1/2">
+					<Spin indicator={<LoadingOutlined spin />} size="small" className="text-cohesion" />
+				</span>
+			)}
 		</div>
 	);
 }

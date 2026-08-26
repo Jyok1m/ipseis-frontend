@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { createChecklistAction, deleteChecklistAction, toggleChecklistItemAction, updateChecklistAction } from "@/lib/server/actions/admin";
 import type { ActionState } from "@/lib/server/actions/types";
 import type { Checklist, Pagination, Prospect, SessionUser } from "@/lib/types";
@@ -56,7 +56,6 @@ interface ChecklistsClientProps {
  */
 export default function ChecklistsClient({ initialChecklists, pagination, allUsers, allProspects }: ChecklistsClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 
 	const [checklists, setChecklists] = useState<Checklist[]>(initialChecklists);
 	const [saving, setSaving] = useState(false);
@@ -95,7 +94,6 @@ export default function ChecklistsClient({ initialChecklists, pagination, allUse
 		if (result.ok) {
 			openNotification("success", "Succès", result.message ?? successMessage);
 			onDone?.();
-			startTransition(() => {});
 		} else {
 			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}

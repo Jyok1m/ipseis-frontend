@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef } from "react";
 import { downloadResourcePdf } from "@/lib/authApi";
 import { createResourceAction, deleteResourceAction, updateResourceAction } from "@/lib/server/actions/resources";
 import type { ActionState } from "@/lib/server/actions/types";
@@ -59,7 +59,6 @@ interface RessourcesClientProps {
  */
 export default function RessourcesClient({ resources, pagination, trainings, trainingFilter }: RessourcesClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 	const resourcesPagination = pagination;
 
 	// Resource modal
@@ -98,7 +97,6 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 		if (result.ok) {
 			openNotification("success", "Succès", result.message ?? successMessage);
 			onDone?.();
-			startTransition(() => {});
 		} else {
 			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}

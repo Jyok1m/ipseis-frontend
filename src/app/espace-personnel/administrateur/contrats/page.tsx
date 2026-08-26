@@ -1,4 +1,4 @@
-import { getAdminContracts, getAdminTrainings, getUsers } from "@/lib/server/queries";
+import { getAdminContracts, getAdminTrainings, getUsersForSelect } from "@/lib/server/queries";
 import ContratsClient from "./ContratsClient";
 
 export default async function ContratsPage({ searchParams }: { searchParams: Promise<{ page?: string; status?: string }> }) {
@@ -8,7 +8,7 @@ export default async function ContratsPage({ searchParams }: { searchParams: Pro
 	// indépendantes, résolues en parallèle plutôt qu'en cascade au montage.
 	const [contracts, users, trainings] = await Promise.all([
 		getAdminContracts({ page: Number(page) || 1, status }),
-		getUsers().then((r) => r.items).catch(() => []),
+		getUsersForSelect().catch(() => []),
 		getAdminTrainings().catch(() => []),
 	]);
 

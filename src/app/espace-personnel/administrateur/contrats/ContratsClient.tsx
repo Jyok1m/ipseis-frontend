@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { downloadContractPdf } from "@/lib/authApi";
 import {
 	cancelContractAction,
@@ -95,7 +95,6 @@ interface ContratsClientProps {
  */
 export default function ContratsClient({ contracts, pagination, statusFilter, allUsers, allTrainings }: ContratsClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [, startTransition] = useTransition();
 
 	// Modal
 	const [modalOpen, setModalOpen] = useState(false);
@@ -137,7 +136,6 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 		if (result.ok) {
 			openNotification("success", successTitle, result.message ?? successMessage);
 			onDone?.();
-			startTransition(() => {});
 		} else {
 			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
 		}

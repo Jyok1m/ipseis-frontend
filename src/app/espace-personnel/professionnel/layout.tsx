@@ -13,8 +13,8 @@ const professionnelNavItems = [
 ];
 
 export default async function ProfessionnelLayout({ children }: { children: React.ReactNode }) {
-	const user = await requireUser(["professionnel"]);
-	const unreadCount = await getUnreadCount().catch(() => 0);
+	// Lectures parallèles : le compteur de badge ne dépend pas de l'authentification.
+	const [user, unreadCount] = await Promise.all([requireUser(["professionnel"]), getUnreadCount().catch(() => 0)]);
 
 	return (
 		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0}>

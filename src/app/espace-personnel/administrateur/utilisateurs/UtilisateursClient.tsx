@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { ConfigProvider, Modal, notification, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { CheckCircleIcon, XCircleIcon, UsersIcon, PencilSquareIcon, TrashIcon, ChatBubbleLeftRightIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
@@ -49,7 +49,6 @@ interface UtilisateursClientProps {
  */
 export default function UtilisateursClient({ currentUser, users, pagination, filters }: UtilisateursClientProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [pending, startTransition] = useTransition();
 
 	const [editUser, setEditUser] = useState<AdminUser | null>(null);
 	const [deleteUser, setDeleteUser] = useState<AdminUser | null>(null);
@@ -76,7 +75,6 @@ export default function UtilisateursClient({ currentUser, users, pagination, fil
 			if (result.ok) {
 				notify("success", "Succès", result.message ?? successMessage);
 				onDone();
-				startTransition(() => {});
 			} else {
 				notify("error", "Erreur", result.error ?? "Une erreur est survenue.");
 			}
@@ -120,7 +118,7 @@ export default function UtilisateursClient({ currentUser, users, pagination, fil
 		run(() => sendInternalMessageAction({ recipientUser: messageUser._id, subject, content }), "Message envoyé avec succès.", () => setMessageUser(null));
 	};
 
-	const saving = busy || pending;
+	const saving = busy;
 	const spinner = <Spin indicator={<LoadingOutlined spin className="text-base text-white" />} />;
 
 	return (

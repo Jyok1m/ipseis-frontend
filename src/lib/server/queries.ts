@@ -22,10 +22,22 @@ export const getDashboardStats = () => serverFetch<DashboardStats>("/admin/dashb
 
 // ─── Admin : utilisateurs et codes d'activation ─────────────────────────────
 
-export async function getUsers(params: { page?: number; role?: string; search?: string; excludeRole?: string } = {}) {
+/**
+ * Les listes du backend sont paginées à 20 par défaut (routes/admin.js).
+ * Pour peupler un <select>, cette valeur tronquerait silencieusement les
+ * options : au-delà de 20 comptes, certains deviendraient inassignables.
+ * Au-delà de ce plafond, il faudra un select avec recherche côté serveur
+ * plutôt qu'une liste chargée d'un bloc.
+ */
+const SELECT_OPTIONS_LIMIT = 500;
+
+export async function getUsers(params: { page?: number; role?: string; search?: string; excludeRole?: string; limit?: number } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/admin/users", { searchParams: { ...params, page: params.page ?? 1 } });
 	return normalize<SessionUser & { createdAt: string }>(payload, "users");
 }
+
+/** Utilisateurs destinés à un <select>, sans troncature à 20. */
+export const getUsersForSelect = async () => (await getUsers({ limit: SELECT_OPTIONS_LIMIT })).items;
 
 export async function getActivationCodes(params: { page?: number; archived?: boolean } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/admin/activation-codes", {
@@ -36,10 +48,13 @@ export async function getActivationCodes(params: { page?: number; archived?: boo
 
 // ─── Admin : prospects ──────────────────────────────────────────────────────
 
-export async function getProspects(params: { page?: number; source?: string; search?: string } = {}) {
+export async function getProspects(params: { page?: number; source?: string; search?: string; limit?: number } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/admin/prospects", { searchParams: { ...params, page: params.page ?? 1 } });
 	return normalize<Prospect>(payload, "prospects");
 }
+
+/** Prospects destinés à un <select>, sans troncature à 20. */
+export const getProspectsForSelect = async () => (await getProspects({ limit: SELECT_OPTIONS_LIMIT })).items;
 
 // ─── Admin : formations et thèmes ───────────────────────────────────────────
 
