@@ -97,11 +97,11 @@ export default function RootLayout({
 			<head>
 				<JsonLd data={organizationJsonLd} />
 			</head>
-			<body className="flex h-dvh flex-col overflow-hidden bg-support">
+			<body className="flex min-h-dvh flex-col bg-support">
 				<AntdProvider>
 					{!maintenance && <ConditionalHeader />}
 					{maintenance ? (
-						<main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+						<main className="flex flex-1 flex-col overflow-x-hidden">{children}</main>
 					) : (
 						<LayoutShell>{children}</LayoutShell>
 					)}

@@ -101,7 +101,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 	}, [fetchtrainingData, initialTraining]);
 
 	return (
-		<div className="bg-support px-6 pt-8 lg:px-8 text-sm sm:text-base text-pretty min-h-full">
+		<div className="bg-support px-5 pt-5 sm:px-6 sm:pt-8 lg:px-8 text-sm sm:text-base text-pretty min-h-full">
 			{isLoading || !trainingData ? (
 				<div className="col-start-2 row-start-2 flex justify-center items-center w-full min-h-[400px]">
 					<Spin indicator={<LoadingOutlined spin />} size="large" className="text-cohesion" />
@@ -111,7 +111,7 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 					<div className="mx-auto max-w-3xl text-univers mb-10">
 						<TitleSection tag={trainingData?.theme} title={trainingData?.title} paddingSide={false} noPaddingVertical />
 						{trainingData?.introduction && (
-							<p className="mt-6 text-base sm:text-lg leading-relaxed text-univers/90">{trainingData.introduction}</p>
+							<p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-univers/90">{trainingData.introduction}</p>
 						)}
 						<div>
 							<h2 className="mt-10 mb-5 text-lg sm:text-xl font-semibold tracking-tight flex items-center gap-x-2">

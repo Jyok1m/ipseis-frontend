@@ -28,13 +28,13 @@ const webSiteJsonLd = {
 
 export default function Accueil() {
 	return (
-		<div className="relative flex min-h-full flex-col bg-univers overflow-hidden">
+		<div className="relative flex flex-1 flex-col overflow-hidden bg-univers">
 			<JsonLd data={webSiteJsonLd} />
 			{/* Centrage vertical seulement à partir de sm : sur un téléphone haut,
 			    justify-center dans une hauteur plein écran laissait près de 380 px
 			    de vide au-dessus du titre et autant en dessous du bouton. Le contenu
 			    part désormais du haut, le fond continuant de remplir l'écran. */}
-			<div className="flex min-h-0 flex-1 flex-col items-center justify-start gap-y-3 self-center px-5 pb-10 pt-8 sm:justify-center sm:gap-y-5 sm:px-10 sm:py-4 sm:w-5/6 lg:w-3/5">
+			<div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-start gap-y-3 self-center px-5 pb-10 pt-8 sm:justify-center sm:gap-y-5 sm:px-10 sm:py-4 sm:w-5/6 lg:w-3/5">
 				{/* Gros titre */}
 
 				<div className="text-2xl sm:text-4xl font-bold tracking-widest text-cohesion leading-snug">
@@ -62,12 +62,19 @@ export default function Accueil() {
 					</div>
 				</div>
 			</div>
+			{/* Étoile décorative. Elle était en z-10 au-dessus du contenu et captait
+			    les clics : le bouton « Découvrir nos formations » était inatteignable.
+			    Elle passe derrière, en pointer-events-none, et devient invisible pour
+			    les lecteurs d'écran puisqu'elle n'apporte aucune information.
+			    Sur mobile elle descend en bas de l'écran, où elle occupe l'espace
+			    laissé libre sous le bouton. */}
 			<Image
 				src="/images/star_beige.svg"
-				alt="Étoile Ipseis"
+				alt=""
+				aria-hidden
 				width={500}
 				height={500}
-				className="absolute z-10 opacity-10 top-5 -right-28 sm:-top-5 md:w-[750px] md:-top-20 md:-right-44 lg:w-[1000px] lg:-top-36 lg:-right-60"
+				className="pointer-events-none absolute z-0 opacity-10 -bottom-24 -right-20 sm:bottom-auto sm:-top-5 sm:-right-28 md:w-[750px] md:-top-20 md:-right-44 lg:w-[1000px] lg:-top-36 lg:-right-60"
 			/>
 		</div>
 	);

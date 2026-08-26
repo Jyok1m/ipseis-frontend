@@ -4,7 +4,12 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 
-const mainClass = "min-h-0 flex-1 overflow-y-auto overflow-x-hidden";
+/**
+ * Le document défile de nouveau lui-même : l'en-tête n'est plus figé en haut
+ * d'une zone de contenu à défilement interne, il s'en va avec la page.
+ * overflow-x-hidden reste pour contenir les éléments décoratifs débordants.
+ */
+const mainClass = "flex flex-1 flex-col overflow-x-hidden";
 
 export default function LayoutShell({ children }: { children: ReactNode }) {
 	const pathname = usePathname();
@@ -14,7 +19,7 @@ export default function LayoutShell({ children }: { children: ReactNode }) {
 		return <main className={mainClass}>{children}</main>;
 	}
 
-	// Home : footer fixe, hors de la zone scrollable (toujours visible).
+	// Home : footer sur fond sombre, dans le flux comme les autres pages.
 	if (pathname === "/") {
 		return (
 			<>
@@ -26,7 +31,7 @@ export default function LayoutShell({ children }: { children: ReactNode }) {
 
 	// Autres pages : footer dans le flux, en bas du contenu scrollable.
 	return (
-		<main className={`${mainClass} flex flex-col`}>
+		<main className={mainClass}>
 			<div className="flex flex-1 flex-col">{children}</div>
 			<Footer background="bg-support" />
 		</main>
