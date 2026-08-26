@@ -4,6 +4,7 @@ import AnalyticsGate from "@/components/global/AnalyticsGate";
 import ConditionalHeader from "@/components/global/ConditionalHeader";
 import LayoutShell from "@/components/global/LayoutShell";
 import CookieBanner from "@/components/global/CookieBanner";
+import AntdProvider from "@/components/global/AntdProvider";
 import JsonLd from "@/components/utils/JsonLd";
 import { defaultOpenGraph, defaultTwitter } from "@/components/utils/seo";
 
@@ -97,18 +98,20 @@ export default function RootLayout({
 				<JsonLd data={organizationJsonLd} />
 			</head>
 			<body className="flex h-dvh flex-col overflow-hidden bg-support">
-				{!maintenance && <ConditionalHeader />}
-				{maintenance ? (
-					<main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
-				) : (
-					<LayoutShell>{children}</LayoutShell>
-				)}
-				{!maintenance && (
-					<>
-						<CookieBanner />
-						<AnalyticsGate />
-					</>
-				)}
+				<AntdProvider>
+					{!maintenance && <ConditionalHeader />}
+					{maintenance ? (
+						<main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+					) : (
+						<LayoutShell>{children}</LayoutShell>
+					)}
+					{!maintenance && (
+						<>
+							<CookieBanner />
+							<AnalyticsGate />
+						</>
+					)}
+				</AntdProvider>
 			</body>
 		</html>
 	);
