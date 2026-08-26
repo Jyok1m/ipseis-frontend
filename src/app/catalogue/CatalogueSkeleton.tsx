@@ -30,10 +30,10 @@ export default function CatalogueSkeleton() {
 			<span className="sr-only">Chargement du catalogue…</span>
 			<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
 				<div className="pb-10 lg:pb-0 lg:pr-10">
-					<SkeletonColumn title="Formations transversales" count={1} />
+					<SkeletonColumn title="Professionnels de la santé" count={4} />
 				</div>
 				<div className="pt-10 lg:pl-10 lg:pt-0">
-					<SkeletonColumn title="Professionnels de la santé" count={4} />
+					<SkeletonColumn title="Formations transversales" count={1} />
 				</div>
 			</div>
 		</div>

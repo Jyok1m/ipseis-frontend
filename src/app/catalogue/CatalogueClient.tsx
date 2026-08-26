@@ -113,10 +113,10 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 			<div className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8">
 				<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
 					<div className="pb-10 lg:pb-0 lg:pr-10">
-						<ThemeColumn title="Formations transversales" themes={transversalThemes} onSelect={setSelectedTheme} />
+						<ThemeColumn title="Professionnels de la santé" themes={santeThemes} onSelect={setSelectedTheme} />
 					</div>
 					<div className="pt-10 lg:pl-10 lg:pt-0">
-						<ThemeColumn title="Professionnels de la santé" themes={santeThemes} onSelect={setSelectedTheme} />
+						<ThemeColumn title="Formations transversales" themes={transversalThemes} onSelect={setSelectedTheme} />
 					</div>
 				</div>
 			</div>
@@ -135,32 +135,43 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 					width="min(600px, 95vw)"
 					onCancel={handleClose}
 				>
-					<div className="mx-auto grid max-w-[500px] grid-cols-2 items-center justify-center gap-3.5 py-4 sm:gap-5 sm:py-5">
+					{/* Pas d'aspect-1 : des tuiles carrées de 250 px pour deux lignes de
+					    texte laissaient un vide énorme au centre de chacune. Et une seule
+					    formation reste sur une colonne, plutôt que d'occuper la moitié
+					    gauche d'une grille en deux colonnes. */}
+					<div
+						className={clsx(
+							"mx-auto grid gap-3 py-3 sm:gap-4 sm:py-4",
+							(selectedTheme?.trainings.length ?? 0) > 1 ? "sm:grid-cols-2" : "max-w-sm"
+						)}
+					>
 						{selectedTheme?.trainings.map((training) => {
 							const isLoadingThis = routingId === training._id;
 							return (
-								<div
+								<button
 									key={training._id}
+									type="button"
 									onClick={!isLoadingThis ? () => handleRouting(training._id) : undefined}
+									disabled={isLoadingThis}
 									className={clsx(
-										"relative flex aspect-1 items-center justify-center rounded-xl p-3 shadow-lg ring-2 ring-cohesion/30 transition duration-300",
-										isLoadingThis ? "cursor-wait" : "cursor-pointer hover:scale-105 hover:shadow-xl hover:ring-cohesion"
+										"relative flex min-h-[4.75rem] items-center justify-center rounded-xl bg-support px-4 py-5 text-center ring-2 ring-cohesion/30 transition duration-200",
+										isLoadingThis ? "cursor-wait" : "cursor-pointer hover:bg-cohesion/5 hover:ring-cohesion focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cohesion"
 									)}
 								>
-									<p
+									<span
 										className={clsx(
-											"text-balance text-center text-[0.8rem] font-semibold leading-snug text-univers sm:text-sm lg:text-base",
+											"text-balance text-sm font-semibold leading-snug text-univers sm:text-base",
 											isLoadingThis && "opacity-30"
 										)}
 									>
 										{training.title}
-									</p>
+									</span>
 									{isLoadingThis && (
-										<div className="absolute inset-0 flex justify-center items-center">
+										<span className="absolute inset-0 flex items-center justify-center">
 											<Spin indicator={<LoadingOutlined spin />} size="default" className="text-cohesion" />
-										</div>
+										</span>
 									)}
-								</div>
+								</button>
 							);
 						})}
 					</div>
