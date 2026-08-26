@@ -39,23 +39,36 @@ export default function Accueil() {
 
 				<div className="text-2xl sm:text-4xl font-bold tracking-widest text-cohesion leading-snug">
 					<h1>Vous êtes unique, nos formations et accompagnements aussi.</h1>
-					<Image src={tiretHome} alt="tiret" className="my-2 sm:my-5 w-[75px] h-auto" />
+					<Image
+						src={tiretHome}
+						alt="tiret"
+						className="my-2 sm:my-5 w-[75px] h-auto"
+					/>
 				</div>
 
 				{/* Description */}
 
-				<div className="flex flex-col gap-y-3 text-sm leading-relaxed text-support sm:gap-y-5 sm:text-xl">
+				<div className="flex flex-col gap-y-4 text-lg leading-relaxed text-support sm:gap-y-5 sm:text-xl">
 					<p>
-						Chez IPSEIS, nous croyons que l'apprentissage des professionnels passe par une alliance subtile entre théorie et pratique, transmission et
-						expérimentation. Nous concevons des expériences pédagogiques sur-mesure, ancrées dans le réel, pour faire évoluer les pratiques
-						quotidiennes et les comportements pour un meilleur fonctionnement d'équipe.
+						Chez IPSEIS, nous croyons que l'apprentissage des professionnels
+						passe par une alliance subtile entre théorie et pratique,
+						transmission et expérimentation. Nous concevons des expériences
+						pédagogiques sur-mesure, ancrées dans le réel, pour faire évoluer
+						les pratiques quotidiennes et les comportements pour un meilleur
+						fonctionnement d'équipe.
 					</p>
-					<p className="block md:hidden">Et si la formation devenait une expérience à vivre ?</p>
+					<p className="block md:hidden">
+						Et si la formation devenait une expérience à vivre ?
+					</p>
 					<div className="w-full flex justify-start text-support mt-1 sm:mt-5">
 						<Button href="/catalogue">
-							<span className="md:block items-center text-center hidden">Et si la formation devenait une expérience à vivre ?</span>
+							<span className="md:block items-center text-center hidden">
+								Et si la formation devenait une expérience à vivre ?
+							</span>
 							<span className="flex items-center gap-x-2 font-semibold text-center">
-								<span className="hover:underline hover:underline-offset-8">Découvrir nos formations</span>
+								<span className="hover:underline hover:underline-offset-8">
+									Découvrir nos formations
+								</span>
 								<span className="mt-1">→</span>
 							</span>
 						</Button>
@@ -77,7 +90,7 @@ export default function Accueil() {
 				aria-hidden
 				width={500}
 				height={500}
-				className="pointer-events-none absolute left-1/2 top-1/2 z-0 w-[135%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.07] sm:left-auto sm:right-[-7rem] sm:top-[-1.25rem] sm:w-[500px] sm:translate-x-0 sm:translate-y-0 sm:opacity-10 md:right-[-11rem] md:top-[-5rem] md:w-[750px] lg:right-[-15rem] lg:top-[-9rem] lg:w-[1000px]"
+				className="pointer-events-none absolute left-1/2 top-1/2 z-0 w-[135%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.03] sm:left-auto sm:right-[-7rem] sm:top-[-1.25rem] sm:w-[500px] sm:translate-x-0 sm:translate-y-0 sm:opacity-10 md:right-[-11rem] md:top-[-5rem] md:w-[750px] lg:right-[-15rem] lg:top-[-9rem] lg:w-[1000px]"
 			/>
 		</div>
 	);

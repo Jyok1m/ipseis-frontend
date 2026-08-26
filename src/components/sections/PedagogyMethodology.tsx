@@ -29,9 +29,9 @@ export const PedagogyMethodologySection = () => {
 	return (
 		<>
 			<TitleSection tag="Notre méthode" title="Une méthode participative qui engage et transforme" />
-			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider">
+			<div className="pb-10 mx-auto max-w-4xl px-6 lg:px-8 tracking-wider">
 				{/* 3x3 grid where five cards sit like a die face (1,1  -  1,3  -  2,2  -  3,1  -  3,3) */}
-				<div className="mx-auto max-w-7xl">
+				<div className="mx-auto max-w-4xl">
 					<div className="relative grid grid-cols-1 gap-4 md:gap-24 md:grid-cols-2 md:grid-rows-2 place-items-stretch">
 						{/* top-left */}
 						<div className="md:col-start-1 md:row-start-1">
@@ -80,7 +80,7 @@ export const PedagogyMethodologySection = () => {
 							/>
 						</div>
 					</div>
-					<p className="mx-auto max-w-3xl mt-10 md:mt-16 text-center text-base sm:text-lg text-univers">
+					<p className="mt-10 md:mt-16 text-center text-base sm:text-lg text-univers">
 						En combinant ces moyens pédagogiques, nous assurons un apprentissage significatif et durable, solidement enraciné
 						dans la pratique professionnelle.
 					</p>

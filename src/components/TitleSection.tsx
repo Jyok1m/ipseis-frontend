@@ -37,7 +37,7 @@ export const TitleSection = ({
 	return (
 		<div
 			className={clsx(
-				"mx-auto max-w-7xl tracking-wider",
+				"mx-auto max-w-4xl tracking-wider",
 				paddingSide && "px-5 sm:px-6 lg:px-8",
 				// Un seul jeu de classes de padding vertical : la version précédente
 				// ajoutait py-0 par-dessus py-10 en comptant sur l'ordre du littéral,

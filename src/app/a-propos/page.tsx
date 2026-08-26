@@ -27,7 +27,7 @@ export default function APropos() {
 	return (
 		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
-			<div className="mx-auto max-w-7xl px-6 lg:px-8 pb-10">
+			<div className="mx-auto max-w-4xl px-6 lg:px-8 pb-10">
 				<TitlePage
 					title="Bienvenue dans l’univers unique d’apprentissage d’IPSEIS"
 					descriptionNode="Le mot de la fondatrice"
@@ -40,7 +40,7 @@ export default function APropos() {
 				<section>
 					<div className="border border-univers w-12 my-8"></div>
 					<div>
-						<p className="max-w-3xl space-y-7 text-base sm:text-lg text-univers">
+						<p className="space-y-7 text-base sm:text-lg text-univers">
 							<Image
 								src="/images/about-image-hélène.jpg"
 								alt="Photo d'Hélène de Montabert"

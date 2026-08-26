@@ -23,7 +23,7 @@ const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
  */
 function EmptyThemePlaceholder() {
 	return (
-		<div className="flex w-full flex-col items-center justify-center gap-5 sm:aspect-1 sm:max-w-[24rem] lg:max-w-[27rem]">
+		<div className="flex w-full flex-col items-center justify-center gap-5 sm:aspect-1 sm:max-w-[22rem]">
 			<div
 				className={clsx(
 					"flex aspect-1 items-center justify-center rounded-full border-2 border-dashed border-cohesion/35 bg-support/40",

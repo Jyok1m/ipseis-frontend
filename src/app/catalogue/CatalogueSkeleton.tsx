@@ -13,7 +13,7 @@ function SkeletonWheel({ count }: { count: number }) {
 	const diameter = bubbleDiameter(count);
 
 	return (
-		<div className="relative mx-auto aspect-1 w-full max-w-[24rem] lg:max-w-[27rem]">
+		<div className="relative mx-auto aspect-1 w-full max-w-[22rem]">
 			<svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
 				<circle cx="50" cy="50" r={WHEEL_RADIUS} fill="none" stroke="#FF4E00" strokeOpacity="0.12" strokeWidth="0.3" strokeDasharray="1.6 2.2" />
 			</svg>

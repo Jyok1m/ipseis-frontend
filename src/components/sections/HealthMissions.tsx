@@ -6,9 +6,9 @@ export const HealthMissionSection = () => {
 	return (
 		<>
 			<TitleSection tag="Nos missions" title="Agir, transmettre, transformer, engager vos équipes" />
-			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider">
+			<div className="pb-10 mx-auto max-w-4xl px-6 lg:px-8 tracking-wider">
 				{/* 3x3 grid where five cards sit like a die face (1,1  -  1,3  -  2,2  -  3,1  -  3,3) */}
-				<div className="mx-auto max-w-7xl">
+				<div className="mx-auto max-w-4xl">
 					<div className="relative grid grid-cols-1 gap-4 sm:gap-0 sm:grid-cols-3 sm:grid-rows-3">
 						{/* top-left */}
 						<div className="sm:col-start-1 sm:row-start-1">
