@@ -1,5 +1,8 @@
+import { requireUser } from "@/lib/server/session";
 import MessagesPage from "@/components/espace-personnel/MessagesPage";
 
-export default function AdminMessagesPage() {
-	return <MessagesPage canComposeNew />;
+export default async function AdminMessagesPage() {
+	const user = await requireUser(["administrateur"]);
+
+	return <MessagesPage user={user} canComposeNew />;
 }

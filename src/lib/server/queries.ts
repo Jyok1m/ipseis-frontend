@@ -1,19 +1,12 @@
 import "server-only";
 import { serverFetch } from "./fetcher";
-import type { SessionUser } from "./session";
+import { groupResourcesByTraining } from "../types";
+import type { ActivationCode, AdminTraining, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, SessionUser } from "../types";
 
-/** Forme de pagination renvoyée par toutes les listes du backend. */
-export interface Pagination {
-	page: number;
-	limit: number;
-	total: number;
-	pages: number;
-}
-
-export interface Paginated<T> {
-	pagination: Pagination;
-	items: T[];
-}
+// Réexport : les composants importent leurs types depuis ce module métier,
+// sans avoir à connaître le module neutre où ils sont déclarés.
+export type { ActivationCode, AdminTraining, Contract, DashboardStats, Paginated, Pagination, Prospect, Resource, ResourceGroup } from "../types";
+export { groupResourcesByTraining };
 
 /** Le backend nomme le tableau d'après l'entité ; on normalise pour les appelants. */
 function normalize<T>(payload: Record<string, unknown>, key: string): Paginated<T> {
@@ -24,21 +17,6 @@ function normalize<T>(payload: Record<string, unknown>, key: string): Paginated<
 }
 
 // ─── Admin : tableau de bord ────────────────────────────────────────────────
-
-export interface DashboardStats {
-	totalProspects: number;
-	prospectsThisMonth: number;
-	totalUsers: number;
-	totalTrainings: number;
-	totalMessages: number;
-	totalCatalogueDownloads: number;
-	sourceBreakdown: Record<string, number>;
-	totalContracts: number;
-	contractsByStatus: { draft: number; sent: number; signed: number; cancelled: number; rejected: number };
-	recentContracts: Array<{ _id: string; title: string; recipientName: string; status: string; createdAt: string }>;
-	recentUsers: Array<{ _id: string; firstName: string; lastName: string; role: string; createdAt: string }>;
-	checklistsInProgress: number;
-}
 
 export const getDashboardStats = () => serverFetch<DashboardStats>("/admin/dashboard/stats");
 
@@ -53,26 +31,10 @@ export async function getActivationCodes(params: { page?: number; archived?: boo
 	const payload = await serverFetch<Record<string, unknown>>("/admin/activation-codes", {
 		searchParams: { page: params.page ?? 1, archived: params.archived ? "true" : undefined },
 	});
-	return normalize<Record<string, unknown>>(payload, "codes");
+	return normalize<ActivationCode>(payload, "codes");
 }
 
 // ─── Admin : prospects ──────────────────────────────────────────────────────
-
-export interface Prospect {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	source: string;
-	status: string;
-	lastInteractionDate: string;
-	interactionCount: number;
-	hasCatalogueDownload: boolean;
-	hasContactMessage: boolean;
-	hasAccount: boolean;
-	interactions: Array<Record<string, unknown>>;
-	createdAt: string;
-}
 
 export async function getProspects(params: { page?: number; source?: string; search?: string } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/admin/prospects", { searchParams: { ...params, page: params.page ?? 1 } });
@@ -80,26 +42,6 @@ export async function getProspects(params: { page?: number; source?: string; sea
 }
 
 // ─── Admin : formations et thèmes ───────────────────────────────────────────
-
-export interface AdminTraining {
-	_id: string;
-	title: string;
-	introduction?: string;
-	pedagogical_objectives: string[];
-	program: string[];
-	pedagogical_methods: string[];
-	evaluation_methods: string[];
-	audience: string;
-	prerequisites: string;
-	trainer: string;
-	number_of_trainees: string;
-	duration: string;
-	quote: string;
-	accessibility?: string;
-	isVisible?: boolean;
-	themeId?: string;
-	themeName?: string;
-}
 
 export const getAdminTrainings = async () => (await serverFetch<{ trainings: AdminTraining[] }>("/admin/trainings")).trainings;
 
@@ -115,17 +57,6 @@ export async function getChecklists(params: { page?: number } = {}) {
 
 // ─── Contrats ───────────────────────────────────────────────────────────────
 
-export interface Contract {
-	_id: string;
-	title: string;
-	description?: string;
-	status: "draft" | "sent" | "signed" | "cancelled" | "rejected";
-	recipientUser?: { _id: string; firstName: string; lastName: string; email: string };
-	pdfPath?: string;
-	createdAt: string;
-	signedAt?: string;
-}
-
 export async function getAdminContracts(params: { page?: number; status?: string } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/contracts/admin", { searchParams: { ...params, page: params.page ?? 1 } });
 	return normalize<Contract>(payload, "contracts");
@@ -137,16 +68,6 @@ export async function getMyContracts(params: { page?: number } = {}) {
 }
 
 // ─── Ressources ─────────────────────────────────────────────────────────────
-
-export interface Resource {
-	_id: string;
-	title: string;
-	description?: string;
-	training?: { _id: string; title: string };
-	allowedRoles?: string[];
-	filePath?: string;
-	createdAt: string;
-}
 
 export async function getAdminResources(params: { page?: number; trainingId?: string } = {}) {
 	const payload = await serverFetch<Record<string, unknown>>("/resources/admin", { searchParams: { ...params, page: params.page ?? 1 } });

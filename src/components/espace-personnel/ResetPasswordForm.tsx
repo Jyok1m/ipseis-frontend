@@ -1,85 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
-import { resetPassword } from "@/lib/authApi";
-import { useRouter } from "next/navigation";
-import { notification, ConfigProvider, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import React, { useActionState, useCallback } from "react";
 import Link from "next/link";
-import clsx from "clsx";
+import { useRouter } from "next/navigation";
+import { resetPasswordAction } from "@/lib/server/actions/auth";
+import { idle } from "@/lib/server/actions/types";
+import { useActionFeedback } from "@/components/utils/useActionFeedback";
+import SubmitButton from "./SubmitButton";
 
-type NotificationType = "success" | "error";
+const inputClass =
+	"block w-full rounded-lg px-4 py-3 text-univers bg-white border-2 border-univers/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-base font-medium transition-all duration-200";
 
+/**
+ * La correspondance des mots de passe et la longueur minimale sont vérifiées
+ * par le backend (routes/auth.js), qui renvoie les mêmes messages : les
+ * dupliquer ici ferait deux sources de vérité à maintenir en parallèle.
+ */
 export default function ResetPasswordForm({ token }: { token: string }) {
-	const [api, contextHolder] = notification.useNotification();
 	const router = useRouter();
+	const [state, formAction] = useActionState(resetPasswordAction, idle);
 
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
+	// Laisse la notification de succès lisible avant de renvoyer sur la connexion.
+	const onSuccess = useCallback(() => {
+		const timer = setTimeout(() => router.push("/espace-personnel/connexion"), 2000);
+		return () => clearTimeout(timer);
+	}, [router]);
 
-	const openNotification = (type: NotificationType, title: string, message: string) => {
-		api[type]({
-			message: title,
-			description: message,
-			icon:
-				type === "success" ? (
-					<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
-				) : (
-					<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
-				),
-		});
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setIsLoading(true);
-
-		if (!password || !confirmPassword) {
-			openNotification("error", "Erreur", "Veuillez remplir tous les champs.");
-			setIsLoading(false);
-			return;
-		}
-
-		if (password !== confirmPassword) {
-			openNotification("error", "Erreur", "Les mots de passe ne correspondent pas.");
-			setIsLoading(false);
-			return;
-		}
-
-		if (password.length < 8) {
-			openNotification("error", "Erreur", "Le mot de passe doit contenir au moins 8 caractères.");
-			setIsLoading(false);
-			return;
-		}
-
-		try {
-			const response = await resetPassword(token, password, confirmPassword);
-			openNotification("success", "Succès", response.data.message);
-			setTimeout(() => router.push("/espace-personnel/connexion"), 2000);
-		} catch (error: any) {
-			const message = error.response?.data?.error || "Erreur lors de la réinitialisation.";
-			openNotification("error", "Erreur", message);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const feedback = useActionFeedback(state, { successTitle: "Succès", onSuccess });
 
 	return (
 		<div className="w-full max-w-md mx-auto">
-			<ConfigProvider
-				theme={{
-					token: {
-						colorBgElevated: "#fffce8",
-						colorTextHeading: "#263c27",
-						colorText: "#263c27",
-						fontFamily: "Halibut",
-					},
-				}}
-			>
-				{contextHolder}
-			</ConfigProvider>
+			{feedback}
 
 			<div className="bg-white rounded-2xl shadow-lg p-8">
 				<div className="text-center mb-8">
@@ -87,23 +38,15 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 					<p className="text-univers/60 mt-2">Définissez votre nouveau mot de passe</p>
 				</div>
 
-				<form onSubmit={handleSubmit} className="space-y-6">
+				<form action={formAction} className="space-y-6">
+					<input type="hidden" name="token" value={token} />
+
 					<div>
 						<label htmlFor="password" className="text-base sm:text-lg leading-7 text-univers font-bold mb-1 block">
 							Nouveau mot de passe<span className="text-cohesion ml-1">*</span>
 						</label>
 						<div className="mt-2">
-							<input
-								onChange={(e) => setPassword(e.target.value)}
-								value={password}
-								disabled={isLoading}
-								id="password"
-								name="password"
-								type="password"
-								autoComplete="new-password"
-								placeholder="Minimum 8 caractères"
-								className="block w-full rounded-lg px-4 py-3 text-univers bg-white border-2 border-univers/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-base font-medium transition-all duration-200"
-							/>
+							<input id="password" name="password" type="password" autoComplete="new-password" placeholder="Minimum 8 caractères" className={inputClass} />
 						</div>
 					</div>
 
@@ -113,29 +56,19 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 						</label>
 						<div className="mt-2">
 							<input
-								onChange={(e) => setConfirmPassword(e.target.value)}
-								value={confirmPassword}
-								disabled={isLoading}
 								id="confirmPassword"
 								name="confirmPassword"
 								type="password"
 								autoComplete="new-password"
 								placeholder="Retapez le mot de passe"
-								className="block w-full rounded-lg px-4 py-3 text-univers bg-white border-2 border-univers/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-base font-medium transition-all duration-200"
+								className={inputClass}
 							/>
 						</div>
 					</div>
 
-					<button
-						type="submit"
-						disabled={isLoading}
-						className={clsx(
-							isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-univers/90 hover:shadow-lg",
-							"w-full rounded-xl bg-univers px-6 py-4 text-support font-bold shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers transition-all duration-200"
-						)}
-					>
-						{!isLoading ? "Réinitialiser" : <Spin indicator={<LoadingOutlined spin className="text-xl text-support" />} />}
-					</button>
+					<SubmitButton className="w-full rounded-xl bg-univers px-6 py-4 text-support font-bold shadow-md hover:bg-univers/90 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers transition-all duration-200">
+						Réinitialiser
+					</SubmitButton>
 				</form>
 
 				<p className="text-center mt-6 text-univers/60 text-sm">

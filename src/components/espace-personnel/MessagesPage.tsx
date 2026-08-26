@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getConversations, getArchivedConversations, sendInternalMessage, getUsers, getConversation, archiveConversation, unarchiveConversation, getContactMessages, getContactMessage, markContactMessageRead, replyToContactMessage } from "@/lib/authApi";
+import { getConversations, getArchivedConversations, getUsers, getConversation, getContactMessages, getContactMessage } from "@/lib/authApi";
+import {
+	archiveConversationAction,
+	markContactMessageReadAction,
+	replyToContactMessageAction,
+	sendInternalMessageAction,
+	unarchiveConversationAction,
+} from "@/lib/server/actions/messages";
 import { useSocket } from "@/context/SocketContext";
-import { useAuth } from "@/context/AuthContext";
+import type { ContactMessage, ContactReply, InternalMessage, MessageUser, SessionUser } from "@/lib/types";
 import { notification, ConfigProvider, Spin, Modal } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
@@ -23,57 +30,20 @@ import clsx from "clsx";
 
 type NotificationType = "success" | "error";
 
-interface MessageUser {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	role: string;
-}
-
-interface Message {
-	_id: string;
-	senderUser: MessageUser;
-	recipientUser: MessageUser;
-	subject: string;
-	content: string;
-	isRead: boolean;
-	parentMessage: string | null;
-	conversationId: string | null;
-	threadCount?: number;
-	unreadInThread?: number;
-	createdAt: string;
-}
-
-interface ContactReply {
-	_id: string;
-	content: string;
-	sentBy: { _id: string; firstName: string; lastName: string } | null;
-	sentAt: string;
-}
-
-interface ContactMessage {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	message: string;
-	interestedFormations: string[];
-	isRead: boolean;
-	replies: ContactReply[];
-	createdAt: string;
-}
+// Le fil de discussion utilise le type partagé InternalMessage.
+type Message = InternalMessage;
 
 interface MessagesPageProps {
+	/** Fourni par le Server Component parent : plus de GET /auth/me au montage. */
+	user: SessionUser;
 	canComposeNew?: boolean;
 }
 
 const inputClass =
 	"block w-full rounded-lg px-4 py-2.5 text-gray-900 bg-white border border-gray-300 focus:border-univers focus:ring-2 focus:ring-univers/20 shadow-sm placeholder:text-gray-400 text-sm font-medium transition-all duration-200";
 
-export default function MessagesPage({ canComposeNew = false }: MessagesPageProps) {
+export default function MessagesPage({ user, canComposeNew = false }: MessagesPageProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const { user } = useAuth();
 	const { socket, contactUnreadCount, refreshContactUnreadCount } = useSocket();
 
 	// View: for admin "internal" | "contact", for others always internal
@@ -115,17 +85,18 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 		if (!activeConversationId) return;
 		setArchiving(true);
 		try {
-			if (viewingArchived) {
-				await unarchiveConversation(activeConversationId);
-				openNotification("success", "Désarchivée", "La conversation a été désarchivée.");
-			} else {
-				await archiveConversation(activeConversationId);
-				openNotification("success", "Archivée", "La conversation a été archivée.");
+			const result = viewingArchived
+				? await unarchiveConversationAction(activeConversationId)
+				: await archiveConversationAction(activeConversationId);
+
+			if (!result.ok) {
+				openNotification("error", "Erreur", result.error ?? (viewingArchived ? "Impossible de désarchiver la conversation." : "Impossible d'archiver la conversation."));
+				return;
 			}
+
+			openNotification("success", viewingArchived ? "Désarchivée" : "Archivée", result.message ?? "");
 			setConversationOpen(false);
 			loadMessages(1);
-		} catch {
-			openNotification("error", "Erreur", viewingArchived ? "Impossible de désarchiver la conversation." : "Impossible d'archiver la conversation.");
 		} finally {
 			setArchiving(false);
 		}
@@ -233,21 +204,23 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 
 		const lastMsg = conversationMessages[conversationMessages.length - 1];
 		const recipientId =
-			lastMsg.senderUser._id === user?._id ? lastMsg.recipientUser._id : lastMsg.senderUser._id;
+			lastMsg.senderUser._id === user._id ? lastMsg.recipientUser._id : lastMsg.senderUser._id;
 
 		try {
-			await sendInternalMessage({
+			const result = await sendInternalMessageAction({
 				recipientUser: recipientId,
 				subject: conversationSubject.startsWith("Re: ") ? conversationSubject : `Re: ${conversationSubject}`,
 				content: replyContent,
 				parentMessage: lastMsg._id,
 			});
+			if (!result.ok) {
+				openNotification("error", "Erreur", result.error ?? "Erreur lors de l'envoi.");
+				return;
+			}
 			setReplyContent("");
 			const response = await getConversation(activeConversationId);
 			setConversationMessages(response.data.messages);
 			loadMessages(pagination?.page || 1);
-		} catch (error: any) {
-			openNotification("error", "Erreur", error.response?.data?.error || "Erreur lors de l'envoi.");
 		} finally {
 			setReplying(false);
 		}
@@ -281,11 +254,15 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 		}
 		setComposeSending(true);
 		try {
-			await sendInternalMessage({
+			const result = await sendInternalMessageAction({
 				recipientUser: composeRecipient._id,
 				subject: composeSubject,
 				content: composeContent,
 			});
+			if (!result.ok) {
+				openNotification("error", "Erreur", result.error ?? "Erreur lors de l'envoi.");
+				return;
+			}
 			openNotification("success", "Envoyé", "Message envoyé avec succès.");
 			setComposeOpen(false);
 			setComposeRecipient(null);
@@ -293,8 +270,6 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 			setComposeContent("");
 			setUserSearch("");
 			loadMessages(1);
-		} catch (error: any) {
-			openNotification("error", "Erreur", error.response?.data?.error || "Erreur lors de l'envoi.");
 		} finally {
 			setComposeSending(false);
 		}
@@ -345,12 +320,10 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 
 		// Mark as read + refresh global count
 		if (!msg.isRead) {
-			try {
-				await markContactMessageRead(msg._id);
+			const result = await markContactMessageReadAction(msg._id);
+			if (result.ok) {
 				setContactMessages((prev) => prev.map((m) => (m._id === msg._id ? { ...m, isRead: true } : m)));
 				refreshContactUnreadCount();
-			} catch {
-				// Silent fail
 			}
 		}
 
@@ -364,14 +337,16 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 		setContactReplying(true);
 
 		try {
-			const response = await replyToContactMessage(selectedContact._id, contactReplyContent);
+			const result = await replyToContactMessageAction(selectedContact._id, contactReplyContent);
+			if (!result.ok) {
+				openNotification("error", "Erreur", result.error ?? "Erreur lors de l'envoi de la réponse.");
+				return;
+			}
 			openNotification("success", "Envoyé", "Réponse envoyée par email avec succès.");
-			setSelectedContact(response.data.contactMessage);
+			if (result.contactMessage) setSelectedContact(result.contactMessage);
 			setContactReplyContent("");
 			loadContactMessages(contactPagination?.page || 1);
 			refreshContactUnreadCount();
-		} catch (error: any) {
-			openNotification("error", "Erreur", error.response?.data?.error || "Erreur lors de l'envoi de la réponse.");
 		} finally {
 			setContactReplying(false);
 		}
@@ -601,7 +576,7 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 					) : (
 						<div className="divide-y divide-gray-100">
 							{messages.map((msg) => {
-								const person = msg.senderUser?._id === user?._id ? msg.recipientUser : msg.senderUser;
+								const person = msg.senderUser?._id === user._id ? msg.recipientUser : msg.senderUser;
 								const isUnread = msg.unreadInThread > 0;
 								return (
 									<button
@@ -820,7 +795,7 @@ export default function MessagesPage({ canComposeNew = false }: MessagesPageProp
 								{/* Messages thread */}
 								<div className="max-h-[400px] overflow-y-auto space-y-3 mb-4 px-1">
 									{conversationMessages.map((msg) => {
-										const isMine = msg.senderUser._id === user?._id;
+										const isMine = msg.senderUser._id === user._id;
 										return (
 											<div key={msg._id} className={clsx("flex", isMine ? "justify-end" : "justify-start")}>
 												<div

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { getMyContracts, signContract, rejectContract, downloadContractPdf } from "@/lib/authApi";
-import { notification, ConfigProvider, Spin, Modal } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { useState, useTransition } from "react";
+import { ConfigProvider, Modal, notification } from "antd";
 import {
 	CheckCircleIcon,
 	XCircleIcon,
@@ -14,10 +12,12 @@ import {
 	NoSymbolIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import PdfPreviewModal from "./PdfPreviewModal";
+import { downloadContractPdf } from "@/lib/authApi";
+import { rejectContractAction, signContractAction } from "@/lib/server/actions/contracts";
 import { addWatermarkToPdf } from "@/lib/pdfWatermark";
-
-type NotificationType = "success" | "error";
+import type { Contract, Pagination } from "@/lib/types";
+import PdfPreviewModal from "./PdfPreviewModal";
+import PaginationLinks from "./PaginationLinks";
 
 const statusLabels: Record<string, string> = {
 	sent: "En attente de signature",
@@ -33,18 +33,16 @@ const statusColors: Record<string, string> = {
 	rejected: "bg-red-50 text-red-700 border-red-200",
 };
 
-function formatDate(date: string) {
-	return new Date(date).toLocaleDateString("fr-FR");
-}
+const formatDate = (date: string) => new Date(date).toLocaleDateString("fr-FR");
 
-function getContractWatermark(contract: any): { text: string; color: string } | undefined {
+function getContractWatermark(contract: Contract): { text: string; color: string } | undefined {
 	switch (contract.status) {
 		case "signed":
-			return { text: `Signé électroniquement le ${formatDate(contract.signedAt)}`, color: "#16a34a" };
+			return contract.signedAt ? { text: `Signé électroniquement le ${formatDate(contract.signedAt)}`, color: "#16a34a" } : undefined;
 		case "cancelled":
-			return { text: `Annulé le ${formatDate(contract.cancelledAt || contract.updatedAt)}`, color: "#dc2626" };
+			return contract.cancelledAt ? { text: `Annulé le ${formatDate(contract.cancelledAt)}`, color: "#dc2626" } : undefined;
 		case "rejected":
-			return { text: `Rejeté le ${formatDate(contract.rejectedAt || contract.updatedAt)}`, color: "#dc2626" };
+			return contract.rejectedAt ? { text: `Rejeté le ${formatDate(contract.rejectedAt)}`, color: "#dc2626" } : undefined;
 		case "sent":
 			return { text: "En attente de signature", color: "#d97706" };
 		default:
@@ -52,18 +50,30 @@ function getContractWatermark(contract: any): { text: string; color: string } | 
 	}
 }
 
-export default function MyContractsList() {
+interface MyContractsListProps {
+	contracts: Contract[];
+	pagination: Pagination;
+	/** Chemin de la page, dépendant du rôle, pour les liens de pagination. */
+	basePath: string;
+}
+
+/**
+ * Liste rendue par le serveur ; ce composant ne garde que l'interactivité :
+ * confirmations modales, signature/refus via server actions, et
+ * téléchargement/aperçu du PDF qui exigent des Blob côté navigateur.
+ *
+ * Après une action, revalidatePath côté serveur renvoie la liste à jour :
+ * plus de rechargement manuel via loadContracts.
+ */
+export default function MyContractsList({ contracts, pagination, basePath }: MyContractsListProps) {
 	const [api, contextHolder] = notification.useNotification();
-	const [contracts, setContracts] = useState<any[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [pagination, setPagination] = useState<any>(null);
+	const [, startTransition] = useTransition();
 	const [previewOpen, setPreviewOpen] = useState(false);
 	const [previewLoading, setPreviewLoading] = useState(false);
 	const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
-	const [previewTitle, setPreviewTitle] = useState("");
-	const [previewContract, setPreviewContract] = useState<any>(null);
+	const [previewContract, setPreviewContract] = useState<Contract | null>(null);
 
-	const openNotification = (type: NotificationType, title: string, message: string) => {
+	const notify = (type: "success" | "error", title: string, message: string) => {
 		api[type]({
 			message: title,
 			description: message,
@@ -76,73 +86,67 @@ export default function MyContractsList() {
 		});
 	};
 
-	const loadContracts = useCallback(async (page: number) => {
-		setLoading(true);
-		try {
-			const response = await getMyContracts(page);
-			setContracts(response.data.contracts);
-			setPagination(response.data.pagination);
-		} catch {
-			// silent
-		} finally {
-			setLoading(false);
+	const confirmAction = (
+		contract: Contract,
+		{ title, content, okText, danger, action, successTitle, successMessage }: {
+			title: string;
+			content: string;
+			okText: string;
+			danger?: boolean;
+			action: (id: string) => Promise<{ ok: boolean; error?: string }>;
+			successTitle: string;
+			successMessage: string;
 		}
-	}, []);
-
-	useEffect(() => {
-		loadContracts(1);
-	}, [loadContracts]);
-
-	const handleSign = (id: string, title: string) => {
+	) => {
 		Modal.confirm({
+			title,
+			content,
+			okText,
+			cancelText: "Annuler",
+			okButtonProps: danger ? { danger: true } : { style: { backgroundColor: "#263C27" } },
+			onOk: async () => {
+				const result = await action(contract._id);
+				if (result.ok) {
+					notify("success", successTitle, successMessage);
+					// Rejoue le rendu serveur pour refléter la revalidation.
+					startTransition(() => {});
+				} else {
+					notify("error", "Erreur", result.error ?? "Une erreur est survenue.");
+				}
+			},
+		});
+	};
+
+	const handleSign = (contract: Contract) =>
+		confirmAction(contract, {
 			title: "Signer le contrat ?",
-			content: `En signant, vous acceptez les termes du contrat "${title}". Votre adresse IP et la date seront enregistrées.`,
+			content: `En signant, vous acceptez les termes du contrat "${contract.title}". Votre adresse IP et la date seront enregistrées.`,
 			okText: "Accepter et signer",
-			cancelText: "Annuler",
-			okButtonProps: { style: { backgroundColor: "#263C27" } },
-			onOk: async () => {
-				try {
-					await signContract(id);
-					openNotification("success", "Signé", "Le contrat a été signé avec succès.");
-					loadContracts(pagination?.page || 1);
-				} catch (error: any) {
-					openNotification("error", "Erreur", error.response?.data?.error || "Erreur lors de la signature.");
-				}
-			},
+			action: signContractAction,
+			successTitle: "Signé",
+			successMessage: "Le contrat a été signé avec succès.",
 		});
-	};
 
-	const handleReject = (id: string, title: string) => {
-		Modal.confirm({
+	const handleReject = (contract: Contract) =>
+		confirmAction(contract, {
 			title: "Rejeter le contrat ?",
-			content: `Vous êtes sur le point de rejeter le contrat "${title}". Cette action est irréversible.`,
+			content: `Vous êtes sur le point de rejeter le contrat "${contract.title}". Cette action est irréversible.`,
 			okText: "Rejeter",
-			cancelText: "Annuler",
-			okButtonProps: { danger: true },
-			onOk: async () => {
-				try {
-					await rejectContract(id);
-					openNotification("success", "Rejeté", "Le contrat a été rejeté.");
-					loadContracts(pagination?.page || 1);
-				} catch (error: any) {
-					openNotification("error", "Erreur", error.response?.data?.error || "Erreur lors du rejet.");
-				}
-			},
+			danger: true,
+			action: rejectContractAction,
+			successTitle: "Rejeté",
+			successMessage: "Le contrat a été rejeté.",
 		});
-	};
 
-	const handleDownload = async (contract: any) => {
+	const handleDownload = async (contract: Contract) => {
 		try {
 			const response = await downloadContractPdf(contract._id);
 			const blob: Blob = response.data;
 			const watermark = getContractWatermark(contract);
-			let pdfBlob: Blob;
+			let pdfBlob = blob;
 			if (watermark) {
-				const arrayBuffer = await blob.arrayBuffer();
-				const watermarkedBytes = await addWatermarkToPdf(arrayBuffer, watermark);
+				const watermarkedBytes = await addWatermarkToPdf(await blob.arrayBuffer(), watermark);
 				pdfBlob = new Blob([watermarkedBytes], { type: "application/pdf" });
-			} else {
-				pdfBlob = blob;
 			}
 			const url = window.URL.createObjectURL(pdfBlob);
 			const link = document.createElement("a");
@@ -153,22 +157,20 @@ export default function MyContractsList() {
 			link.remove();
 			window.URL.revokeObjectURL(url);
 		} catch {
-			openNotification("error", "Erreur", "Impossible de télécharger le PDF.");
+			notify("error", "Erreur", "Impossible de télécharger le PDF.");
 		}
 	};
 
-	const handlePreview = async (contract: any) => {
-		setPreviewTitle(contract.title);
+	const handlePreview = async (contract: Contract) => {
 		setPreviewContract(contract);
 		setPreviewBlobUrl(null);
 		setPreviewLoading(true);
 		setPreviewOpen(true);
 		try {
 			const response = await downloadContractPdf(contract._id);
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
-			setPreviewBlobUrl(url);
+			setPreviewBlobUrl(window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" })));
 		} catch {
-			openNotification("error", "Erreur", "Impossible de charger le PDF.");
+			notify("error", "Erreur", "Impossible de charger le PDF.");
 		} finally {
 			setPreviewLoading(false);
 		}
@@ -185,14 +187,7 @@ export default function MyContractsList() {
 	return (
 		<div>
 			<ConfigProvider
-				theme={{
-					token: {
-						colorBgElevated: "#ffffff",
-						colorTextHeading: "#1a1a1a",
-						colorText: "#374151",
-						fontFamily: "Halibut",
-					},
-				}}
+				theme={{ token: { colorBgElevated: "#ffffff", colorTextHeading: "#1a1a1a", colorText: "#374151", fontFamily: "Halibut" } }}
 			>
 				{contextHolder}
 			</ConfigProvider>
@@ -203,14 +198,10 @@ export default function MyContractsList() {
 			</h1>
 			<p className="text-gray-500 mb-8">Consultez et signez vos contrats.</p>
 
-			{loading ? (
-				<div className="flex justify-center py-12">
-					<Spin indicator={<LoadingOutlined spin />} size="large" className="text-cohesion" />
-				</div>
-			) : contracts.length > 0 ? (
+			{contracts.length > 0 ? (
 				<>
 					<div className="grid grid-cols-1 gap-4">
-						{contracts.map((c: any) => (
+						{contracts.map((c) => (
 							<div key={c._id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
 								<div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
 									<div className="flex-1 min-w-0">
@@ -230,9 +221,9 @@ export default function MyContractsList() {
 											{(c.startDate || c.endDate) && (
 												<span>
 													<span className="font-medium text-gray-700">Période :</span>{" "}
-													{c.startDate && new Date(c.startDate).toLocaleDateString("fr-FR")}
+													{c.startDate && formatDate(c.startDate)}
 													{c.startDate && c.endDate && " → "}
-													{c.endDate && new Date(c.endDate).toLocaleDateString("fr-FR")}
+													{c.endDate && formatDate(c.endDate)}
 												</span>
 											)}
 											{c.amount > 0 && (
@@ -242,14 +233,12 @@ export default function MyContractsList() {
 											)}
 											{c.signedAt && (
 												<span>
-													<span className="font-medium text-gray-700">Signé le :</span>{" "}
-													{new Date(c.signedAt).toLocaleDateString("fr-FR")}
+													<span className="font-medium text-gray-700">Signé le :</span> {formatDate(c.signedAt)}
 												</span>
 											)}
 											{c.rejectedAt && (
 												<span>
-													<span className="font-medium text-gray-700">Rejeté le :</span>{" "}
-													{new Date(c.rejectedAt).toLocaleDateString("fr-FR")}
+													<span className="font-medium text-gray-700">Rejeté le :</span> {formatDate(c.rejectedAt)}
 												</span>
 											)}
 										</div>
@@ -276,14 +265,14 @@ export default function MyContractsList() {
 										{c.status === "sent" && (
 											<>
 												<button
-													onClick={() => handleReject(c._id, c.title)}
+													onClick={() => handleReject(c)}
 													className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-300 text-red-600 text-sm font-medium hover:bg-red-50 cursor-pointer transition-colors"
 												>
 													<NoSymbolIcon className="h-4 w-4" />
 													Rejeter
 												</button>
 												<button
-													onClick={() => handleSign(c._id, c.title)}
+													onClick={() => handleSign(c)}
 													className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-univers text-white text-sm font-semibold hover:bg-univers/90 cursor-pointer transition-colors"
 												>
 													<CheckIcon className="h-4 w-4" />
@@ -296,22 +285,7 @@ export default function MyContractsList() {
 							</div>
 						))}
 					</div>
-					{pagination && pagination.pages > 1 && (
-						<div className="flex justify-center gap-2 mt-6">
-							{Array.from({ length: pagination.pages }, (_, i) => (
-								<button
-									key={i + 1}
-									onClick={() => loadContracts(i + 1)}
-									className={clsx(
-										"px-3 py-1 rounded text-sm font-medium",
-										pagination.page === i + 1 ? "bg-univers text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-									)}
-								>
-									{i + 1}
-								</button>
-							))}
-						</div>
-					)}
+					<PaginationLinks pagination={pagination} basePath={basePath} />
 				</>
 			) : (
 				<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
@@ -323,7 +297,7 @@ export default function MyContractsList() {
 			<PdfPreviewModal
 				open={previewOpen}
 				onClose={closePreview}
-				title={previewTitle}
+				title={previewContract?.title ?? ""}
 				pdfBlobUrl={previewBlobUrl}
 				loading={previewLoading}
 				watermark={previewContract ? getContractWatermark(previewContract) : undefined}

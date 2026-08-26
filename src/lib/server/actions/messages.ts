@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { serverFetch } from "../fetcher";
 import { type ActionState, toErrorState } from "./types";
+import type { ContactMessage } from "../../types";
 
 /** La messagerie est accessible depuis les trois espaces de rôle. */
 function revalidateMessages() {
@@ -70,11 +71,18 @@ export async function markContactMessageReadAction(id: string): Promise<ActionSt
 	}
 }
 
-export async function replyToContactMessageAction(id: string, content: string): Promise<ActionState> {
+/** Renvoie le message mis à jour : l'UI affiche le fil de réponses sans re-fetch. */
+export async function replyToContactMessageAction(
+	id: string,
+	content: string
+): Promise<ActionState & { contactMessage?: ContactMessage }> {
 	try {
-		const data = await serverFetch<{ message: string }>(`/messages/admin/${id}/reply`, { method: "POST", body: { content } });
+		const data = await serverFetch<{ message: string; contactMessage: ContactMessage }>(`/messages/admin/${id}/reply`, {
+			method: "POST",
+			body: { content },
+		});
 		revalidatePath(ADMIN_MESSAGES);
-		return { ok: true, message: data.message ?? "Réponse envoyée." };
+		return { ok: true, message: data.message ?? "Réponse envoyée.", contactMessage: data.contactMessage };
 	} catch (error) {
 		return toErrorState(error, "Erreur lors de l'envoi de la réponse.");
 	}

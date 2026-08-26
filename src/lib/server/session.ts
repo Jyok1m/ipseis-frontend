@@ -2,21 +2,9 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { ApiError, serverFetch } from "./fetcher";
+import type { Role, SessionUser } from "../types";
 
-export type Role = "administrateur" | "apprenant" | "professionnel";
-
-export interface SessionUser {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	role: Role;
-	phone: string;
-	company: string;
-	position: string;
-	address: string;
-	isActive: boolean;
-}
+export type { Role, SessionUser } from "../types";
 
 /**
  * Utilisateur courant, ou null si la session est absente/expirée.
