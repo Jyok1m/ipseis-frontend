@@ -218,12 +218,12 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 									    doit apparaître : une fiche muette sur ce point laisse croire
 									    que seul l'Intra existe. */}
 									<dl className="ml-3 space-y-0.5">
-										<div className="flex gap-x-1.5">
-											<dt className="font-semibold">{MODALITIES.intraLabel} :</dt>
+										<div className="flex items-baseline gap-x-1.5">
+											<dt className="shrink-0 font-semibold">{MODALITIES.intraLabel}&nbsp;:</dt>
 											<dd>{trainingData?.number_of_trainees}</dd>
 										</div>
-										<div className="flex gap-x-1.5">
-											<dt className="font-semibold">{MODALITIES.interLabel} :</dt>
+										<div className="flex items-baseline gap-x-1.5">
+											<dt className="shrink-0 font-semibold">{MODALITIES.interLabel}&nbsp;:</dt>
 											<dd>{MODALITIES.interCapacity}</dd>
 										</div>
 									</dl>
@@ -245,12 +245,12 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										<h3 className="font-semibold">Tarification</h3>
 									</div>
 									<dl className="ml-3 space-y-0.5">
-										<div className="flex gap-x-1.5">
-											<dt className="font-semibold">{MODALITIES.intraLabel} :</dt>
+										<div className="flex items-baseline gap-x-1.5">
+											<dt className="shrink-0 font-semibold">{MODALITIES.intraLabel}&nbsp;:</dt>
 											<dd>{trainingData?.quote}</dd>
 										</div>
-										<div className="flex gap-x-1.5">
-											<dt className="font-semibold">{MODALITIES.interLabel} :</dt>
+										<div className="flex items-baseline gap-x-1.5">
+											<dt className="shrink-0 font-semibold">{MODALITIES.interLabel}&nbsp;:</dt>
 											<dd>{MODALITIES.interQuote}</dd>
 										</div>
 									</dl>
