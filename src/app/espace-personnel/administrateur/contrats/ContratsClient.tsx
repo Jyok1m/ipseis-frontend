@@ -10,7 +10,12 @@ import {
 	updateContractAction,
 } from "@/lib/server/actions/contracts";
 import type { ActionState } from "@/lib/server/actions/types";
-import type { AdminTraining, Contract, Pagination, SessionUser } from "@/lib/types";
+import type {
+	AdminTraining,
+	Contract,
+	Pagination,
+	SessionUser,
+} from "@/lib/types";
 import PaginationLinks from "@/components/espace-personnel/PaginationLinks";
 import FilterSelect from "@/components/espace-personnel/admin/FilterSelect";
 import { notification, ConfigProvider, Spin, Modal } from "antd";
@@ -53,14 +58,25 @@ function formatDate(date: string) {
 	return new Date(date).toLocaleDateString("fr-FR");
 }
 
-function getContractWatermark(contract: any): { text: string; color: string } | undefined {
+function getContractWatermark(
+	contract: any,
+): { text: string; color: string } | undefined {
 	switch (contract.status) {
 		case "signed":
-			return { text: `Signé électroniquement le ${formatDate(contract.signedAt)}`, color: "#16a34a" };
+			return {
+				text: `Signé électroniquement le ${formatDate(contract.signedAt)}`,
+				color: "#16a34a",
+			};
 		case "cancelled":
-			return { text: `Annulé le ${formatDate(contract.cancelledAt || contract.updatedAt)}`, color: "#dc2626" };
+			return {
+				text: `Annulé le ${formatDate(contract.cancelledAt || contract.updatedAt)}`,
+				color: "#dc2626",
+			};
 		case "rejected":
-			return { text: `Rejeté le ${formatDate(contract.rejectedAt || contract.updatedAt)}`, color: "#dc2626" };
+			return {
+				text: `Rejeté le ${formatDate(contract.rejectedAt || contract.updatedAt)}`,
+				color: "#dc2626",
+			};
 		case "sent":
 			return { text: "En attente de signature", color: "#d97706" };
 		default:
@@ -93,7 +109,13 @@ interface ContratsClientProps {
  * le serveur. Le composant ne garde que le formulaire de création/édition, les
  * confirmations et le téléchargement PDF (qui exige un Blob navigateur).
  */
-export default function ContratsClient({ contracts, pagination, statusFilter, allUsers, allTrainings }: ContratsClientProps) {
+export default function ContratsClient({
+	contracts,
+	pagination,
+	statusFilter,
+	allUsers,
+	allTrainings,
+}: ContratsClientProps) {
 	const [api, contextHolder] = notification.useNotification();
 
 	// Modal
@@ -118,26 +140,46 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 	const [previewTitle, setPreviewTitle] = useState("");
 	const [previewContract, setPreviewContract] = useState<any>(null);
 
-	const openNotification = (type: NotificationType, titleMsg: string, message: string) => {
+	const openNotification = (
+		type: NotificationType,
+		titleMsg: string,
+		message: string,
+	) => {
 		api[type]({
 			message: titleMsg,
 			description: message,
 			icon:
 				type === "success" ? (
-					<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
+					<CheckCircleIcon
+						aria-hidden="true"
+						className="h-6 w-6 text-green-400"
+					/>
 				) : (
 					<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
 				),
 		});
 	};
 
-	const run = async (action: () => Promise<ActionState>, successTitle: string, successMessage: string, onDone?: () => void) => {
+	const run = async (
+		action: () => Promise<ActionState>,
+		successTitle: string,
+		successMessage: string,
+		onDone?: () => void,
+	) => {
 		const result = await action();
 		if (result.ok) {
-			openNotification("success", successTitle, result.message ?? successMessage);
+			openNotification(
+				"success",
+				successTitle,
+				result.message ?? successMessage,
+			);
 			onDone?.();
 		} else {
-			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
+			openNotification(
+				"error",
+				"Erreur",
+				result.error ?? "Une erreur est survenue.",
+			);
 		}
 	};
 
@@ -173,7 +215,11 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 
 	const handleSave = async () => {
 		if (!title || !recipientUser) {
-			openNotification("error", "Erreur", "Le titre et le destinataire sont obligatoires.");
+			openNotification(
+				"error",
+				"Erreur",
+				"Le titre et le destinataire sont obligatoires.",
+			);
 			return;
 		}
 
@@ -190,13 +236,18 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 			if (pdfFile) formData.append("pdf", pdfFile);
 
 			await run(
-				() => (editingContract ? updateContractAction(editingContract._id, formData) : createContractAction({ ok: false }, formData)),
+				() =>
+					editingContract
+						? updateContractAction(editingContract._id, formData)
+						: createContractAction({ ok: false }, formData),
 				"Succès",
-				editingContract ? "Contrat modifié avec succès." : "Contrat créé avec succès.",
+				editingContract
+					? "Contrat modifié avec succès."
+					: "Contrat créé avec succès.",
 				() => {
 					setModalOpen(false);
 					resetForm();
-				}
+				},
 			);
 		} finally {
 			setSaving(false);
@@ -206,11 +257,17 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 	const handleSend = async (id: string) => {
 		Modal.confirm({
 			title: "Envoyer le contrat ?",
-			content: "Le destinataire recevra un email de notification. Cette action est irréversible.",
+			content:
+				"Le destinataire recevra un email de notification. Cette action est irréversible.",
 			okText: "Envoyer",
 			cancelText: "Annuler",
 			okButtonProps: { style: { backgroundColor: "#263C27" } },
-			onOk: () => run(() => sendContractAction(id), "Envoyé", "Le contrat a été envoyé au destinataire."),
+			onOk: () =>
+				run(
+					() => sendContractAction(id),
+					"Envoyé",
+					"Le contrat a été envoyé au destinataire.",
+				),
 		});
 	};
 
@@ -221,18 +278,29 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 			okText: "Annuler le contrat",
 			cancelText: "Retour",
 			okButtonProps: { danger: true },
-			onOk: () => run(() => cancelContractAction(id), "Annulé", "Le contrat a été annulé."),
+			onOk: () =>
+				run(
+					() => cancelContractAction(id),
+					"Annulé",
+					"Le contrat a été annulé.",
+				),
 		});
 	};
 
 	const handleDelete = async (id: string) => {
 		Modal.confirm({
 			title: "Supprimer le contrat ?",
-			content: "Cette action est irréversible. Le contrat et le PDF associé seront supprimés.",
+			content:
+				"Cette action est irréversible. Le contrat et le PDF associé seront supprimés.",
 			okText: "Supprimer",
 			cancelText: "Annuler",
 			okButtonProps: { danger: true },
-			onOk: () => run(() => deleteContractAction(id), "Supprimé", "Le contrat a été supprimé."),
+			onOk: () =>
+				run(
+					() => deleteContractAction(id),
+					"Supprimé",
+					"Le contrat a été supprimé.",
+				),
 		});
 	};
 
@@ -241,7 +309,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 			const response = await downloadContractPdf(contract._id);
 			const blob: Blob = response.data;
 			const watermark = getContractWatermark(contract);
-			const pdfBlob = watermark ? await addWatermarkToPdf(await blob.arrayBuffer(), watermark) : blob;
+			const pdfBlob = watermark
+				? await addWatermarkToPdf(await blob.arrayBuffer(), watermark)
+				: blob;
 			const url = window.URL.createObjectURL(pdfBlob);
 			const link = document.createElement("a");
 			link.href = url;
@@ -263,7 +333,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 		setPreviewOpen(true);
 		try {
 			const response = await downloadContractPdf(contract._id);
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+			const url = window.URL.createObjectURL(
+				new Blob([response.data], { type: "application/pdf" }),
+			);
 			setPreviewBlobUrl(url);
 		} catch {
 			openNotification("error", "Erreur", "Impossible de charger le PDF.");
@@ -301,7 +373,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 						<DocumentTextIcon className="h-7 w-7 text-gray-400" />
 						Gestion des contrats
 					</h1>
-					<p className="text-gray-500">Créez, envoyez et suivez vos contrats.</p>
+					<p className="text-gray-500">
+						Créez, envoyez et suivez vos contrats.
+					</p>
 				</div>
 				<button
 					onClick={openCreateModal}
@@ -325,33 +399,60 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 							<table className="w-full text-left text-sm">
 								<thead>
 									<tr className="border-b border-gray-200">
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Titre</th>
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Destinataire</th>
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Statut</th>
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Dates</th>
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Montant</th>
-										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">Actions</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Titre
+										</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Destinataire
+										</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Statut
+										</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Dates
+										</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Montant
+										</th>
+										<th className="py-3 px-2 font-semibold text-gray-600 text-xs uppercase tracking-wide">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{contracts.map((c: any) => (
 										<tr key={c._id} className="border-b border-gray-100">
-											<td className="py-3 px-2 font-medium text-gray-900">{c.title}</td>
+											<td className="py-3 px-2 font-medium text-gray-900">
+												{c.title}
+											</td>
 											<td className="py-3 px-2 text-gray-700">
-												{c.recipientUser ? `${c.recipientUser.firstName} ${c.recipientUser.lastName}` : "—"}
+												{c.recipientUser
+													? `${c.recipientUser.firstName} ${c.recipientUser.lastName}`
+													: "-"}
 											</td>
 											<td className="py-3 px-2">
-												<span className={clsx("px-2 py-1 rounded-full text-xs font-semibold", statusColors[c.status])}>
+												<span
+													className={clsx(
+														"px-2 py-1 rounded-full text-xs font-semibold",
+														statusColors[c.status],
+													)}
+												>
 													{statusLabels[c.status]}
 												</span>
 											</td>
 											<td className="py-3 px-2 text-gray-500 text-xs">
-												{c.startDate && new Date(c.startDate).toLocaleDateString("fr-FR")}
+												{c.startDate &&
+													new Date(c.startDate).toLocaleDateString("fr-FR")}
 												{c.startDate && c.endDate && " → "}
-												{c.endDate && new Date(c.endDate).toLocaleDateString("fr-FR")}
-												{!c.startDate && !c.endDate && "—"}
+												{c.endDate &&
+													new Date(c.endDate).toLocaleDateString("fr-FR")}
+												{!c.startDate && !c.endDate && "-"}
 											</td>
-											<td className="py-3 px-2 text-gray-700">{c.amount ? `${c.amount.toLocaleString("fr-FR")} €` : "—"}</td>
+											<td className="py-3 px-2 text-gray-700">
+												{c.amount
+													? `${c.amount.toLocaleString("fr-FR")} €`
+													: "-"}
+											</td>
 											<td className="py-3 px-2">
 												<div className="flex items-center gap-1">
 													{c.pdfUrl && (
@@ -413,17 +514,26 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 								</tbody>
 							</table>
 						</div>
-						<PaginationLinks pagination={pagination} basePath={BASE_PATH} extraParams={{ status: statusFilter }} />
+						<PaginationLinks
+							pagination={pagination}
+							basePath={BASE_PATH}
+							extraParams={{ status: statusFilter }}
+						/>
 					</>
 				) : (
-					<p className="text-gray-500 text-center py-8">Aucun contrat trouvé.</p>
+					<p className="text-gray-500 text-center py-8">
+						Aucun contrat trouvé.
+					</p>
 				)}
 			</div>
 
 			{/* Create/Edit Modal */}
 			{modalOpen && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center">
-					<div className="fixed inset-0 bg-black/50" onClick={() => setModalOpen(false)} />
+					<div
+						className="fixed inset-0 bg-black/50"
+						onClick={() => setModalOpen(false)}
+					/>
 					<div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto p-6">
 						<h2 className="text-lg font-bold text-gray-900 mb-4">
 							{editingContract ? "Modifier le contrat" : "Nouveau contrat"}
@@ -431,7 +541,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 
 						<div className="space-y-4">
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Titre *</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Titre *
+								</label>
 								<input
 									type="text"
 									value={title}
@@ -441,7 +553,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Description
+								</label>
 								<textarea
 									value={description}
 									onChange={(e) => setDescription(e.target.value)}
@@ -451,7 +565,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Destinataire *</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Destinataire *
+								</label>
 								<select
 									value={recipientUser}
 									onChange={(e) => setRecipientUser(e.target.value)}
@@ -467,7 +583,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Formation liée</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Formation liée
+								</label>
 								<select
 									value={linkedTraining}
 									onChange={(e) => setLinkedTraining(e.target.value)}
@@ -484,7 +602,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 
 							<div className="grid grid-cols-2 gap-3">
 								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Date de début
+									</label>
 									<input
 										type="date"
 										value={startDate}
@@ -493,7 +613,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 									/>
 								</div>
 								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Date de fin
+									</label>
 									<input
 										type="date"
 										value={endDate}
@@ -504,7 +626,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Montant (€)</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Montant (€)
+								</label>
 								<input
 									type="number"
 									value={amount}
@@ -539,12 +663,18 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 								onClick={handleSave}
 								disabled={saving}
 								className={clsx(
-									saving ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-univers/90",
-									"px-4 py-2 rounded-lg bg-univers text-white font-semibold text-sm shadow-sm transition-all"
+									saving
+										? "cursor-not-allowed opacity-70"
+										: "cursor-pointer hover:bg-univers/90",
+									"px-4 py-2 rounded-lg bg-univers text-white font-semibold text-sm shadow-sm transition-all",
 								)}
 							>
 								{saving ? (
-									<Spin indicator={<LoadingOutlined spin className="text-base text-white" />} />
+									<Spin
+										indicator={
+											<LoadingOutlined spin className="text-base text-white" />
+										}
+									/>
 								) : editingContract ? (
 									"Enregistrer"
 								) : (
@@ -562,7 +692,9 @@ export default function ContratsClient({ contracts, pagination, statusFilter, al
 				title={previewTitle}
 				pdfBlobUrl={previewBlobUrl}
 				loading={previewLoading}
-				watermark={previewContract ? getContractWatermark(previewContract) : undefined}
+				watermark={
+					previewContract ? getContractWatermark(previewContract) : undefined
+				}
 			/>
 		</div>
 	);

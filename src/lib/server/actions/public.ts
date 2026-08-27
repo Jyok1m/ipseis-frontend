@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { serverFetch } from "../fetcher";
 import { type ActionState, toErrorState } from "./types";
+import { subjectLabel } from "@/lib/contactSubjects";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -17,6 +18,10 @@ export async function sendContactMessageAction(_prev: ActionState, formData: For
 	const email = String(formData.get("email") ?? "").trim();
 	const message = String(formData.get("message") ?? "").trim();
 	const interestedFormations = formData.getAll("interestedFormations").map(String);
+	// Le motif est validé contre la liste connue plutôt que recopié tel quel :
+	// le corps du message part dans un email, un libellé posté à la main s'y
+	// serait retrouvé en en-tête.
+	const subject = subjectLabel(String(formData.get("subject") ?? ""));
 
 	if (!firstName || !lastName || !email || !message) {
 		return { ok: false, error: "Veuillez remplir tous les champs obligatoires." };
@@ -25,10 +30,15 @@ export async function sendContactMessageAction(_prev: ActionState, formData: For
 		return { ok: false, error: "Veuillez saisir une adresse email valide." };
 	}
 
+	// Le modèle Message du backend ne porte pas de champ « objet » : le motif est
+	// préfixé au corps, ce qui le rend visible dans l'espace admin et dans les
+	// notifications sans imposer une migration côté API.
+	const body = subject ? `Motif : ${subject}\n\n---\n\n${message}` : message;
+
 	try {
 		const data = await serverFetch<{ message: string }>("/messages/new", {
 			method: "POST",
-			body: { firstName, lastName, email, message, interestedFormations },
+			body: { firstName, lastName, email, message: body, interestedFormations },
 		});
 		// Un message de contact crée ou met à jour un prospect côté admin.
 		revalidatePath("/espace-personnel/administrateur/prospects");

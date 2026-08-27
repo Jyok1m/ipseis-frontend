@@ -7,9 +7,7 @@ import { PedagogyMethodologySection } from "@/components/sections/PedagogyMethod
 import { ApproachSection } from "@/components/sections/Approach";
 import { PedagogyFollowUpSection } from "@/components/sections/PedagogyFollowUp";
 import { PedagogyTrainersSection } from "@/components/sections/PedagogyTrainers";
-import { QualiopiSection } from "@/components/sections/Qualiopi";
 import { PedagogyQualityOutcomeSection } from "@/components/sections/PedagogyQualityOutcomes";
-import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
@@ -30,22 +28,14 @@ export default function Pedagogie() {
 		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
 
-			<TitlePage
-				title="Pour former autrement et transformer durablement"
-				descriptionNode="Notre démarche pédagogique"
-			/>
-
-			{/* Introduction de la démarche pédagogique (approche expérientielle) */}
-			<div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-				<p className="text-base sm:text-lg text-univers text-center">
-					Notre approche expérientielle repose sur l&apos;activité, la
-					coopération, la participation et l&apos;anticipation.
-				</p>
-			</div>
+			{/* Le titre n'est plus suivi d'une accroche ni d'un chapeau : les
+			    sous-parties, identifiées par leur étoile rouge orangé, prennent la
+			    suite directement. Deux phrases d'introduction se glissaient entre
+			    les deux et repoussaient le contenu réel sous la ligne de flottaison. */}
+			<TitlePage title="Pour former autrement et transformer durablement" />
 
 			{/* Notre approche : la démarche d'élaboration de projet (roue) */}
 
-			{/* <Divider /> */}
 			<ApproachSection
 				hideList
 				showWheel
@@ -58,7 +48,7 @@ export default function Pedagogie() {
 			<Divider />
 			<PedagogyMethodologySection />
 
-			{/* 3. Un dispositif d'évaluation mobilisant des moyens permettant de mesurer les acquis */}
+			{/* Un dispositif d'évaluation mobilisant des moyens permettant de mesurer les acquis */}
 
 			<Divider />
 			<PedagogyFollowUpSection />
@@ -71,29 +61,18 @@ export default function Pedagogie() {
 				</Link>
 			</div>
 
-			{/* 4. Des formateurs sélectionnés pour leurs valeurs et expertise */}
+			{/* Des formateurs sélectionnés pour leurs valeurs et expertise */}
 
 			<Divider />
 			<PedagogyTrainersSection />
 
-			{/* Qualiopi */}
-
-			<Divider />
-			<QualiopiSection />
+			{/* Qualiopi et le catalogue ne figurent plus ici : la certification est
+			    traitée dans l'onglet Qualité, où le certificat est consultable, et
+			    le catalogue dans l'onglet Formations. Les répéter sur la pédagogie
+			    faisait doublon sans rien apporter. */}
 
 			<Divider />
 			<PedagogyQualityOutcomeSection />
-
-			{/* CTA Catalogue */}
-			<Divider />
-			<div className="mx-auto max-w-4xl mt-20 rounded-3xl">
-				<CatalogueCtaSection
-					title="Découvrez nos formations innovantes"
-					description="Explorez notre pédagogie active appliquée à travers plus de 30 formations conçues pour transformer durablement vos pratiques professionnelles."
-					className="mx-6 lg:mx-8"
-				/>
-			</div>
-
 		</div>
 	);
 }

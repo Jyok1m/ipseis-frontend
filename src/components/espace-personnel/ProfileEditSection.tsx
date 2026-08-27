@@ -2,7 +2,10 @@
 
 import { useActionState, useCallback, useState } from "react";
 import { PencilSquareIcon, LockClosedIcon } from "@heroicons/react/24/outline";
-import { changePasswordAction, updateProfileAction } from "@/lib/server/actions/auth";
+import {
+	changePasswordAction,
+	updateProfileAction,
+} from "@/lib/server/actions/auth";
 import { idle } from "@/lib/server/actions/types";
 import { useActionFeedback } from "@/components/utils/useActionFeedback";
 import type { SessionUser } from "@/lib/types";
@@ -11,15 +14,36 @@ import SubmitButton from "./SubmitButton";
 const inputClass =
 	"block w-full rounded-lg px-4 py-2.5 text-gray-900 bg-white border border-gray-300 focus:border-univers focus:ring-2 focus:ring-univers/20 shadow-sm placeholder:text-gray-400 text-sm font-medium transition-all duration-200";
 
-const cancelClass = "px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors";
-const saveClass = "px-4 py-2 rounded-lg text-sm font-bold text-white bg-univers shadow-sm hover:bg-univers/90 transition-all duration-200 flex items-center gap-2";
+const cancelClass =
+	"px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors";
+const saveClass =
+	"px-4 py-2 rounded-lg text-sm font-bold text-white bg-univers shadow-sm hover:bg-univers/90 transition-all duration-200 flex items-center gap-2";
 
-const Field = ({ label, name, defaultValue, type = "text" }: { label: string; name: string; defaultValue?: string; type?: string }) => (
+const Field = ({
+	label,
+	name,
+	defaultValue,
+	type = "text",
+}: {
+	label: string;
+	name: string;
+	defaultValue?: string;
+	type?: string;
+}) => (
 	<div>
-		<label htmlFor={name} className="text-sm font-semibold text-gray-700 mb-1 block">
+		<label
+			htmlFor={name}
+			className="text-sm font-semibold text-gray-700 mb-1 block"
+		>
 			{label}
 		</label>
-		<input id={name} name={name} type={type} defaultValue={defaultValue} className={inputClass} />
+		<input
+			id={name}
+			name={name}
+			type={type}
+			defaultValue={defaultValue}
+			className={inputClass}
+		/>
 	</div>
 );
 
@@ -36,11 +60,23 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 	const closeEdit = useCallback(() => setEditing(false), []);
 	const closePassword = useCallback(() => setChangingPassword(false), []);
 
-	const [profileState, profileAction] = useActionState(updateProfileAction, idle);
-	const [passwordState, passwordAction] = useActionState(changePasswordAction, idle);
+	const [profileState, profileAction] = useActionState(
+		updateProfileAction,
+		idle,
+	);
+	const [passwordState, passwordAction] = useActionState(
+		changePasswordAction,
+		idle,
+	);
 
-	const profileFeedback = useActionFeedback(profileState, { successTitle: "Profil mis à jour", onSuccess: closeEdit });
-	const passwordFeedback = useActionFeedback(passwordState, { successTitle: "Mot de passe modifié", onSuccess: closePassword });
+	const profileFeedback = useActionFeedback(profileState, {
+		successTitle: "Profil mis à jour",
+		onSuccess: closeEdit,
+	});
+	const passwordFeedback = useActionFeedback(passwordState, {
+		successTitle: "Mot de passe modifié",
+		onSuccess: closePassword,
+	});
 
 	return (
 		<>
@@ -54,7 +90,10 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 						Mon profil
 					</h3>
 					{!editing && (
-						<button onClick={() => setEditing(true)} className="text-sm text-univers hover:underline font-semibold">
+						<button
+							onClick={() => setEditing(true)}
+							className="text-sm text-univers hover:underline font-semibold"
+						>
 							Modifier
 						</button>
 					)}
@@ -63,12 +102,28 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 				{editing ? (
 					<form action={profileAction} className="space-y-4">
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-							<Field label="Prénom" name="firstName" defaultValue={user.firstName} />
+							<Field
+								label="Prénom"
+								name="firstName"
+								defaultValue={user.firstName}
+							/>
 							<Field label="Nom" name="lastName" defaultValue={user.lastName} />
 							<Field label="Téléphone" name="phone" defaultValue={user.phone} />
-							<Field label="Entreprise" name="company" defaultValue={user.company} />
-							<Field label="Poste" name="position" defaultValue={user.position} />
-							<Field label="Adresse" name="address" defaultValue={user.address} />
+							<Field
+								label="Entreprise"
+								name="company"
+								defaultValue={user.company}
+							/>
+							<Field
+								label="Poste"
+								name="position"
+								defaultValue={user.position}
+							/>
+							<Field
+								label="Adresse"
+								name="address"
+								defaultValue={user.address}
+							/>
 						</div>
 						<div className="flex justify-end gap-3 pt-2">
 							<button type="button" onClick={closeEdit} className={cancelClass}>
@@ -87,7 +142,7 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 						</div>
 						<div>
 							<span className="text-gray-400">Téléphone</span>
-							<p className="text-gray-900 font-medium">{user.phone || "—"}</p>
+							<p className="text-gray-900 font-medium">{user.phone || "-"}</p>
 						</div>
 						<div>
 							<span className="text-gray-400">Prénom</span>
@@ -99,15 +154,17 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 						</div>
 						<div>
 							<span className="text-gray-400">Entreprise</span>
-							<p className="text-gray-900 font-medium">{user.company || "—"}</p>
+							<p className="text-gray-900 font-medium">{user.company || "-"}</p>
 						</div>
 						<div>
 							<span className="text-gray-400">Poste</span>
-							<p className="text-gray-900 font-medium">{user.position || "—"}</p>
+							<p className="text-gray-900 font-medium">
+								{user.position || "-"}
+							</p>
 						</div>
 						<div className="sm:col-span-2">
 							<span className="text-gray-400">Adresse</span>
-							<p className="text-gray-900 font-medium">{user.address || "—"}</p>
+							<p className="text-gray-900 font-medium">{user.address || "-"}</p>
 						</div>
 					</div>
 				)}
@@ -120,15 +177,34 @@ export default function ProfileEditSection({ user }: { user: SessionUser }) {
 								Changer le mot de passe
 							</h4>
 							<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-								<Field label="Mot de passe actuel" name="currentPassword" type="password" />
-								<Field label="Nouveau mot de passe" name="newPassword" type="password" />
-								<Field label="Confirmer" name="confirmNewPassword" type="password" />
+								<Field
+									label="Mot de passe actuel"
+									name="currentPassword"
+									type="password"
+								/>
+								<Field
+									label="Nouveau mot de passe"
+									name="newPassword"
+									type="password"
+								/>
+								<Field
+									label="Confirmer"
+									name="confirmNewPassword"
+									type="password"
+								/>
 							</div>
 							<div className="flex justify-end gap-3">
-								<button type="button" onClick={closePassword} className={cancelClass}>
+								<button
+									type="button"
+									onClick={closePassword}
+									className={cancelClass}
+								>
 									Annuler
 								</button>
-								<SubmitButton className={saveClass} spinnerClassName="text-white">
+								<SubmitButton
+									className={saveClass}
+									spinnerClassName="text-white"
+								>
 									Changer
 								</SubmitButton>
 							</div>

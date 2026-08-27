@@ -19,14 +19,15 @@ import {
 	faCalendarDays,
 	faEuroSign,
 	faUniversalAccess,
+	faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import starOrange from "@/_images/logo/star_orange.svg";
-import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
 import type { Training } from "@/lib/api";
 import { DEFAULT_ACCESSIBILITY } from "@/lib/api";
+import { MODALITIES } from "@/lib/trainingModalities";
 
 /**
  * Liste à puces iconographiées.
@@ -110,6 +111,17 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 				<>
 					<div className="mx-auto max-w-4xl text-univers mb-10">
 						<TitleSection tag={trainingData?.theme} title={trainingData?.title} titleAs="h1" paddingSide={false} noPaddingVertical />
+						{/* La fiche est proposée juste sous le titre : c'est le document
+						    qu'un responsable formation transmet en interne, il doit être
+						    atteignable sans parcourir toute la page. Le PDF est généré à la
+						    volée depuis ces mêmes données (cf. ./fiche/route.ts). */}
+						<a
+							href={`/catalogue/formation/${trainingData._id}/fiche`}
+							className="mt-4 inline-flex items-center gap-2 rounded-lg border border-cohesion px-3.5 py-2 text-sm font-semibold text-cohesion transition-colors hover:bg-cohesion hover:text-support sm:text-base"
+						>
+							<FontAwesomeIcon icon={faFilePdf} className="h-4 w-4" />
+							Télécharger la fiche programme (PDF)
+						</a>
 						{trainingData?.introduction && (
 							<p className="mt-4 text-base leading-relaxed text-univers/90 sm:mt-6 sm:text-lg">{trainingData.introduction}</p>
 						)}
@@ -200,9 +212,21 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										<div className="h-10 min-w-10 flex items-center justify-center text-cohesion">
 											<FontAwesomeIcon icon={faUserDoctor} className="flex-none" />
 										</div>
-										<h3 className="font-semibold">Capacité</h3>
+										<h3 className="font-semibold">Nombre de participants</h3>
 									</div>
-									<span className="flex items-center ml-3">{trainingData?.number_of_trainees}</span>
+									{/* IPSEIS ne commercialise pas encore d'Inter, mais la modalité
+									    doit apparaître : une fiche muette sur ce point laisse croire
+									    que seul l'Intra existe. */}
+									<dl className="ml-3 space-y-0.5">
+										<div className="flex gap-x-1.5">
+											<dt className="font-semibold">{MODALITIES.intraLabel} :</dt>
+											<dd>{trainingData?.number_of_trainees}</dd>
+										</div>
+										<div className="flex gap-x-1.5">
+											<dt className="font-semibold">{MODALITIES.interLabel} :</dt>
+											<dd>{MODALITIES.interCapacity}</dd>
+										</div>
+									</dl>
 								</div>
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2">
 									<div className="flex items-center">
@@ -220,7 +244,17 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 										</div>
 										<h3 className="font-semibold">Tarification</h3>
 									</div>
-									<span className="flex items-center ml-3">{trainingData?.quote}</span>
+									<dl className="ml-3 space-y-0.5">
+										<div className="flex gap-x-1.5">
+											<dt className="font-semibold">{MODALITIES.intraLabel} :</dt>
+											<dd>{trainingData?.quote}</dd>
+										</div>
+										<div className="flex gap-x-1.5">
+											<dt className="font-semibold">{MODALITIES.interLabel} :</dt>
+											<dd>{MODALITIES.interQuote}</dd>
+										</div>
+									</dl>
+									<p className="ml-3 mt-1.5 text-xs text-univers/70 sm:text-sm">{MODALITIES.priceNote}</p>
 								</div>
 								<div className="flex flex-col gap-x-3 ring-0 sm:ring-1 ring-cohesion rounded-lg p-0 sm:p-2 col-span-full">
 									<div className="flex items-center">
@@ -234,12 +268,30 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 							</div>
 						</div>
 					</div>
-					{/* <Divider /> */}
-					<div className="mx-auto max-w-4xl">
-						<CatalogueCtaSection
-							title="Vous souhaitez en savoir plus ou nous contacter ?"
-							description="Téléchargez notre catalogue PDF complet avec toutes les formations détaillées, les modalités et les tarifs."
-						/>
+					{/* Le renvoi vers le catalogue PDF a disparu d'ici : il proposait un
+					    téléchargement qui n'existe pas encore, et Hélène le réserve à
+					    l'onglet Formations. Reste ce qu'un visiteur cherche au bas d'une
+					    fiche : demander un devis, ou repartir explorer. */}
+					<div className="mx-auto mb-16 mt-10 max-w-4xl rounded-2xl border border-cohesion px-6 py-8 text-center">
+						<h2 className="text-xl font-bold text-univers sm:text-2xl">Cette formation vous intéresse ?</h2>
+						<p className="mx-auto mt-3 max-w-2xl text-base text-univers/80 sm:text-lg">
+							Nous construisons chaque intervention avec vous. Demandez un devis ou posez-nous vos questions : nous vous répondons
+							sous 72 heures.
+						</p>
+						<div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+							<Link
+								href="/contact"
+								className="inline-flex w-full items-center justify-center rounded-lg bg-cohesion px-4 py-2.5 font-semibold text-support transition-colors hover:bg-cohesion/90 sm:w-auto"
+							>
+								Demander un devis
+							</Link>
+							<Link
+								href="/formations"
+								className="inline-flex w-full items-center justify-center rounded-lg border border-univers/30 px-4 py-2.5 font-semibold text-univers transition-colors hover:bg-univers hover:text-support sm:w-auto"
+							>
+								Voir toutes nos formations
+							</Link>
+						</div>
 					</div>
 				</>
 			)}

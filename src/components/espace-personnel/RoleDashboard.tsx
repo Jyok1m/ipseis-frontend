@@ -1,6 +1,11 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { DocumentTextIcon, ClockIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+	DocumentTextIcon,
+	ClockIcon,
+	CheckCircleIcon,
+	ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import type { Contract, ResourceGroup, SessionUser } from "@/lib/types";
 import MyResourcesList from "./MyResourcesList";
 import InfoTooltip from "./InfoTooltip";
@@ -35,7 +40,7 @@ interface RoleDashboardProps {
 
 /**
  * Tableau de bord commun aux espaces apprenant et professionnel, qui ne
- * différaient que par l'icône, deux libellés et un lien — pour 179 lignes
+ * différaient que par l'icône, deux libellés et un lien - pour 179 lignes
  * dupliquées de part et d'autre.
  *
  * Server Component : contrats et ressources arrivent déjà résolus, il ne reste
@@ -76,7 +81,8 @@ export default function RoleDashboard({
 					<div className="flex items-center gap-3">
 						<ExclamationTriangleIcon className="h-6 w-6 text-amber-600 flex-shrink-0" />
 						<p className="text-sm font-medium text-amber-800">
-							Vous avez {pending} contrat{pending > 1 ? "s" : ""} en attente de signature.
+							Vous avez {pending} contrat{pending > 1 ? "s" : ""} en attente de
+							signature.
 						</p>
 					</div>
 					<Link
@@ -88,10 +94,15 @@ export default function RoleDashboard({
 				</div>
 			)}
 
-			<UnreadMessagesBanner messagesHref={`/espace-personnel/${role}/messages`} />
+			<UnreadMessagesBanner
+				messagesHref={`/espace-personnel/${role}/messages`}
+			/>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-				<InfoTooltip title="Contrats actifs" description="Contrats que vous avez signés et qui sont en vigueur.">
+				<InfoTooltip
+					title="Contrats actifs"
+					description="Contrats que vous avez signés et qui sont en vigueur."
+				>
 					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center gap-4">
 						<div className="p-3 rounded-lg bg-green-50">
 							<CheckCircleIcon className="h-6 w-6 text-green-600" />
@@ -102,7 +113,10 @@ export default function RoleDashboard({
 						</div>
 					</div>
 				</InfoTooltip>
-				<InfoTooltip title="En attente" description="Contrats qui vous ont été envoyés et qui nécessitent votre signature.">
+				<InfoTooltip
+					title="En attente"
+					description="Contrats qui vous ont été envoyés et qui nécessitent votre signature."
+				>
 					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center gap-4">
 						<div className="p-3 rounded-lg bg-amber-50">
 							<ClockIcon className="h-6 w-6 text-amber-600" />
@@ -119,8 +133,14 @@ export default function RoleDashboard({
 				<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 					<div className="flex items-center justify-between mb-4">
 						<h3 className="font-bold text-gray-900">Contrats récents</h3>
-						<InfoTooltip title="Tous les contrats" description="Voir la liste complète de vos contrats, les signer ou les consulter.">
-							<Link href={`/espace-personnel/${role}/contrats`} className="text-sm text-univers hover:underline font-semibold">
+						<InfoTooltip
+							title="Tous les contrats"
+							description="Voir la liste complète de vos contrats, les signer ou les consulter."
+						>
+							<Link
+								href={`/espace-personnel/${role}/contrats`}
+								className="text-sm text-univers hover:underline font-semibold"
+							>
 								Voir tous
 							</Link>
 						</InfoTooltip>
@@ -128,19 +148,31 @@ export default function RoleDashboard({
 					{recentContracts.length > 0 ? (
 						<ul className="space-y-3">
 							{recentContracts.map((c) => (
-								<li key={c._id} className="flex items-center justify-between gap-3 py-2 border-b border-gray-100 last:border-0">
+								<li
+									key={c._id}
+									className="flex items-center justify-between gap-3 py-2 border-b border-gray-100 last:border-0"
+								>
 									<div className="flex items-center gap-3 min-w-0">
 										<DocumentTextIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
-										<span className="text-sm font-medium text-gray-900 truncate">{c.title}</span>
+										<span className="text-sm font-medium text-gray-900 truncate">
+											{c.title}
+										</span>
 									</div>
-									<span className={clsx("px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0", statusColors[c.status])}>
+									<span
+										className={clsx(
+											"px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0",
+											statusColors[c.status],
+										)}
+									>
 										{statusLabels[c.status]}
 									</span>
 								</li>
 							))}
 						</ul>
 					) : (
-						<p className="text-sm text-gray-500">Aucun contrat pour le moment.</p>
+						<p className="text-sm text-gray-500">
+							Aucun contrat pour le moment.
+						</p>
 					)}
 				</div>
 			</div>
@@ -148,8 +180,14 @@ export default function RoleDashboard({
 			<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
 				<div className="flex items-center justify-between mb-4">
 					<h3 className="font-bold text-gray-900">Ressources récentes</h3>
-					<InfoTooltip title="Toutes les ressources" description="Accéder à l'ensemble de vos documents PDF et supports de formation.">
-						<Link href={resourcesHref} className="text-sm text-univers hover:underline font-semibold">
+					<InfoTooltip
+						title="Toutes les ressources"
+						description="Accéder à l'ensemble de vos documents PDF et supports de formation."
+					>
+						<Link
+							href={resourcesHref}
+							className="text-sm text-univers hover:underline font-semibold"
+						>
 							Voir toutes
 						</Link>
 					</InfoTooltip>

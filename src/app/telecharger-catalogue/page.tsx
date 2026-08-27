@@ -1,10 +1,12 @@
 import React from "react";
+import { notFound } from "next/navigation";
 import TitlePage from "@/components/global/TitlePage";
 import CatalogueDownloadForm from "./CatalogueDownloadForm";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
 import { getAllTrainings } from "@/lib/api";
+import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
 export const metadata: Metadata = buildMetadata({
 	title: "Télécharger le catalogue IPSEIS - Formations Santé",
@@ -16,6 +18,11 @@ export const metadata: Metadata = buildMetadata({
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Télécharger le catalogue", path: "/telecharger-catalogue" }]);
 
 export default async function TelechargerCatalogue() {
+	// La page répond 404 quand le catalogue PDF est masqué : la masquer
+	// seulement dans la navigation laisserait l'URL accessible, indexable, et
+	// enverrait une demande de catalogue qu'IPSEIS ne peut pas honorer.
+	if (!CATALOGUE_PDF_ENABLED) notFound();
+
 	const { themes } = await getAllTrainings();
 
 	return (

@@ -1,10 +1,12 @@
 import React, { Suspense } from "react";
 import TitlePage from "@/components/global/TitlePage";
 import Divider from "@/components/global/Divider";
-import { HealthPerimeterSection } from "@/components/sections/HealthPerimeter";
+import { HandicapAccessibilitySection } from "@/components/sections/HandicapAccessibility";
 import CatalogueClient from "@/app/catalogue/CatalogueClient";
 import CatalogueSkeleton from "@/app/catalogue/CatalogueSkeleton";
+import CatalogueCtaSection from "@/components/sections/CatalogueCtaSection";
 import { getCatalogue } from "@/lib/api";
+import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
@@ -30,27 +32,41 @@ export default function Formations() {
 		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
 
+			{/* La section « Notre périmètre » (structures / collaborateurs) a été
+			    retirée : elle énumérait des sigles d'établissements et de métiers
+			    entre le titre et le catalogue, et repoussait les deux colonnes de
+			    publics - la seule chose que le visiteur vient chercher ici. */}
 			<TitlePage
 				title="Formations"
-				descriptionNode={
-					<>
-						Des formations actives, immersives et sur mesure pour les équipes
-						des établissements sanitaires, sociaux et médico-sociaux, ainsi que
-						des formations transversales adaptées à tous les métiers.
-					</>
-				}
+				descriptionNode="Des formations actives, immersives et sur mesure, adaptées à votre métier."
 			/>
 
-			{/* Notre périmètre */}
+			{/* Catalogue de formations (santé & transversales) */}
 
-			<HealthPerimeterSection />
-
-			{/* Catalogue de formations (transversales & santé) */}
-
-			<Divider />
 			<Suspense fallback={<CatalogueSkeleton />}>
 				<CatalogueServer />
 			</Suspense>
+
+			<Divider />
+
+			{/* Accessibilité handicap (Qualiopi, indicateur 26) */}
+
+			<div className="pt-10">
+				<HandicapAccessibilitySection />
+			</div>
+
+			{/* Le catalogue PDF n'est proposé que si IPSEIS en dispose vraiment :
+			    NEXT_PUBLIC_CATALOGUE_PDF_ENABLED commande à la fois cet encart, la
+			    page /telecharger-catalogue et sa présence dans le sitemap. */}
+			{CATALOGUE_PDF_ENABLED && (
+				<div className="mx-auto max-w-4xl rounded-3xl">
+					<CatalogueCtaSection
+						title="Découvrez toutes nos formations"
+						description="Téléchargez notre catalogue complet et explorez l'ensemble de nos formations."
+						className="mx-6 lg:mx-8"
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -2,7 +2,11 @@
 
 import { useState, useRef } from "react";
 import { downloadResourcePdf } from "@/lib/authApi";
-import { createResourceAction, deleteResourceAction, updateResourceAction } from "@/lib/server/actions/resources";
+import {
+	createResourceAction,
+	deleteResourceAction,
+	updateResourceAction,
+} from "@/lib/server/actions/resources";
 import type { ActionState } from "@/lib/server/actions/types";
 import type { Pagination, Resource } from "@/lib/types";
 import PaginationLinks from "@/components/espace-personnel/PaginationLinks";
@@ -39,7 +43,9 @@ const emptyResourceForm = {
 
 const inputBase =
 	"block w-full rounded-lg px-4 py-2.5 text-gray-900 bg-white border shadow-sm placeholder:text-gray-400 text-sm font-medium transition-all duration-200";
-const inputClass = inputBase + " border-gray-300 focus:border-univers focus:ring-2 focus:ring-univers/20";
+const inputClass =
+	inputBase +
+	" border-gray-300 focus:border-univers focus:ring-2 focus:ring-univers/20";
 const selectClass = inputClass + " pr-10";
 const labelClass = "text-sm font-semibold text-gray-700 mb-1 block";
 
@@ -57,7 +63,12 @@ interface RessourcesClientProps {
  * composant conserve le formulaire d'upload et l'aperçu PDF, qui manipulent
  * un File et un Blob côté navigateur.
  */
-export default function RessourcesClient({ resources, pagination, trainings, trainingFilter }: RessourcesClientProps) {
+export default function RessourcesClient({
+	resources,
+	pagination,
+	trainings,
+	trainingFilter,
+}: RessourcesClientProps) {
 	const [api, contextHolder] = notification.useNotification();
 	const resourcesPagination = pagination;
 
@@ -79,33 +90,51 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 	const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
 	const [previewTitle, setPreviewTitle] = useState("");
 
-	const openNotification = (type: NotificationType, title: string, message: string) => {
+	const openNotification = (
+		type: NotificationType,
+		title: string,
+		message: string,
+	) => {
 		api[type]({
 			message: title,
 			description: message,
 			icon:
 				type === "success" ? (
-					<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
+					<CheckCircleIcon
+						aria-hidden="true"
+						className="h-6 w-6 text-green-400"
+					/>
 				) : (
 					<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
 				),
 		});
 	};
 
-	const run = async (action: () => Promise<ActionState>, successMessage: string, onDone?: () => void) => {
+	const run = async (
+		action: () => Promise<ActionState>,
+		successMessage: string,
+		onDone?: () => void,
+	) => {
 		const result = await action();
 		if (result.ok) {
 			openNotification("success", "Succès", result.message ?? successMessage);
 			onDone?.();
 		} else {
-			openNotification("error", "Erreur", result.error ?? "Une erreur est survenue.");
+			openNotification(
+				"error",
+				"Erreur",
+				result.error ?? "Une erreur est survenue.",
+			);
 		}
 	};
 
 	// ---- Handlers ----
 	const openResCreateModal = () => {
 		setResEditingId(null);
-		setResForm({ ...emptyResourceForm, linkedTraining: trainings.length > 0 ? trainings[0]._id : "" });
+		setResForm({
+			...emptyResourceForm,
+			linkedTraining: trainings.length > 0 ? trainings[0]._id : "",
+		});
 		setResFile(null);
 		if (resFileInputRef.current) resFileInputRef.current.value = "";
 		setResModalOpen(true);
@@ -128,7 +157,11 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 	const handleResSave = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!resForm.title || !resForm.linkedTraining) {
-			openNotification("error", "Erreur", "Le titre et la formation liée sont obligatoires.");
+			openNotification(
+				"error",
+				"Erreur",
+				"Le titre et la formation liée sont obligatoires.",
+			);
 			return;
 		}
 		if (!resEditingId && !resFile) {
@@ -136,7 +169,11 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 			return;
 		}
 		if (!resForm.targetApprenant && !resForm.targetProfessionnel) {
-			openNotification("error", "Erreur", "Veuillez sélectionner au moins une cible (Apprenants ou Professionnels).");
+			openNotification(
+				"error",
+				"Erreur",
+				"Veuillez sélectionner au moins une cible (Apprenants ou Professionnels).",
+			);
 			return;
 		}
 
@@ -153,9 +190,14 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 			if (resFile) formData.append("pdf", resFile);
 
 			await run(
-				() => (resEditingId ? updateResourceAction(resEditingId, formData) : createResourceAction({ ok: false }, formData)),
-				resEditingId ? "Ressource modifiée avec succès." : "Ressource créée avec succès.",
-				() => setResModalOpen(false)
+				() =>
+					resEditingId
+						? updateResourceAction(resEditingId, formData)
+						: createResourceAction({ ok: false }, formData),
+				resEditingId
+					? "Ressource modifiée avec succès."
+					: "Ressource créée avec succès.",
+				() => setResModalOpen(false),
 			);
 		} finally {
 			setResSaving(false);
@@ -166,7 +208,11 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 		if (!resDeleteId) return;
 		setResDeleting(true);
 		try {
-			await run(() => deleteResourceAction(resDeleteId), "Ressource supprimée.", () => setResDeleteId(null));
+			await run(
+				() => deleteResourceAction(resDeleteId),
+				"Ressource supprimée.",
+				() => setResDeleteId(null),
+			);
 		} finally {
 			setResDeleting(false);
 		}
@@ -184,7 +230,11 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 			link.remove();
 			window.URL.revokeObjectURL(url);
 		} catch {
-			openNotification("error", "Erreur", "Impossible de télécharger le fichier.");
+			openNotification(
+				"error",
+				"Erreur",
+				"Impossible de télécharger le fichier.",
+			);
 		}
 	};
 
@@ -195,7 +245,9 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 		setPreviewOpen(true);
 		try {
 			const response = await downloadResourcePdf(resource._id);
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+			const url = window.URL.createObjectURL(
+				new Blob([response.data], { type: "application/pdf" }),
+			);
 			setPreviewBlobUrl(url);
 		} catch {
 			openNotification("error", "Erreur", "Impossible de charger le PDF.");
@@ -213,13 +265,16 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 	};
 
 	const roleLabel = (roles: string[]) => {
-		if (roles.includes("apprenant") && roles.includes("professionnel")) return "Tous";
+		if (roles.includes("apprenant") && roles.includes("professionnel"))
+			return "Tous";
 		if (roles.includes("apprenant")) return "Apprenants";
 		if (roles.includes("professionnel")) return "Professionnels";
-		return "—";
+		return "-";
 	};
 
-	const resourceToDelete = resDeleteId ? resources.find((r) => r._id === resDeleteId) : null;
+	const resourceToDelete = resDeleteId
+		? resources.find((r) => r._id === resDeleteId)
+		: null;
 
 	return (
 		<div>
@@ -250,7 +305,10 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 							<DocumentTextIcon className="h-7 w-7 text-gray-400" />
 							Ressources PDF
 						</h1>
-						<p className="text-gray-500 mt-1">{resourcesPagination.total} ressource{resourcesPagination.total > 1 ? "s" : ""}</p>
+						<p className="text-gray-500 mt-1">
+							{resourcesPagination.total} ressource
+							{resourcesPagination.total > 1 ? "s" : ""}
+						</p>
 					</div>
 					<button
 						onClick={openResCreateModal}
@@ -266,7 +324,10 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 				<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 sticky top-0 z-10">
 					<FilterSelect
 						paramName="trainingId"
-						options={[{ value: "", label: "Toutes les formations" }, ...trainings.map((t) => ({ value: t._id, label: t.title }))]}
+						options={[
+							{ value: "", label: "Toutes les formations" },
+							...trainings.map((t) => ({ value: t._id, label: t.title })),
+						]}
 						className={clsx(selectClass, "sm:w-80")}
 					/>
 				</div>
@@ -284,34 +345,59 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 								<table className="w-full text-sm">
 									<thead>
 										<tr className="border-b border-gray-200 bg-gray-50">
-											<th className="text-left px-4 py-3 font-semibold text-gray-700">Titre</th>
-											<th className="text-left px-4 py-3 font-semibold text-gray-700">Formation</th>
-											<th className="text-left px-4 py-3 font-semibold text-gray-700">Cible</th>
-											<th className="text-left px-4 py-3 font-semibold text-gray-700">Fichier</th>
-											<th className="text-right px-4 py-3 font-semibold text-gray-700">Actions</th>
+											<th className="text-left px-4 py-3 font-semibold text-gray-700">
+												Titre
+											</th>
+											<th className="text-left px-4 py-3 font-semibold text-gray-700">
+												Formation
+											</th>
+											<th className="text-left px-4 py-3 font-semibold text-gray-700">
+												Cible
+											</th>
+											<th className="text-left px-4 py-3 font-semibold text-gray-700">
+												Fichier
+											</th>
+											<th className="text-right px-4 py-3 font-semibold text-gray-700">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{resources.map((resource) => (
-											<tr key={resource._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+											<tr
+												key={resource._id}
+												className="border-b border-gray-100 last:border-0 hover:bg-gray-50"
+											>
 												<td className="px-4 py-3">
-													<p className="font-medium text-gray-900">{resource.title}</p>
-													{resource.description && <p className="text-gray-500 text-xs mt-0.5 truncate max-w-xs">{resource.description}</p>}
+													<p className="font-medium text-gray-900">
+														{resource.title}
+													</p>
+													{resource.description && (
+														<p className="text-gray-500 text-xs mt-0.5 truncate max-w-xs">
+															{resource.description}
+														</p>
+													)}
 												</td>
-												<td className="px-4 py-3 text-gray-700">{resource.linkedTraining?.title || "—"}</td>
+												<td className="px-4 py-3 text-gray-700">
+													{resource.linkedTraining?.title || "-"}
+												</td>
 												<td className="px-4 py-3">
-													<span className={clsx(
-														"px-2 py-0.5 rounded-full text-xs font-semibold",
-														resource.targetRoles.length === 2
-															? "bg-univers/10 text-univers"
-															: resource.targetRoles.includes("apprenant")
-															? "bg-blue-50 text-blue-700"
-															: "bg-purple-50 text-purple-700"
-													)}>
+													<span
+														className={clsx(
+															"px-2 py-0.5 rounded-full text-xs font-semibold",
+															resource.targetRoles.length === 2
+																? "bg-univers/10 text-univers"
+																: resource.targetRoles.includes("apprenant")
+																	? "bg-blue-50 text-blue-700"
+																	: "bg-purple-50 text-purple-700",
+														)}
+													>
 														{roleLabel(resource.targetRoles)}
 													</span>
 												</td>
-												<td className="px-4 py-3 text-gray-500 text-xs truncate max-w-[150px]">{resource.originalFileName || "—"}</td>
+												<td className="px-4 py-3 text-gray-500 text-xs truncate max-w-[150px]">
+													{resource.originalFileName || "-"}
+												</td>
 												<td className="px-4 py-3">
 													<div className="flex items-center justify-end gap-1">
 														<button
@@ -352,7 +438,11 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 						</div>
 
 						{/* Pagination */}
-						<PaginationLinks pagination={pagination} basePath={BASE_PATH} extraParams={{ trainingId: trainingFilter }} />
+						<PaginationLinks
+							pagination={pagination}
+							basePath={BASE_PATH}
+							extraParams={{ trainingId: trainingFilter }}
+						/>
 					</>
 				)}
 
@@ -374,7 +464,9 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 							<input
 								type="text"
 								value={resForm.title}
-								onChange={(e) => setResForm((prev) => ({ ...prev, title: e.target.value }))}
+								onChange={(e) =>
+									setResForm((prev) => ({ ...prev, title: e.target.value }))
+								}
 								placeholder="Nom de la ressource"
 								disabled={resSaving}
 								className={inputClass}
@@ -384,7 +476,12 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 							<label className={labelClass}>Description</label>
 							<textarea
 								value={resForm.description}
-								onChange={(e) => setResForm((prev) => ({ ...prev, description: e.target.value }))}
+								onChange={(e) =>
+									setResForm((prev) => ({
+										...prev,
+										description: e.target.value,
+									}))
+								}
 								placeholder="Description optionnelle"
 								disabled={resSaving}
 								rows={2}
@@ -397,7 +494,12 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 							</label>
 							<select
 								value={resForm.linkedTraining}
-								onChange={(e) => setResForm((prev) => ({ ...prev, linkedTraining: e.target.value }))}
+								onChange={(e) =>
+									setResForm((prev) => ({
+										...prev,
+										linkedTraining: e.target.value,
+									}))
+								}
 								disabled={resSaving}
 								className={selectClass}
 							>
@@ -418,7 +520,12 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 									<input
 										type="checkbox"
 										checked={resForm.targetApprenant}
-										onChange={(e) => setResForm((prev) => ({ ...prev, targetApprenant: e.target.checked }))}
+										onChange={(e) =>
+											setResForm((prev) => ({
+												...prev,
+												targetApprenant: e.target.checked,
+											}))
+										}
 										disabled={resSaving}
 										className="rounded border-gray-300 text-univers focus:ring-univers"
 									/>
@@ -428,7 +535,12 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 									<input
 										type="checkbox"
 										checked={resForm.targetProfessionnel}
-										onChange={(e) => setResForm((prev) => ({ ...prev, targetProfessionnel: e.target.checked }))}
+										onChange={(e) =>
+											setResForm((prev) => ({
+												...prev,
+												targetProfessionnel: e.target.checked,
+											}))
+										}
 										disabled={resSaving}
 										className="rounded border-gray-300 text-univers focus:ring-univers"
 									/>
@@ -438,8 +550,13 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 						</div>
 						<div>
 							<label className={labelClass}>
-								Fichier PDF{!resEditingId && <span className="text-red-400 ml-1">*</span>}
-								{resEditingId && <span className="text-gray-400 font-normal ml-1">(laisser vide pour conserver le fichier actuel)</span>}
+								Fichier PDF
+								{!resEditingId && <span className="text-red-400 ml-1">*</span>}
+								{resEditingId && (
+									<span className="text-gray-400 font-normal ml-1">
+										(laisser vide pour conserver le fichier actuel)
+									</span>
+								)}
 							</label>
 							<input
 								ref={resFileInputRef}
@@ -464,12 +581,18 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 								type="submit"
 								disabled={resSaving}
 								className={clsx(
-									resSaving ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-univers/90",
-									"px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-univers shadow-sm transition-all duration-200"
+									resSaving
+										? "cursor-not-allowed opacity-70"
+										: "cursor-pointer hover:bg-univers/90",
+									"px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-univers shadow-sm transition-all duration-200",
 								)}
 							>
 								{resSaving ? (
-									<Spin indicator={<LoadingOutlined spin className="text-base text-white" />} />
+									<Spin
+										indicator={
+											<LoadingOutlined spin className="text-base text-white" />
+										}
+									/>
 								) : resEditingId ? (
 									"Enregistrer"
 								) : (
@@ -497,7 +620,8 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 							{resourceToDelete?.title}
 						</p>
 						<p className="text-sm text-red-600 mb-6">
-							Cette action est irréversible. Le fichier PDF sera également supprimé.
+							Cette action est irréversible. Le fichier PDF sera également
+							supprimé.
 						</p>
 						<div className="flex justify-end gap-3">
 							<button
@@ -511,11 +635,21 @@ export default function RessourcesClient({ resources, pagination, trainings, tra
 								onClick={handleResDelete}
 								disabled={resDeleting}
 								className={clsx(
-									resDeleting ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-red-700",
-									"px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-red-600 shadow-sm transition-all duration-200"
+									resDeleting
+										? "cursor-not-allowed opacity-70"
+										: "cursor-pointer hover:bg-red-700",
+									"px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-red-600 shadow-sm transition-all duration-200",
 								)}
 							>
-								{resDeleting ? <Spin indicator={<LoadingOutlined spin className="text-base text-white" />} /> : "Supprimer"}
+								{resDeleting ? (
+									<Spin
+										indicator={
+											<LoadingOutlined spin className="text-base text-white" />
+										}
+									/>
+								) : (
+									"Supprimer"
+								)}
 							</button>
 						</div>
 					</div>

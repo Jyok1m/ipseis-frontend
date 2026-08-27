@@ -8,6 +8,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import starOrange from "@/_images/logo/star_orange.svg";
 import ThemeWheel from "./ThemeWheel";
+import { COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
 /** Thématique du catalogue, formations incluses. */
@@ -41,8 +42,13 @@ function EmptyThemePlaceholder() {
 
 function ThemeColumn({ title, themes, onSelect }: { title: string; themes: CatalogueTheme[]; onSelect: (theme: CatalogueTheme) => void }) {
 	return (
-		<div className="flex flex-col items-center">
-			<h2 className="mb-6 text-center text-base font-bold uppercase tracking-wider text-univers sm:mb-8 sm:text-xl lg:text-2xl">{title}</h2>
+		<div className="flex h-full flex-col items-center">
+			{/* Les intitulés sont maintenant des phrases entières et non plus deux
+			    mots : sans largeur maximale la ligne courait jusqu'aux bords de la
+			    colonne, et les deux titres ne se répondaient plus. */}
+			<h2 className={`${COLUMN_TITLE_CLASS} text-univers`}>
+				{title}
+			</h2>
 
 			{themes.length === 0 ? <EmptyThemePlaceholder /> : <ThemeWheel themes={themes} onSelect={onSelect} />}
 		</div>
@@ -56,7 +62,15 @@ function ThemeColumn({ title, themes, onSelect }: { title: string; themes: Catal
  * déjà dans les props, puis faisait un GET /trainings/by-theme à chaque
  * ouverture de modale. Les deux ont disparu : l'ouverture est instantanée.
  */
-export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }) {
+export default function CatalogueClient({
+	themes,
+	santeTitle = COLUMN_TITLES.sante,
+	transversalTitle = COLUMN_TITLES.transversal,
+}: {
+	themes: CatalogueTheme[];
+	santeTitle?: string;
+	transversalTitle?: string;
+}) {
 	const router = useRouter();
 	const [selectedTheme, setSelectedTheme] = useState<CatalogueTheme | null>(null);
 	const [routingId, setRoutingId] = useState<string | null>(null);
@@ -83,10 +97,10 @@ export default function CatalogueClient({ themes }: { themes: CatalogueTheme[] }
 			<div className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8">
 				<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
 					<div className="pb-10 lg:pb-0 lg:pr-10">
-						<ThemeColumn title="Professionnels de la santé" themes={santeThemes} onSelect={setSelectedTheme} />
+						<ThemeColumn title={santeTitle} themes={santeThemes} onSelect={setSelectedTheme} />
 					</div>
 					<div className="pt-10 lg:pl-10 lg:pt-0">
-						<ThemeColumn title="Formations transversales" themes={transversalThemes} onSelect={setSelectedTheme} />
+						<ThemeColumn title={transversalTitle} themes={transversalThemes} onSelect={setSelectedTheme} />
 					</div>
 				</div>
 			</div>
