@@ -29,8 +29,7 @@ export default function PdfPreviewModal({ open, onClose, title, pdfBlobUrl, load
 		try {
 			const response = await fetch(pdfBlobUrl);
 			const pdfBytes = await response.arrayBuffer();
-			const watermarkedBytes = await addWatermarkToPdf(pdfBytes, watermark);
-			const blob = new Blob([watermarkedBytes], { type: "application/pdf" });
+			const blob = await addWatermarkToPdf(pdfBytes, watermark);
 			const url = URL.createObjectURL(blob);
 			window.open(url);
 			setTimeout(() => URL.revokeObjectURL(url), 60000);

@@ -16,7 +16,7 @@ export const HealthTrainerSection = () => {
 	return (
 		<>
 			<TitleSection tag="Notre expertise" title="Des formateurs sélectionnés pour leurs valeurs et expertise" />
-			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8">
+			<div className="pb-10 mx-auto max-w-4xl px-6 lg:px-8">
 				{dataList.map((node, index) => (
 					<StarBulletPoint key={index} dataNode={node} />
 				))}

@@ -42,7 +42,7 @@ export default function CatalogueCtaSection({ variant = "default", title, descri
 
 	return (
 		<section className={`py-6 mt-10 mb-20 rounded-2xl border border-cohesion ${className}`}>
-			<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<div className="mx-auto max-w-4xl px-6 lg:px-8">
 				<div className="mx-auto max-w-4xl text-center">
 					<div className="flex justify-center mb-6">
 						<div className="flex items-center justify-center w-16 h-16 bg-white/80 rounded-full shadow-lg">

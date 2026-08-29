@@ -8,8 +8,8 @@ export const PedagogyProcessSection = () => {
 	return (
 		<>
 			<TitleSection tag="Des formations adaptées et optimisées" title="Une démarche d'élaboration de projet efficace, fluide, collaborative et de proximité" />
-			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8 tracking-wider sm:mt-24 sm:mb-24">
-				<div className="mx-auto max-w-5xl">
+			<div className="pb-10 mx-auto max-w-4xl px-6 lg:px-8 tracking-wider sm:mt-24 sm:mb-24">
+				<div className="mx-auto max-w-4xl">
 					<div className="relative grid grid-cols-1 gap-4 sm:gap-2 sm:[grid-template-columns:0.9fr_1fr_0.9fr] sm:[grid-template-rows:0.9fr_1fr_0.9fr] place-items-stretch">
 						<div className="sm:col-start-2 sm:row-start-1 sm:-translate-y-24">
 							<FeatureBox

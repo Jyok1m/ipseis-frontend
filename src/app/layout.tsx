@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import AnalyticsGate from "@/components/global/AnalyticsGate";
 import ConditionalHeader from "@/components/global/ConditionalHeader";
+import LayoutShell from "@/components/global/LayoutShell";
 import CookieBanner from "@/components/global/CookieBanner";
+import AntdProvider from "@/components/global/AntdProvider";
+import BackToTop from "@/components/global/BackToTop";
 import JsonLd from "@/components/utils/JsonLd";
 import { defaultOpenGraph, defaultTwitter } from "@/components/utils/seo";
 
@@ -59,6 +62,12 @@ export const metadata: Metadata = {
 	manifest: "/manifest.json",
 };
 
+/** Colore la barre du navigateur mobile aux couleurs de la marque. */
+export const viewport: Viewport = {
+	themeColor: "#263C27",
+	colorScheme: "light",
+};
+
 const organizationJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "EducationalOrganization",
@@ -95,15 +104,22 @@ export default function RootLayout({
 			<head>
 				<JsonLd data={organizationJsonLd} />
 			</head>
-			<body className="flex flex-col justify-between min-h-screen max-w-screen bg-support overflow-x-hidden">
-				{!maintenance && <ConditionalHeader />}
-				<div className="bg-support">{children}</div>
-				{!maintenance && (
-					<>
-						<CookieBanner />
-						<AnalyticsGate />
-					</>
-				)}
+			<body className="flex min-h-dvh flex-col bg-support">
+				<AntdProvider>
+					{!maintenance && <ConditionalHeader />}
+					{maintenance ? (
+						<main className="flex flex-1 flex-col overflow-x-hidden">{children}</main>
+					) : (
+						<LayoutShell>{children}</LayoutShell>
+					)}
+					{!maintenance && (
+						<>
+							<BackToTop />
+							<CookieBanner />
+							<AnalyticsGate />
+						</>
+					)}
+				</AntdProvider>
 			</body>
 		</html>
 	);

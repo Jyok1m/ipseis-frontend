@@ -1,9 +1,10 @@
-"use client";
-
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
+import { getMyResources, groupResourcesByTraining } from "@/lib/server/queries";
 import MyResourcesList from "@/components/espace-personnel/MyResourcesList";
 
-export default function ProfessionnelActivitePage() {
+export default async function ProfessionnelActivitePage() {
+	const resources = await getMyResources().catch(() => []);
+
 	return (
 		<div>
 			<h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
@@ -12,7 +13,7 @@ export default function ProfessionnelActivitePage() {
 			</h1>
 			<p className="text-gray-500 mb-8">Retrouvez ici les ressources liées à vos formations.</p>
 
-			<MyResourcesList />
+			<MyResourcesList groups={groupResourcesByTraining(resources)} />
 		</div>
 	);
 }

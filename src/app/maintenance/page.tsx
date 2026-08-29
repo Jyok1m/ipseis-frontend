@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function MaintenancePage() {
 	return (
-		<main className="bg-support min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
+		<div className="bg-support min-h-full flex flex-col items-center justify-center px-6 py-16 text-center">
 			<div className="flex max-w-xl flex-col items-center">
 				<Image src={logoGreen} alt="IPSEIS" priority className="mb-10 h-auto w-48 sm:w-56" />
 
@@ -30,6 +30,6 @@ export default function MaintenancePage() {
 					Une question&nbsp;? helenedm@ipseis.fr
 				</a>
 			</div>
-		</main>
+		</div>
 	);
 }

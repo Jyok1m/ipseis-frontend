@@ -1,53 +1,82 @@
-import React from "react";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
-import Image from "next/image";
-import starOrange from "@/_images/logo/star_orange.svg";
+import { bubbleDiameter, polarPosition, WHEEL_RADIUS } from "./wheelGeometry";
+import { COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
 
-const SkeletonBubble = ({ index }: { index: number }) => {
-	const positions = [
-		"col-start-2 row-start-1 justify-self-center w-[130px] sm:w-full",
-		"col-start-3 row-start-2 justify-self-center w-[130px] sm:w-full",
-		"col-start-2 row-start-3 justify-self-center w-[130px] sm:w-full",
-		"col-start-1 row-start-2 justify-self-center w-[130px] sm:w-full",
-	];
+/**
+ * Fallback du Suspense du catalogue.
+ *
+ * Il calque la mise en page réelle - deux colonnes, mêmes titres, même roue aux
+ * mêmes proportions - pour que le remplacement ne provoque aucun saut.
+ *
+ * Server Component sans antd : cet écran n'embarque aucun JavaScript.
+ */
+
+function SkeletonWheel({ count }: { count: number }) {
+	const diameter = bubbleDiameter(count);
 
 	return (
-		<div
-			key={index}
-			className={`${
-				positions[index % positions.length]
-			} flex justify-center items-center aspect-1 ring-2 ring-cohesion/30 cursor-wait rounded-full shadow-2xl p-2 animate-pulse duration-500`}
-		>
-			<div className="col-start-2 row-start-2 flex justify-center items-center w-full">
-				<Spin indicator={<LoadingOutlined spin />} size="large" className="text-cohesion" />
-			</div>
+		<div className="relative mx-auto aspect-1 w-full max-w-[22rem]">
+			<svg
+				viewBox="0 0 100 100"
+				className="absolute inset-0 h-full w-full"
+				aria-hidden="true"
+			>
+				<circle
+					cx="50"
+					cy="50"
+					r={WHEEL_RADIUS}
+					fill="none"
+					stroke="#FF4E00"
+					strokeOpacity="0.12"
+					strokeWidth="0.3"
+					strokeDasharray="1.6 2.2"
+				/>
+			</svg>
+			<div className="absolute left-1/2 top-1/2 h-[18%] w-[18%] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-univers/5" />
+			{Array.from({ length: count }, (_, index) => {
+				const position = polarPosition(index, count);
+				return (
+					<div
+						key={index}
+						style={{
+							left: `${position.x}%`,
+							top: `${position.y}%`,
+							width: `${diameter}%`,
+							height: `${diameter}%`,
+						}}
+						className="absolute -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-univers/5 ring-2 ring-cohesion/15"
+					/>
+				);
+			})}
 		</div>
 	);
-};
+}
 
-const BubbleContainer = ({ children }: { children: React.ReactNode }) => (
-	<div className="grid grid-cols-3 grid-rows-3 gap-2 items-center justify-center max-w-2xl mb-10">{children}</div>
-);
+function SkeletonColumn({ title, count }: { title: string; count: number }) {
+	return (
+		<div className="flex h-full flex-col items-center">
+			<h2 className={`${COLUMN_TITLE_CLASS} text-univers/30`}>{title}</h2>
+
+			<SkeletonWheel count={count} />
+		</div>
+	);
+}
 
 export default function CatalogueSkeleton() {
 	return (
-		<div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col items-center mt-10">
-			<BubbleContainer>
-				<div className="col-start-2 row-start-2 flex justify-center items-center w-full">
-					<Image
-						src={starOrange}
-						alt="Logo Ipseis"
-						title="Logo Ipseis"
-						height={200}
-						width={200}
-						className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56"
-					/>
+		<div
+			className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8"
+			aria-busy="true"
+			aria-live="polite"
+		>
+			<span className="sr-only">Chargement du catalogue…</span>
+			<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
+				<div className="pb-10 lg:pb-0 lg:pr-10">
+					<SkeletonColumn title={COLUMN_TITLES.sante} count={4} />
 				</div>
-				{[1, 2, 3, 4].map((_, index) => (
-					<SkeletonBubble key={index} index={index} />
-				))}
-			</BubbleContainer>
+				<div className="pt-10 lg:pl-10 lg:pt-0">
+					<SkeletonColumn title={COLUMN_TITLES.transversal} count={1} />
+				</div>
+			</div>
 		</div>
 	);
 }

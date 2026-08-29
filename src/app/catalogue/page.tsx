@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import TitlePage from "@/components/global/TitlePage";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
-import { getThemes } from "@/lib/api";
+import { getCatalogue } from "@/lib/api";
 import CatalogueClient from "./CatalogueClient";
 import CatalogueSkeleton from "./CatalogueSkeleton";
 
@@ -17,16 +16,40 @@ export const metadata: Metadata = buildMetadata({
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Catalogue", path: "/catalogue" }]);
 
-// Server Component pour les données pré-chargées
-async function CatalogueServer() {
-	const themes = await getThemes();
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
 
-	return <CatalogueClient initialThemes={themes} />;
+/** Liste ordonnée des formations visibles, pour que les moteurs les indexent depuis le catalogue. */
+function buildCatalogueJsonLd(themes: Awaited<ReturnType<typeof getCatalogue>>) {
+	const trainings = themes.flatMap((theme) => theme.trainings.map((training) => ({ theme: theme.title, ...training })));
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: "Catalogue de formations IPSEIS",
+		numberOfItems: trainings.length,
+		itemListElement: trainings.map((training, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			name: training.title,
+			url: `${SITE_URL}/catalogue/formation/${training._id}`,
+		})),
+	};
+}
+
+async function CatalogueServer() {
+	const themes = await getCatalogue();
+
+	return (
+		<>
+			<JsonLd data={buildCatalogueJsonLd(themes)} />
+			<CatalogueClient themes={themes} />
+		</>
+	);
 }
 
 export default function CataloguePage() {
 	return (
-		<div className="bg-support min-h-screen">
+		<div className="bg-support min-h-full">
 			<JsonLd data={breadcrumbJsonLd} />
 			<TitlePage
 				title="Catalogue de formations"
@@ -39,7 +62,6 @@ export default function CataloguePage() {
 			<Suspense fallback={<CatalogueSkeleton />}>
 				<CatalogueServer />
 			</Suspense>
-			<Footer />
 		</div>
 	);
 }

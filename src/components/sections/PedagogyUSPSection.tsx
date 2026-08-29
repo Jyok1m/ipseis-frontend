@@ -37,7 +37,7 @@ export const PedagogyUSPSection = () => {
 	return (
 		<>
 			<TitleSection tag="Nos formations" title="Des formations variées et adaptatives pour plus d’efficacité" />
-			<div className="pb-10 mx-auto max-w-7xl px-6 lg:px-8">
+			<div className="pb-10 mx-auto max-w-4xl px-6 lg:px-8">
 				{dataList.map((node, index) => (
 					<StarBulletPoint key={index} dataNode={node} />
 				))}

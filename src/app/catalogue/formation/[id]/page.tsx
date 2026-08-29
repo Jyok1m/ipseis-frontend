@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import Footer from "@/components/global/Footer";
 import JsonLd from "@/components/utils/JsonLd";
-import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
+import { buildMetadata, buildBreadcrumbJsonLd, truncate } from "@/components/utils/seo";
 import { getTrainingById, getAllTrainings } from "@/lib/api";
 import TrainingClient from "./_components/TrainingClient";
 import TrainingSkeleton from "./_components/TrainingSkeleton";
@@ -45,7 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 		return buildMetadata({
 			title: `${training.title} - Formation IPSEIS`,
-			description: `Formation ${training.title} : ${training.program?.slice(0, 2).join(", ")}...`,
+			description: truncate(
+				training.introduction?.trim() ||
+					`Formation ${training.title} : ${training.program?.slice(0, 2).join(", ")}. Durée : ${training.duration}.`
+			),
 			path: `/catalogue/formation/${id}`,
 		});
 	} catch (error) {
@@ -70,19 +72,28 @@ async function FormationServer({ id }: { id: string }) {
 		{ name: training.title, path: `/catalogue/formation/${training._id}` },
 	]);
 
+	// Le tarif est exprimé par journée d'intervention, pas comme un prix de
+	// formation : le déclarer en offers reviendrait à annoncer un prix qui n'en
+	// est pas un, donc on ne l'expose pas.
 	const courseJsonLd = {
 		"@context": "https://schema.org",
 		"@type": "Course",
 		name: training.title,
-		description: training.pedagogical_objectives?.slice(0, 3).join(". ") || training.title,
+		description: training.introduction?.trim() || training.pedagogical_objectives?.slice(0, 3).join(". ") || training.title,
+		inLanguage: "fr",
+		url: `https://www.ipseis.fr/catalogue/formation/${training._id}`,
+		teaches: training.pedagogical_objectives?.length ? training.pedagogical_objectives : undefined,
+		audience: training.audience ? { "@type": "Audience", audienceType: training.audience } : undefined,
+		coursePrerequisites: training.prerequisites || undefined,
 		provider: {
-			"@type": "Organization",
+			"@type": "EducationalOrganization",
 			name: "IPSEIS",
 			url: "https://www.ipseis.fr",
 		},
 		hasCourseInstance: {
 			"@type": "CourseInstance",
 			courseMode: "onsite",
+			courseSchedule: training.duration ? { "@type": "Schedule", repeatCount: 1, description: training.duration } : undefined,
 			instructor: training.trainer ? { "@type": "Person", name: training.trainer } : undefined,
 		},
 	};
@@ -100,11 +111,8 @@ export default async function FormationPage({ params }: { params: Promise<{ id: 
 	const { id } = await params;
 
 	return (
-		<>
-			<Suspense fallback={<TrainingSkeleton />}>
-				<FormationServer id={id} />
-			</Suspense>
-			<Footer />
-		</>
+		<Suspense fallback={<TrainingSkeleton />}>
+			<FormationServer id={id} />
+		</Suspense>
 	);
 }

@@ -4,8 +4,8 @@ import logoBeige from "@/_images/logo/logo_beige.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
+import LogoutButton from "./LogoutButton";
 import { ArrowRightStartOnRectangleIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface NavItem {
@@ -22,7 +22,6 @@ interface DashboardSidebarProps {
 
 export default function DashboardSidebar({ navItems, mobileOpen, onMobileClose }: DashboardSidebarProps) {
 	const pathname = usePathname();
-	const { logout } = useAuth();
 	const { unreadCount, contactUnreadCount } = useSocket();
 	const totalUnread = unreadCount + contactUnreadCount;
 
@@ -68,13 +67,10 @@ export default function DashboardSidebar({ navItems, mobileOpen, onMobileClose }
 					<ArrowTopRightOnSquareIcon className="h-5 w-5" />
 					Voir le site
 				</Link>
-				<button
-					onClick={logout}
-					className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-support/80 hover:bg-white/10 hover:text-support text-base font-medium transition-colors"
-				>
+				<LogoutButton className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-support/80 hover:bg-white/10 hover:text-support text-base font-medium transition-colors">
 					<ArrowRightStartOnRectangleIcon className="h-5 w-5" />
 					Déconnexion
-				</button>
+				</LogoutButton>
 			</div>
 		</>
 	);

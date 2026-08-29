@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllTrainings } from "@/lib/api";
+import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
 
@@ -18,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.9,
 		},
 		{
-			url: `${baseUrl}/secteur-sante`,
+			url: `${baseUrl}/formations`,
 			lastModified: new Date(),
 			changeFrequency: "monthly",
 			priority: 0.8,
@@ -46,12 +47,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			lastModified: new Date(),
 			changeFrequency: "monthly",
 			priority: 0.8,
-		},
-		{
-			url: `${baseUrl}/telecharger-catalogue`,
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
 		},
 		{
 			url: `${baseUrl}/mentions-legales`,
@@ -83,5 +78,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		// Sitemap still works without dynamic pages
 	}
 
-	return [...staticPages, ...trainingPages];
+	// La page de téléchargement du catalogue répond 404 tant que le catalogue
+	// PDF est masqué : la déclarer ici enverrait les robots sur une impasse.
+	const catalogueDownloadPage: MetadataRoute.Sitemap = CATALOGUE_PDF_ENABLED
+		? [
+				{
+					url: `${baseUrl}/telecharger-catalogue`,
+					lastModified: new Date(),
+					changeFrequency: "monthly" as const,
+					priority: 0.6,
+				},
+		  ]
+		: [];
+
+	return [...staticPages, ...catalogueDownloadPage, ...trainingPages];
 }

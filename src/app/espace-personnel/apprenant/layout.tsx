@@ -1,8 +1,8 @@
-"use client";
-
-import ProtectedRoute from "@/components/espace-personnel/ProtectedRoute";
-import DashboardLayout from "@/components/espace-personnel/DashboardLayout";
 import { HomeIcon, AcademicCapIcon, DocumentTextIcon, UserCircleIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { requireUser } from "@/lib/server/session";
+import { getUnreadCount } from "@/lib/server/queries";
+import { SocketProvider } from "@/context/SocketContext";
+import DashboardLayout from "@/components/espace-personnel/DashboardLayout";
 
 const apprenantNavItems = [
 	{ name: "Tableau de bord", href: "/espace-personnel/apprenant", icon: <HomeIcon className="h-5 w-5" /> },
@@ -12,10 +12,15 @@ const apprenantNavItems = [
 	{ name: "Mon compte", href: "/espace-personnel/apprenant/mon-compte", icon: <UserCircleIcon className="h-5 w-5" /> },
 ];
 
-export default function ApprenantLayout({ children }: { children: React.ReactNode }) {
+export default async function ApprenantLayout({ children }: { children: React.ReactNode }) {
+	// Lectures parallèles : le compteur de badge ne dépend pas de l'authentification.
+	const [user, unreadCount] = await Promise.all([requireUser(["apprenant"]), getUnreadCount().catch(() => 0)]);
+
 	return (
-		<ProtectedRoute allowedRoles={["apprenant"]}>
-			<DashboardLayout navItems={apprenantNavItems}>{children}</DashboardLayout>
-		</ProtectedRoute>
+		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0}>
+			<DashboardLayout navItems={apprenantNavItems} user={user}>
+				{children}
+			</DashboardLayout>
+		</SocketProvider>
 	);
 }

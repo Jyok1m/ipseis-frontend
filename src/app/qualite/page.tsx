@@ -1,7 +1,6 @@
 import React from "react";
 import TitlePage from "@/components/global/TitlePage";
-import ContentHeading from "@/components/global/ContentHeading";
-import Footer from "@/components/global/Footer";
+import SectionHeading from "@/components/global/SectionHeading";
 import JsonLd from "@/components/utils/JsonLd";
 import QualiopiCertificate from "@/components/sections/QualiopiCertificate";
 import type { Metadata } from "next";
@@ -20,7 +19,7 @@ export default function Qualite() {
 	return (
 		<div className="bg-support min-h-full overflow-x-hidden">
 			<JsonLd data={breadcrumbJsonLd} />
-			<div className="mx-auto max-w-4xl px-6 lg:px-8 pb-10">
+			<div className="mx-auto max-w-4xl px-5 pb-10 sm:px-6 lg:px-8">
 				<TitlePage
 					title="Qualité"
 					descriptionNode="Notre engagement, le cadre réglementaire et nos certifications"
@@ -32,7 +31,7 @@ export default function Qualite() {
 				<div className="mt-10 space-y-14 text-base sm:text-lg text-univers">
 					{/* 1. Notre engagement qualité */}
 					<section>
-						<ContentHeading className="mb-4">1. Notre engagement qualité</ContentHeading>
+						<SectionHeading className="mb-4">1. Notre engagement qualité</SectionHeading>
 						<div className="space-y-4">
 							<p>
 								Depuis sa création en 2024, IPSEIS est engagé dans une démarche globale d&apos;amélioration continue. Cet
@@ -49,7 +48,7 @@ export default function Qualite() {
 
 					{/* 2. Le cadre réglementaire */}
 					<section>
-						<ContentHeading className="mb-4">2. Le cadre réglementaire</ContentHeading>
+						<SectionHeading className="mb-4">2. Le cadre réglementaire</SectionHeading>
 						<div className="space-y-4">
 							<p>IPSEIS répond aux obligations de grands textes fondateurs :</p>
 							<ul className="list-disc space-y-2 pl-6">
@@ -72,7 +71,7 @@ export default function Qualite() {
 
 					{/* 3. Nos certifications */}
 					<section>
-						<ContentHeading className="mb-4">3. Nos certifications</ContentHeading>
+						<SectionHeading className="mb-4">3. Nos certifications</SectionHeading>
 						<div className="space-y-4">
 							<p>
 								IPSEIS est certifié QUALIOPI dans la catégorie «&nbsp;Actions de formation&nbsp;» depuis septembre 2024.
@@ -90,7 +89,6 @@ export default function Qualite() {
 					</section>
 				</div>
 			</div>
-			<Footer />
 		</div>
 	);
 }

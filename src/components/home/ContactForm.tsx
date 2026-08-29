@@ -1,26 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import clsx from "clsx";
-import axios from "axios";
-import { LoadingOutlined } from "@ant-design/icons";
-import { CheckCircleIcon, XCircleIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
-import { Spin, notification, ConfigProvider } from "antd";
-type NotificationType = "success" | "info" | "warning" | "error";
+import React, { useActionState, useRef, useState } from "react";
+import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { sendContactMessageAction } from "@/lib/server/actions/public";
+import { idle } from "@/lib/server/actions/types";
+import { useActionFeedback } from "@/components/utils/useActionFeedback";
+import TrainingMultiSelect from "@/components/global/TrainingMultiSelect";
+import SubmitButton from "@/components/espace-personnel/SubmitButton";
+import { CONTACT_SUBJECTS } from "@/lib/contactSubjects";
+import type { ThemeWithTrainings } from "@/lib/types";
 
 const InputWrapper = ({
 	label,
+	htmlFor,
 	children,
 	className,
 	required = false,
 }: {
 	label: string;
+	htmlFor: string;
 	children: React.ReactNode;
 	className?: string;
 	required?: boolean;
 }) => (
 	<div className={className}>
-		<label htmlFor={label} className="text-sm sm:text-base leading-6 text-support font-bold block">
+		<label htmlFor={htmlFor} className="text-sm sm:text-base leading-6 text-support font-bold block">
 			{label}
 			{required && <span className="text-cohesion ml-1">*</span>}
 		</label>
@@ -28,304 +32,123 @@ const InputWrapper = ({
 	</div>
 );
 
-const TextInput = ({ onChange, value, id, name, type, autoComplete, placeholder, disabled }: any) => (
-	<input
-		onChange={onChange}
-		value={value}
-		disabled={disabled}
-		id={id}
-		name={name}
-		type={type}
-		autoComplete={autoComplete}
-		placeholder={placeholder}
-		className="block w-full rounded-lg px-3.5 py-2 sm:py-2.5 text-univers bg-white border border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-sm sm:text-base font-medium transition-all duration-200"
-	/>
-);
+const inputClass =
+	"block w-full rounded-lg px-3.5 py-2 sm:py-2.5 text-univers bg-white border border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-sm sm:text-base font-medium transition-all duration-200";
 
-const TextAreaInput = ({ onChange, value, id, name, rows, placeholder, disabled }: any) => (
-	<textarea
-		onChange={onChange}
-		value={value}
-		disabled={disabled}
-		id={id}
-		name={name}
-		rows={rows}
-		placeholder={placeholder}
-		className="block w-full rounded-lg px-3.5 py-2 text-univers bg-white border border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm placeholder:text-univers/50 text-sm sm:text-base font-medium transition-all duration-200 resize-vertical"
-	/>
-);
-
-const MultiSelectDropdown = ({
-	options,
-	themes,
-	selectedValues,
-	onChange,
-	disabled,
-}: {
-	options?: string[];
-	themes?: Array<{ _id: string; title: string; trainings: Array<{ _id: string; title: string }> }>;
-	selectedValues: string[];
-	onChange: (values: string[]) => void;
-	disabled: boolean;
-}) => {
-	const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const value = e.target.value;
-		if (value && !selectedValues.includes(value)) {
-			onChange([...selectedValues, value]);
-		}
-	};
-
-	const removeSelection = (valueToRemove: string) => {
-		onChange(selectedValues.filter((value) => value !== valueToRemove));
-	};
+/**
+ * Le formulaire poste vers une server action au lieu d'un axios navigateur :
+ * l'URL du backend n'apparaît plus dans les requêtes réseau de la page, et la
+ * soumission fonctionne sans JavaScript.
+ *
+ * Les thèmes sont rendus par le serveur (page en ISR) : plus de GET
+ * /trainings/all au montage, et le select est peuplé dès le premier paint.
+ */
+export default function ContactForm({ themes }: { themes: ThemeWithTrainings[] }) {
+	const formRef = useRef<HTMLFormElement>(null);
+	const [state, formAction] = useActionState(sendContactMessageAction, idle);
+	// Le motif conditionne l'affichage du choix de formations : demander à un
+	// futur formateur vacataire quelles formations l'intéressent n'a pas de sens,
+	// et la liste occupait la moitié du formulaire pour tout le monde.
+	const [subject, setSubject] = useState<string>(CONTACT_SUBJECTS[0].value);
+	// La sélection de formations vit dans l'état de TrainingMultiSelect, hors de
+	// portée d'un form.reset() : sans remontage, les formations cochées
+	// restaient sélectionnées après un envoi réussi et repartaient avec le
+	// message suivant.
+	const [sendCount, setSendCount] = useState(0);
+	const feedback = useActionFeedback(state, {
+		successTitle: "Merci !",
+		errorTitle: "Zut...",
+		onSuccess: () => {
+			formRef.current?.reset();
+			setSubject(CONTACT_SUBJECTS[0].value);
+			setSendCount((count) => count + 1);
+		},
+	});
 
 	return (
-		<div className="space-y-3">
-			<select
-				onChange={handleSelectChange}
-				disabled={disabled}
-				value=""
-				className="block w-full rounded-lg px-3.5 py-2 sm:py-2.5 text-univers bg-white border border-support/20 focus:border-cohesion focus:ring-2 focus:ring-cohesion/20 shadow-sm text-sm sm:text-base font-medium transition-all duration-200"
-			>
-				<option value="">Sélectionnez une ou plusieurs formations</option>
-				{themes && themes.length > 0
-					? themes.map((theme) => (
-							<optgroup key={theme._id} label={theme.title}>
-								{theme.trainings.map((training) => (
-									<option key={training._id} value={training.title} disabled={selectedValues.includes(training.title)}>
-										{training.title} {selectedValues.includes(training.title) ? "(déjà sélectionné)" : ""}
-									</option>
-								))}
-							</optgroup>
-					  ))
-					: options?.map((option) => (
-							<option key={option} value={option} disabled={selectedValues.includes(option)}>
-								{option} {selectedValues.includes(option) ? "(déjà sélectionné)" : ""}
-							</option>
-					  ))}
-			</select>
-
-			{selectedValues.length > 0 && (
-				<div className="space-y-2">
-					<p className="text-sm text-support/70 font-medium">Formations sélectionnées :</p>
-					<div className="flex flex-wrap gap-1.5">
-						{selectedValues.map((value) => (
-							<span
-								key={value}
-								className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-cohesion/10 text-support border border-cohesion/30 rounded-full text-sm font-medium"
-							>
-								{value}
-								<button
-									type="button"
-									onClick={() => removeSelection(value)}
-									disabled={disabled}
-									className="text-cohesion hover:text-cohesion/70 font-bold text-base leading-none disabled:opacity-50"
-								>
-									×
-								</button>
-							</span>
-						))}
-					</div>
-				</div>
-			)}
-		</div>
-	);
-};
-
-export default function ContactForm() {
-	const [api, contextHolder] = notification.useNotification();
-
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [email, setEmail] = useState("");
-	const [message, setMessage] = useState("");
-	const [allFormations, setAllFormations] = useState<Array<{ _id: string; title: string; trainings: Array<{ _id: string; title: string }> }>>([]);
-	const [interestedFormations, setInterestedFormations] = useState<string[]>([]);
-
-	const [isLoading, setIsLoading] = useState(false);
-
-	useEffect(() => {
-		(async () => {
-			try {
-				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/trainings/all`);
-				const themes = response.data.themes;
-
-				setAllFormations(themes);
-			} catch (error) {
-				console.error("Erreur lors de la récupération des formations :", error);
-			}
-		})();
-	}, []);
-
-	const openNotification = (type: NotificationType, title: string, message: string) => {
-		api[type]({
-			message: title,
-			description: message,
-			icon:
-				type === "success" ? (
-					<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
-				) : (
-					<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
-				),
-		});
-	};
-
-	const handleSubmit = async () => {
-		setIsLoading(true);
-
-		const payload = { firstName, lastName, email, message, interestedFormations };
-
-		if ([firstName, lastName, email, message].some((value) => value.length === 0)) {
-			openNotification("error", "Zut...", "Veuillez remplir tous les champs obligatoires.");
-			setIsLoading(false);
-			return;
-		}
-
-		try {
-			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/messages/new`, payload);
-
-			if (response.status === 200) {
-				openNotification("success", "Merci !", response.data.message);
-				setFirstName("");
-				setLastName("");
-				setEmail("");
-				setMessage("");
-				setInterestedFormations([]);
-			} else {
-				openNotification("error", "Zut...", response.data.error);
-			}
-		} catch (error: any) {
-			openNotification("error", "Oops...", error.message);
-			setIsLoading(false);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return (
-		<div className="relative isolate bg-maitrise p-4 sm:p-5 w-[92%] sm:w-4/5 lg:max-w-2xl rounded-2xl">
-			<ConfigProvider
-				theme={{
-					token: {
-						colorBgElevated: "#fffce8",
-						colorTextHeading: "#263c27",
-						colorText: "#263c27",
-						fontFamily: "Halibut",
-					},
-				}}
-			>
-				{contextHolder}
-			</ConfigProvider>
+		<div className="relative isolate w-full rounded-2xl bg-maitrise p-4 sm:p-5">
+			{feedback}
 
 			<div className="mx-auto">
-				{/* Info Box */}
-				<div className="mb-5 p-3.5 bg-support/15 border border-support/30 rounded-xl">
+				<div className="mb-5 rounded-xl border border-support/30 bg-support/15 p-3.5">
 					<div className="flex items-start gap-3">
-						<ChatBubbleLeftRightIcon className="h-5 w-5 text-support mt-0.5 flex-shrink-0" />
+						<ChatBubbleLeftRightIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-support" />
 						<div>
-							<h3 className="text-support font-bold mb-1 text-sm sm:text-base">Contactez-nous directement</h3>
-							<p className="text-support/90 text-xs sm:text-sm leading-relaxed font-medium">
-								Une question sur nos formations ? Besoin d'un devis personnalisé ? Notre équipe vous répond dans les plus brefs délais.
+							<h2 className="mb-1 text-sm font-bold text-support sm:text-base">
+								Une question ? Nous rejoindre ? Une réclamation ? Contactez-nous
+							</h2>
+							<p className="text-xs font-medium leading-relaxed text-support/90 sm:text-sm">
+								IPSEIS s&apos;engage à vous répondre dans un délai maximum de 72 heures.
 							</p>
 						</div>
 					</div>
 				</div>
 
-				<div className="flex flex-col lg:flex-row">
-					<div className="lg:flex-auto">
-						<div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:gap-y-5 sm:grid-cols-2">
-							<InputWrapper label="Prénom" required>
-								<TextInput
-									onChange={(e: any) => setFirstName(e.target.value)}
-									value={firstName}
-									disabled={isLoading}
-									id="first-name"
-									name="first-name"
-									type="text"
-									autoComplete="given-name"
-									placeholder="ex. Jean"
-								/>
-							</InputWrapper>
-							<InputWrapper label="Nom de famille" required>
-								<TextInput
-									onChange={(e: any) => setLastName(e.target.value)}
-									value={lastName}
-									disabled={isLoading}
-									id="last-name"
-									name="last-name"
-									type="text"
-									autoComplete="family-name"
-									placeholder="ex. Dupont"
-								/>
-							</InputWrapper>
-							<InputWrapper label="Email" className="col-span-full sm:col-span-2" required>
-								<TextInput
-									onChange={(e: any) => setEmail(e.target.value)}
-									value={email}
-									disabled={isLoading}
-									id="email"
-									name="email"
-									type="email"
-									autoComplete="email"
-									placeholder="ex. jean.dupont@test.fr"
-								/>
-							</InputWrapper>
-							<InputWrapper label="Message" className="col-span-full sm:col-span-2" required>
-								<TextAreaInput
-									onChange={(e: any) => setMessage(e.target.value)}
-									value={message}
-									disabled={isLoading}
-									id="message"
-									name="message"
-									rows={5}
-									placeholder="ex. Bonjour, je souhaiterais plus d'informations sur vos formations..."
-								/>
-							</InputWrapper>
-							<InputWrapper label="Formations d'intérêt (optionnel)" className="col-span-full sm:col-span-2">
-								<MultiSelectDropdown
-									themes={allFormations}
-									selectedValues={interestedFormations}
-									onChange={setInterestedFormations}
-									disabled={isLoading}
-								/>
-							</InputWrapper>
-						</div>
-
-						{/* RGPD Notice */}
-						<div className="mt-5 p-3 bg-support/10 border border-support/15 rounded-lg">
-							<p className="text-support/80 text-xs sm:text-sm leading-relaxed font-medium">
-								En soumettant ce formulaire, vous acceptez que vos données personnelles soient utilisées pour traiter votre demande et vous
-								recontacter. Vos données sont traitées conformément à notre{" "}
-								<a href="/mentions-legales" className="text-cohesion hover:underline font-semibold">
-									politique de confidentialité
-								</a>
-								.
-							</p>
-						</div>
-
-						<div className="mt-6">
-							<button
-								onClick={() => handleSubmit()}
-								disabled={isLoading}
-								className={clsx(
-									isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-univers/90 hover:shadow-lg transform hover:scale-105",
-									"w-full rounded-xl bg-univers px-5 py-3 sm:py-3.5 text-sm sm:text-base text-support font-bold shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers transition-all duration-200"
-								)}
+				<form ref={formRef} action={formAction} className="flex flex-col">
+					<div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 sm:gap-y-5">
+						<InputWrapper label="Prénom" htmlFor="firstName" required>
+							<input id="firstName" name="firstName" type="text" autoComplete="given-name" placeholder="ex. Jean" className={inputClass} />
+						</InputWrapper>
+						<InputWrapper label="Nom de famille" htmlFor="lastName" required>
+							<input id="lastName" name="lastName" type="text" autoComplete="family-name" placeholder="ex. Dupont" className={inputClass} />
+						</InputWrapper>
+						<InputWrapper label="Email" htmlFor="email" className="col-span-full sm:col-span-2" required>
+							<input id="email" name="email" type="email" autoComplete="email" placeholder="ex. jean.dupont@test.fr" className={inputClass} />
+						</InputWrapper>
+						<InputWrapper label="Objet de votre demande" htmlFor="subject" className="col-span-full sm:col-span-2" required>
+							<select
+								id="subject"
+								name="subject"
+								value={subject}
+								onChange={(event) => setSubject(event.target.value)}
+								className={inputClass}
 							>
-								<span className="flex justify-center items-center gap-2.5 text-support">
-									{!isLoading ? (
-										<>
-											<ChatBubbleLeftRightIcon className="h-5 w-5" />
-											<span className="font-bold">Envoyer le message</span>
-										</>
-									) : (
-										<Spin indicator={<LoadingOutlined spin className="text-lg" />} />
-									)}
-								</span>
-							</button>
-						</div>
+								{CONTACT_SUBJECTS.map((option) => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+						</InputWrapper>
+						<InputWrapper label="Message" htmlFor="message" className="col-span-full sm:col-span-2" required>
+							<textarea
+								id="message"
+								name="message"
+								rows={5}
+								placeholder="ex. Bonjour, je souhaiterais plus d'informations sur vos formations..."
+								className={`${inputClass} resize-vertical`}
+							/>
+						</InputWrapper>
+						{subject === "formation" && (
+							<InputWrapper label="Formations d'intérêt (optionnel)" htmlFor="interestedFormations" className="col-span-full sm:col-span-2">
+								<TrainingMultiSelect key={sendCount} themes={themes} />
+							</InputWrapper>
+						)}
 					</div>
-				</div>
+
+					<div className="mt-5 rounded-lg border border-support/15 bg-support/10 p-3">
+						<p className="text-xs font-medium leading-relaxed text-support/80 sm:text-sm">
+							En soumettant ce formulaire, vous acceptez que vos données personnelles soient utilisées pour traiter votre demande et vous
+							recontacter. Vos données sont traitées conformément à notre{" "}
+							<a href="/politique-de-confidentialite" className="font-semibold text-cohesion hover:underline">
+								politique de confidentialité
+							</a>
+							.
+						</p>
+					</div>
+
+					<div className="mt-6">
+						<SubmitButton
+							className="w-full rounded-xl bg-univers px-5 py-3 text-sm font-bold text-support shadow-md transition-all duration-200 hover:bg-univers/90 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-univers sm:py-3.5 sm:text-base"
+							spinnerClassName="text-support"
+						>
+							<span className="flex items-center justify-center gap-2.5 text-support">
+								<ChatBubbleLeftRightIcon className="h-5 w-5" />
+								<span className="font-bold">Envoyer le message</span>
+							</span>
+						</SubmitButton>
+					</div>
+				</form>
 			</div>
 		</div>
 	);
