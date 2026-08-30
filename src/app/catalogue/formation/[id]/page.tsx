@@ -7,29 +7,23 @@ import {
 	buildBreadcrumbJsonLd,
 	truncate,
 } from "@/components/utils/seo";
-import { getTrainingById, getAllTrainings } from "@/lib/api";
+import { getTrainingById } from "@/lib/api";
 import TrainingClient from "./_components/TrainingClient";
 import TrainingSkeleton from "./_components/TrainingSkeleton";
 
-// Génération statique des pages les plus populaires
+/**
+ * Aucune fiche n'est prérendue au build.
+ *
+ * La liste provenait d'un appel au backend, or BACKEND_URL n'est fournie qu'au
+ * runtime : l'appel échouait pendant `next build` et retournait déjà [] via son
+ * catch, sans que rien ne le signale. Autant l'assumer explicitement.
+ *
+ * `dynamicParams` vaut true par défaut : chaque fiche est donc rendue au
+ * premier accès puis mise en cache, ce qui donne le même résultat qu'une
+ * génération au build, étalée sur les premières visites.
+ */
 export async function generateStaticParams() {
-	try {
-		const { themes } = await getAllTrainings();
-
-		// Extraire tous les IDs de formation
-		const trainingIds = themes.flatMap((theme) =>
-			theme.trainings.map((training) => ({
-				id: training._id,
-			})),
-		);
-
-		// On peut limiter à un certain nombre pour éviter de générer trop de pages
-		// Par exemple, les 20 premières formations
-		return trainingIds.slice(0, 20);
-	} catch (error) {
-		console.error("Error generating static params:", error);
-		return [];
-	}
+	return [];
 }
 
 export async function generateMetadata({

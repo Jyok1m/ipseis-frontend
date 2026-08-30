@@ -11,6 +11,20 @@ import JsonLd from "@/components/utils/JsonLd";
 import type { Metadata } from "next";
 import { buildMetadata, buildBreadcrumbJsonLd } from "@/components/utils/seo";
 
+/**
+ * Rendu à la demande plutôt qu'au build.
+ *
+ * Cette route interroge le backend, or BACKEND_URL n'est fournie qu'au runtime :
+ * pendant `next build` le fetch échoue et le repli gracieux de lib/api.ts
+ * renvoie une liste vide. La page serait donc figée vide dans l'image, et le
+ * temps de revalidation la laisserait ainsi après chaque déploiement.
+ *
+ * Le coût est faible : les fetch de lib/api.ts portent `next: { revalidate }`,
+ * donc le Data Cache continue de servir les réponses backend et seul le rendu
+ * HTML est refait.
+ */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildMetadata({
 	title: "Formations - Transversales & spécialisées santé",
 	description:

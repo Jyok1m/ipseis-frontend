@@ -4,6 +4,20 @@ import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu";
 
+/**
+ * Rendu à la demande plutôt qu'au build.
+ *
+ * Cette route interroge le backend, or BACKEND_URL n'est fournie qu'au runtime :
+ * pendant `next build` le fetch échoue et le repli gracieux de lib/api.ts
+ * renvoie une liste vide. La page serait donc figée vide dans l'image, et le
+ * temps de revalidation la laisserait ainsi après chaque déploiement.
+ *
+ * Le coût est faible : les fetch de lib/api.ts portent `next: { revalidate }`,
+ * donc le Data Cache continue de servir les réponses backend et seul le rendu
+ * HTML est refait.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const staticPages: MetadataRoute.Sitemap = [
 		{
