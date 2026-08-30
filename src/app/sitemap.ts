@@ -2,8 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllTrainings } from "@/lib/api";
 import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
-const baseUrl =
-	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const staticPages: MetadataRoute.Sitemap = [

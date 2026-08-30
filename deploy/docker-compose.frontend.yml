@@ -27,31 +27,31 @@ services:
       - traefik.enable=true
       - traefik.docker.network=web
 
-      # Les quatre domaines répondent ; ipseis-formation.fr est le canonique
+      # Les quatre domaines répondent ; ipseis.eu est le canonique
       # (cf. SITE_URL dans le Jenkinsfile), les autres redirigent en 301.
-      - traefik.http.routers.ipseis-web.rule=Host(`ipseis-formation.fr`)
+      - traefik.http.routers.ipseis-web.rule=Host(`ipseis.eu`)
       - traefik.http.routers.ipseis-web.entrypoints=websecure
       - traefik.http.routers.ipseis-web.tls.certresolver=letsencrypt
       - traefik.http.services.ipseis-web.loadbalancer.server.port=3000
 
-      - traefik.http.routers.ipseis-web-alias.rule=Host(`ipseis.fr`) || Host(`www.ipseis.fr`) || Host(`www.ipseis-formation.fr`)
+      - traefik.http.routers.ipseis-web-alias.rule=Host(`ipseis.fr`) || Host(`www.ipseis.fr`) || Host(`www.ipseis.eu`)
       - traefik.http.routers.ipseis-web-alias.entrypoints=websecure
       - traefik.http.routers.ipseis-web-alias.tls.certresolver=letsencrypt
       - traefik.http.routers.ipseis-web-alias.middlewares=ipseis-canonical
       - traefik.http.middlewares.ipseis-canonical.redirectregex.regex=^https?://[^/]+/(.*)
-      - traefik.http.middlewares.ipseis-canonical.redirectregex.replacement=https://ipseis-formation.fr/$${1}
+      - traefik.http.middlewares.ipseis-canonical.redirectregex.replacement=https://ipseis.eu/$${1}
       - traefik.http.middlewares.ipseis-canonical.redirectregex.permanent=true
 
   # /socket.io servi sous le domaine du front mais routé vers le backend.
   # Sans cela le WebSocket vise un domaine tiers, le cookie `token` n'est pas
-  # envoyé (un cookie de ipseis-formation.fr ne part jamais vers
+  # envoyé (un cookie de ipseis.eu ne part jamais vers
   # joachimjasmin.fr) et le handshake est rejeté par le middleware io.use().
   # Priorité supérieure pour passer devant le routeur du front.
   ipseis-api:
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.ipseis-ws.rule=(Host(`ipseis-formation.fr`) || Host(`ipseis.fr`)) && PathPrefix(`/socket.io`)
+      - traefik.http.routers.ipseis-ws.rule=(Host(`ipseis.eu`) || Host(`ipseis.fr`)) && PathPrefix(`/socket.io`)
       - traefik.http.routers.ipseis-ws.priority=100
       - traefik.http.routers.ipseis-ws.entrypoints=websecure
       - traefik.http.routers.ipseis-ws.tls.certresolver=letsencrypt
@@ -69,7 +69,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.ipseis-web-dev.rule=Host(`dev.ipseis-formation.fr`) || Host(`dev.ipseis.fr`)
+      - traefik.http.routers.ipseis-web-dev.rule=Host(`dev.ipseis.eu`) || Host(`dev.ipseis.fr`)
       - traefik.http.routers.ipseis-web-dev.entrypoints=websecure
       - traefik.http.routers.ipseis-web-dev.tls.certresolver=letsencrypt
       - traefik.http.services.ipseis-web-dev.loadbalancer.server.port=3000
@@ -78,7 +78,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.ipseis-ws-dev.rule=(Host(`dev.ipseis-formation.fr`) || Host(`dev.ipseis.fr`)) && PathPrefix(`/socket.io`)
+      - traefik.http.routers.ipseis-ws-dev.rule=(Host(`dev.ipseis.eu`) || Host(`dev.ipseis.fr`)) && PathPrefix(`/socket.io`)
       - traefik.http.routers.ipseis-ws-dev.priority=100
       - traefik.http.routers.ipseis-ws-dev.entrypoints=websecure
       - traefik.http.routers.ipseis-ws-dev.tls.certresolver=letsencrypt

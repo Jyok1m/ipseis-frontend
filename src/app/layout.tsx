@@ -11,7 +11,7 @@ import { defaultOpenGraph, defaultTwitter } from "@/components/utils/seo";
 
 export const metadata: Metadata = {
 	metadataBase: new URL(
-		process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr",
+		process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu",
 	),
 	title: {
 		default: "IPSEIS - Formations innovantes santé & accompagnement",
@@ -86,8 +86,8 @@ const organizationJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "EducationalOrganization",
 	name: "IPSEIS",
-	url: "https://ipseis-formation.fr",
-	logo: "https://ipseis-formation.fr/images/banner-home.png",
+	url: "https://ipseis.eu",
+	logo: "https://ipseis.eu/images/banner-home.png",
 	description:
 		"Organisme de formation innovant dédié aux professionnels du secteur sanitaire, social et médico-social.",
 	address: {
@@ -97,7 +97,7 @@ const organizationJsonLd = {
 		postalCode: "35400",
 		addressCountry: "FR",
 	},
-	email: "helenedm@ipseis-formation.fr",
+	email: "hdemontabert@yahoo.fr",
 	sameAs: [],
 	hasCredential: {
 		"@type": "EducationalOccupationalCredential",

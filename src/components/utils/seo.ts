@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 const siteName = "IPSEIS";
-const baseUrl =
-	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu";
 
 export const defaultOpenGraph: Metadata["openGraph"] = {
 	type: "website",

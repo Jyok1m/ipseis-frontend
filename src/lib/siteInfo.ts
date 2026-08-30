@@ -18,7 +18,7 @@ export const IPSEIS = {
 	phoneHref: "+33630709978",
 	/** Format lisible, celui qu'on affiche. */
 	phone: "06 30 70 99 78",
-	email: "helenedm@ipseis-formation.fr",
+	email: "hdemontabert@yahoo.fr",
 } as const;
 
 /**

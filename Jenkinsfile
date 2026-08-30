@@ -15,7 +15,7 @@ pipeline {
         // répond sur deux noms par environnement, mais un seul doit être déclaré
         // aux moteurs sous peine de contenu dupliqué : les autres redirigent en
         // 301 au niveau du reverse proxy.
-        SITE_URL = "${env.BRANCH_NAME == 'main' ? 'https://ipseis-formation.fr' : 'https://dev.ipseis-formation.fr'}"
+        SITE_URL = "${env.BRANCH_NAME == 'main' ? 'https://ipseis.eu' : 'https://dev.ipseis.eu'}"
         CATALOGUE_PDF_ENABLED = "false"
     }
 

@@ -18,8 +18,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 	{ name: "Catalogue", path: "/catalogue" },
 ]);
 
-const SITE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu";
 
 /** Liste ordonnée des formations visibles, pour que les moteurs les indexent depuis le catalogue. */
 function buildCatalogueJsonLd(
