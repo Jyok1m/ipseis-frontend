@@ -127,11 +127,12 @@ export default function APropos() {
 				</section>
 
 				{/* 2. Nos chiffres clés 2025 */}
-				<section className="mt-16 clear-both">
+				{/* TODO (IPSEIS) : remplacer les valeurs ci-dessous par les chiffres réels 2025 et préciser leur mode de calcul. */}
+
+				{/* <section className="mt-16 clear-both">
 					<SectionHeading className="mb-4">
 						Nos chiffres clés 2025
 					</SectionHeading>
-					{/* TODO (IPSEIS) : remplacer les valeurs ci-dessous par les chiffres réels 2025 et préciser leur mode de calcul. */}
 					<p className="text-sm text-univers/60">
 						Chiffres en cours de consolidation pour l’année 2025.
 					</p>
@@ -150,7 +151,7 @@ export default function APropos() {
 							</div>
 						))}
 					</dl>
-				</section>
+				</section> */}
 
 				{/* 3. Délai d'accès */}
 				<section className="mt-16">
