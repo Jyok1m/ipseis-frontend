@@ -24,6 +24,21 @@ interface SocketProviderProps {
 	/** Compteurs rendus côté serveur : le badge est juste dès le premier paint. */
 	initialUnreadCount: number;
 	initialContactUnreadCount: number;
+	/**
+	 * Origine visée par le WebSocket, injectée par le layout serveur.
+	 *
+	 * socket.io est le seul appel navigateur qui ne peut pas passer par
+	 * /api/proxy (un route handler ne relaie pas un WebSocket). La valeur
+	 * descend en prop plutôt que d'être lue dans une NEXT_PUBLIC_* : celle-ci
+	 * serait gravée dans le bundle au build et figerait l'image sur un seul
+	 * environnement.
+	 *
+	 * Chaîne vide = même origine que le front (cas recommandé : le reverse proxy
+	 * route /socket.io vers le backend). C'est le seul montage où le cookie
+	 * `token` est transmis : posé host-only sur le domaine du front, il n'est
+	 * jamais envoyé à un domaine tiers, et l'auth du handshake échouerait.
+	 */
+	socketUrl: string;
 }
 
 /**
@@ -32,7 +47,7 @@ interface SocketProviderProps {
  * qu'aux mises à jour ultérieures. Deux allers-retours REST en moins par
  * chargement de page de l'espace personnel.
  */
-export function SocketProvider({ children, user, initialUnreadCount, initialContactUnreadCount }: SocketProviderProps) {
+export function SocketProvider({ children, user, initialUnreadCount, initialContactUnreadCount, socketUrl }: SocketProviderProps) {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
 	const [contactUnreadCount, setContactUnreadCount] = useState(initialContactUnreadCount);
@@ -54,8 +69,8 @@ export function SocketProvider({ children, user, initialUnreadCount, initialCont
 	}, [user.role]);
 
 	useEffect(() => {
-		const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3098";
-		const newSocket = io(backendUrl, { withCredentials: true, transports: ["websocket", "polling"] });
+		// undefined => socket.io vise l'origine courante (cookie first-party envoyé).
+		const newSocket = io(socketUrl || undefined, { withCredentials: true, transports: ["websocket", "polling"] });
 
 		newSocket.on("unread-count", (data: { count: number }) => setUnreadCount(data.count));
 
@@ -67,7 +82,7 @@ export function SocketProvider({ children, user, initialUnreadCount, initialCont
 			socketRef.current = null;
 			setSocket(null);
 		};
-	}, [user._id]);
+	}, [user._id, socketUrl]);
 
 	return (
 		<SocketContext.Provider value={{ socket, unreadCount, contactUnreadCount, refreshContactUnreadCount }}>

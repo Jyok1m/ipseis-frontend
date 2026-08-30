@@ -1,0 +1,94 @@
+# Extrait de référence à reporter dans /opt/ipseis/docker-compose.yml sur l'hôte.
+# Versionné ici pour que la configuration de déploiement suive le code.
+#
+# HYPOTHÈSES à confirmer avant application :
+#   - le reverse proxy est Traefik v3, réseau externe `web`, resolver `letsencrypt`
+#   - le backend écoute sur 3000 dans son conteneur (bin/www : PORT || 3000)
+#   - les services backend s'appellent `ipseis-api` / `ipseis-api-dev`
+
+services:
+  ipseis-web:
+    image: jyok1m/ipseis-frontend:latest
+    restart: unless-stopped
+    networks: [web, ipseis-internal]
+    environment:
+      # Serveur -> backend. Reste dans le réseau Docker : pas de sortie sur
+      # Internet, pas de TLS à négocier, insensible à une panne DNS publique.
+      # Pour un backend hébergé ailleurs, remplacer par son URL publique —
+      # c'est le seul changement nécessaire, la variable est lue au runtime.
+      BACKEND_URL: http://ipseis-api:3000
+      # Navigateur -> backend (WebSocket uniquement). Vide = même origine que le
+      # front, ce qui suppose la route /socket.io ci-dessous. C'est le seul
+      # montage où le cookie `token` (host-only sur le domaine du front) est
+      # transmis au handshake socket.io.
+      SOCKET_PUBLIC_URL: ""
+      MAINTENANCE_MODE: "false"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+
+      # Les quatre domaines répondent ; ipseis-formation.fr est le canonique
+      # (cf. SITE_URL dans le Jenkinsfile), les autres redirigent en 301.
+      - traefik.http.routers.ipseis-web.rule=Host(`ipseis-formation.fr`)
+      - traefik.http.routers.ipseis-web.entrypoints=websecure
+      - traefik.http.routers.ipseis-web.tls.certresolver=letsencrypt
+      - traefik.http.services.ipseis-web.loadbalancer.server.port=3000
+
+      - traefik.http.routers.ipseis-web-alias.rule=Host(`ipseis.fr`) || Host(`www.ipseis.fr`) || Host(`www.ipseis-formation.fr`)
+      - traefik.http.routers.ipseis-web-alias.entrypoints=websecure
+      - traefik.http.routers.ipseis-web-alias.tls.certresolver=letsencrypt
+      - traefik.http.routers.ipseis-web-alias.middlewares=ipseis-canonical
+      - traefik.http.middlewares.ipseis-canonical.redirectregex.regex=^https?://[^/]+/(.*)
+      - traefik.http.middlewares.ipseis-canonical.redirectregex.replacement=https://ipseis-formation.fr/$${1}
+      - traefik.http.middlewares.ipseis-canonical.redirectregex.permanent=true
+
+  # /socket.io servi sous le domaine du front mais routé vers le backend.
+  # Sans cela le WebSocket vise un domaine tiers, le cookie `token` n'est pas
+  # envoyé (un cookie de ipseis-formation.fr ne part jamais vers
+  # joachimjasmin.fr) et le handshake est rejeté par le middleware io.use().
+  # Priorité supérieure pour passer devant le routeur du front.
+  ipseis-api:
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.ipseis-ws.rule=(Host(`ipseis-formation.fr`) || Host(`ipseis.fr`)) && PathPrefix(`/socket.io`)
+      - traefik.http.routers.ipseis-ws.priority=100
+      - traefik.http.routers.ipseis-ws.entrypoints=websecure
+      - traefik.http.routers.ipseis-ws.tls.certresolver=letsencrypt
+      - traefik.http.routers.ipseis-ws.service=ipseis-ws
+      - traefik.http.services.ipseis-ws.loadbalancer.server.port=3000
+
+  ipseis-web-dev:
+    image: jyok1m/ipseis-frontend:dev
+    restart: unless-stopped
+    networks: [web, ipseis-internal]
+    environment:
+      BACKEND_URL: http://ipseis-api-dev:3000
+      SOCKET_PUBLIC_URL: ""
+      MAINTENANCE_MODE: "false"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.ipseis-web-dev.rule=Host(`dev.ipseis-formation.fr`) || Host(`dev.ipseis.fr`)
+      - traefik.http.routers.ipseis-web-dev.entrypoints=websecure
+      - traefik.http.routers.ipseis-web-dev.tls.certresolver=letsencrypt
+      - traefik.http.services.ipseis-web-dev.loadbalancer.server.port=3000
+
+  ipseis-api-dev:
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.ipseis-ws-dev.rule=(Host(`dev.ipseis-formation.fr`) || Host(`dev.ipseis.fr`)) && PathPrefix(`/socket.io`)
+      - traefik.http.routers.ipseis-ws-dev.priority=100
+      - traefik.http.routers.ipseis-ws-dev.entrypoints=websecure
+      - traefik.http.routers.ipseis-ws-dev.tls.certresolver=letsencrypt
+      - traefik.http.routers.ipseis-ws-dev.service=ipseis-ws-dev
+      - traefik.http.services.ipseis-ws-dev.loadbalancer.server.port=3000
+
+networks:
+  web:
+    external: true
+  # Réseau privé front <-> back : le backend n'a pas besoin d'être joignable
+  # depuis Internet pour que le front l'interroge.
+  ipseis-internal:
+    driver: bridge

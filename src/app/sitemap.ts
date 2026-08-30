@@ -2,7 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllTrainings } from "@/lib/api";
 import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
+const baseUrl =
+	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const staticPages: MetadataRoute.Sitemap = [
@@ -72,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				lastModified: new Date(),
 				changeFrequency: "weekly" as const,
 				priority: 0.7,
-			}))
+			})),
 		);
 	} catch {
 		// Sitemap still works without dynamic pages
@@ -88,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 					changeFrequency: "monthly" as const,
 					priority: 0.6,
 				},
-		  ]
+			]
 		: [];
 
 	return [...staticPages, ...catalogueDownloadPage, ...trainingPages];

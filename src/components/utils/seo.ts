@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 const siteName = "IPSEIS";
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
+const baseUrl =
+	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
 
 export const defaultOpenGraph: Metadata["openGraph"] = {
 	type: "website",
@@ -60,10 +61,12 @@ export function buildMetadata({
 			images: image
 				? [image.url]
 				: Array.isArray(defaultOpenGraph?.images)
-				? (defaultOpenGraph?.images as any[]).map((img) => (typeof img === "string" ? img : img.url))
-				: typeof defaultOpenGraph?.images === "string"
-				? [defaultOpenGraph.images as string]
-				: undefined,
+					? (defaultOpenGraph?.images as any[]).map((img) =>
+							typeof img === "string" ? img : img.url,
+						)
+					: typeof defaultOpenGraph?.images === "string"
+						? [defaultOpenGraph.images as string]
+						: undefined,
 		},
 	};
 }

@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 	]);
 
 	return (
-		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={contactUnreadCount}>
+		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={contactUnreadCount} socketUrl={process.env.SOCKET_PUBLIC_URL ?? ""}>
 			<DashboardLayout navItems={adminNavItems} user={user}>
 				{children}
 			</DashboardLayout>

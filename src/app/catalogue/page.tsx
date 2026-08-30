@@ -14,13 +14,20 @@ export const metadata: Metadata = buildMetadata({
 	path: "/catalogue",
 });
 
-const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Catalogue", path: "/catalogue" }]);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+	{ name: "Catalogue", path: "/catalogue" },
+]);
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr";
+const SITE_URL =
+	process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr";
 
 /** Liste ordonnée des formations visibles, pour que les moteurs les indexent depuis le catalogue. */
-function buildCatalogueJsonLd(themes: Awaited<ReturnType<typeof getCatalogue>>) {
-	const trainings = themes.flatMap((theme) => theme.trainings.map((training) => ({ theme: theme.title, ...training })));
+function buildCatalogueJsonLd(
+	themes: Awaited<ReturnType<typeof getCatalogue>>,
+) {
+	const trainings = themes.flatMap((theme) =>
+		theme.trainings.map((training) => ({ theme: theme.title, ...training })),
+	);
 
 	return {
 		"@context": "https://schema.org",
@@ -55,7 +62,9 @@ export default function CataloguePage() {
 				title="Catalogue de formations"
 				descriptionNode={
 					<>
-						Découvrez nos secteurs d'activité et explorez les différentes thématiques que nous proposons pour répondre à vos besoins professionnels.
+						Découvrez nos secteurs d'activité et explorez les différentes
+						thématiques que nous proposons pour répondre à vos besoins
+						professionnels.
 					</>
 				}
 			/>

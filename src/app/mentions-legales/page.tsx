@@ -262,10 +262,10 @@ export default function MentionsLegalesPage() {
 						<p>
 							Pour toute question, vous pouvez nous écrire à :{" "}
 							<a
-								href="mailto:helenedm@ipseis.fr"
+								href="mailto:helenedm@ipseis-formation.fr"
 								className="text-cohesion hover:underline hover:underline-offset-4"
 							>
-								helenedm@ipseis.fr
+								helenedm@ipseis-formation.fr
 							</a>
 							.
 						</p>
@@ -324,10 +324,10 @@ export default function MentionsLegalesPage() {
 								IPSEIS est responsable des traitements de données effectués via
 								le site. Contact :{" "}
 								<a
-									href="mailto:helenedm@ipseis.fr"
+									href="mailto:helenedm@ipseis-formation.fr"
 									className="text-cohesion hover:underline hover:underline-offset-4"
 								>
-									helenedm@ipseis.fr
+									helenedm@ipseis-formation.fr
 								</a>{" "}
 								(ou le contact officiel désigné).
 							</p>
@@ -460,10 +460,10 @@ export default function MentionsLegalesPage() {
 							limitation, opposition, portabilité, et du droit de définir des
 							directives post-mortem. Pour exercer vos droits :{" "}
 							<a
-								href="mailto:helenedm@ipseis.fr"
+								href="mailto:helenedm@ipseis-formation.fr"
 								className="text-cohesion hover:underline hover:underline-offset-4"
 							>
-								helenedm@ipseis.fr
+								helenedm@ipseis-formation.fr
 							</a>{" "}
 							(joindre tout justificatif utile).
 						</p>

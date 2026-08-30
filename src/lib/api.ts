@@ -1,5 +1,8 @@
 // Service API optimisé avec cache Next.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4001";
+// Lu à chaque appel et non au chargement du module : `next build` importe ce
+// fichier pour prérendre les pages, une constante de module figerait la valeur
+// du build dans l'image.
+const apiBaseUrl = () => process.env.BACKEND_URL || "http://localhost:3098";
 
 // Interface des données
 export type { Theme } from "./types";
@@ -32,7 +35,7 @@ export const DEFAULT_ACCESSIBILITY =
 // Cache et revalidation pour les thèmes (données assez statiques)
 export async function getThemes(): Promise<Theme[]> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/themes/list`, {
+		const response = await fetch(`${apiBaseUrl()}/themes/list`, {
 			next: {
 				revalidate: 3600, // Cache 1 heure
 				tags: ["themes"],
@@ -56,7 +59,7 @@ export async function getThemes(): Promise<Theme[]> {
 // Cache plus court pour les formations par thème
 export async function getTrainingsByTheme(themeId: string): Promise<Training[]> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/trainings/by-theme/${themeId}`, {
+		const response = await fetch(`${apiBaseUrl()}/trainings/by-theme/${themeId}`, {
 			next: {
 				revalidate: 1800, // Cache 30 minutes
 				tags: ["trainings", `theme-${themeId}`],
@@ -80,7 +83,7 @@ export async function getTrainingsByTheme(themeId: string): Promise<Training[]> 
 // Cache et revalidation pour les formations individuelles
 export async function getTrainingById(trainingId: string): Promise<Training | null> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/trainings/by-id/${trainingId}`, {
+		const response = await fetch(`${apiBaseUrl()}/trainings/by-id/${trainingId}`, {
 			next: {
 				revalidate: 3600, // Cache 1 heure
 				tags: ["training", `training-${trainingId}`],
@@ -107,7 +110,7 @@ export async function getTrainingById(trainingId: string): Promise<Training | nu
 // Cache pour toutes les formations (pour generateStaticParams)
 export async function getAllTrainings(): Promise<{ themes: Array<{ _id: string; title: string; trainings: Training[] }> }> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/trainings/all`, {
+		const response = await fetch(`${apiBaseUrl()}/trainings/all`, {
 			next: {
 				revalidate: 7200, // Cache 2 heures
 				tags: ["all-trainings"],

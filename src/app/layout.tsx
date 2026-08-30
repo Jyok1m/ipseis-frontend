@@ -10,14 +10,23 @@ import JsonLd from "@/components/utils/JsonLd";
 import { defaultOpenGraph, defaultTwitter } from "@/components/utils/seo";
 
 export const metadata: Metadata = {
-	metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.ipseis.fr"),
+	metadataBase: new URL(
+		process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis-formation.fr",
+	),
 	title: {
 		default: "IPSEIS - Formations innovantes santé & accompagnement",
 		template: "%s | IPSEIS",
 	},
 	description:
 		"IPSEIS est un organisme de formation innovant dédié aux professionnels du secteur sanitaire, social et médico-social : pédagogie active, immersive et sur mesure.",
-	keywords: ["formation santé", "organisme de formation", "pédagogie active", "innovation pédagogique", "secteur médico-social", "réflexologie"],
+	keywords: [
+		"formation santé",
+		"organisme de formation",
+		"pédagogie active",
+		"innovation pédagogique",
+		"secteur médico-social",
+		"réflexologie",
+	],
 	authors: [{ name: "IPSEIS" }],
 	creator: "IPSEIS",
 	publisher: "IPSEIS",
@@ -38,7 +47,8 @@ export const metadata: Metadata = {
 	twitter: {
 		...defaultTwitter,
 		title: "IPSEIS - Formations innovantes santé & accompagnement",
-		description: "Parcours de formation actifs, immersifs et sur mesure pour les professionnels de santé et du médico-social.",
+		description:
+			"Parcours de formation actifs, immersifs et sur mesure pour les professionnels de santé et du médico-social.",
 	},
 	icons: {
 		apple: [
@@ -53,7 +63,11 @@ export const metadata: Metadata = {
 			{ url: "/icons/apple-icon-180x180.png", sizes: "180x180" },
 		],
 		icon: [
-			{ url: "/icons/android-icon-192x192.png", sizes: "192x192", type: "image/png" },
+			{
+				url: "/icons/android-icon-192x192.png",
+				sizes: "192x192",
+				type: "image/png",
+			},
 			{ url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
 			{ url: "/icons/favicon-96x96.png", sizes: "96x96", type: "image/png" },
 			{ url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -72,8 +86,8 @@ const organizationJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "EducationalOrganization",
 	name: "IPSEIS",
-	url: "https://www.ipseis.fr",
-	logo: "https://www.ipseis.fr/images/banner-home.png",
+	url: "https://ipseis-formation.fr",
+	logo: "https://ipseis-formation.fr/images/banner-home.png",
 	description:
 		"Organisme de formation innovant dédié aux professionnels du secteur sanitaire, social et médico-social.",
 	address: {
@@ -83,7 +97,7 @@ const organizationJsonLd = {
 		postalCode: "35400",
 		addressCountry: "FR",
 	},
-	email: "helenedm@ipseis.fr",
+	email: "helenedm@ipseis-formation.fr",
 	sameAs: [],
 	hasCredential: {
 		"@type": "EducationalOccupationalCredential",
@@ -108,7 +122,9 @@ export default function RootLayout({
 				<AntdProvider>
 					{!maintenance && <ConditionalHeader />}
 					{maintenance ? (
-						<main className="flex flex-1 flex-col overflow-x-hidden">{children}</main>
+						<main className="flex flex-1 flex-col overflow-x-hidden">
+							{children}
+						</main>
 					) : (
 						<LayoutShell>{children}</LayoutShell>
 					)}

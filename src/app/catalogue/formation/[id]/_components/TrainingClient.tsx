@@ -79,7 +79,8 @@ export default function TrainingClient({ id = "", initialTraining = null }: Trai
 
 		setIsLoading(true);
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/trainings/by-id/${trainingId}`);
+			// Route proxy first-party : évite une URL absolue dans le bundle client.
+			const response = await axios.get(`/api/proxy/trainings/by-id/${trainingId}`);
 			if (response.status === 200) {
 				setTrainingData(response.data);
 			}

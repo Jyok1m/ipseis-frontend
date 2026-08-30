@@ -17,7 +17,7 @@ const webSiteJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "WebSite",
 	name: "IPSEIS",
-	url: "https://www.ipseis.fr",
+	url: "https://ipseis-formation.fr",
 	description:
 		"Organisme de formation innovant dédié aux professionnels du secteur sanitaire, social et médico-social.",
 	publisher: {

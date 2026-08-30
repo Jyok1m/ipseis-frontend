@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4001";
+const backendUrl = () => process.env.BACKEND_URL || "http://localhost:3098";
 
 /** Erreur renvoyée par le backend, avec son code HTTP. */
 export class ApiError extends Error {
@@ -24,7 +24,7 @@ interface ServerFetchOptions extends Omit<RequestInit, "body"> {
 }
 
 function buildUrl(path: string, searchParams?: Record<string, QueryValue>) {
-	const url = new URL(`${BACKEND_URL}${path}`);
+	const url = new URL(`${backendUrl()}${path}`);
 	for (const [key, value] of Object.entries(searchParams ?? {})) {
 		if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, String(value));
 	}

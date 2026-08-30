@@ -17,7 +17,7 @@ export default async function ProfessionnelLayout({ children }: { children: Reac
 	const [user, unreadCount] = await Promise.all([requireUser(["professionnel"]), getUnreadCount().catch(() => 0)]);
 
 	return (
-		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0}>
+		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0} socketUrl={process.env.SOCKET_PUBLIC_URL ?? ""}>
 			<DashboardLayout navItems={professionnelNavItems} user={user}>
 				{children}
 			</DashboardLayout>

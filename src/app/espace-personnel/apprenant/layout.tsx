@@ -17,7 +17,7 @@ export default async function ApprenantLayout({ children }: { children: React.Re
 	const [user, unreadCount] = await Promise.all([requireUser(["apprenant"]), getUnreadCount().catch(() => 0)]);
 
 	return (
-		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0}>
+		<SocketProvider user={user} initialUnreadCount={unreadCount} initialContactUnreadCount={0} socketUrl={process.env.SOCKET_PUBLIC_URL ?? ""}>
 			<DashboardLayout navItems={apprenantNavItems} user={user}>
 				{children}
 			</DashboardLayout>

@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/utils/JsonLd";
-import { buildMetadata, buildBreadcrumbJsonLd, truncate } from "@/components/utils/seo";
+import {
+	buildMetadata,
+	buildBreadcrumbJsonLd,
+	truncate,
+} from "@/components/utils/seo";
 import { getTrainingById, getAllTrainings } from "@/lib/api";
 import TrainingClient from "./_components/TrainingClient";
 import TrainingSkeleton from "./_components/TrainingSkeleton";
@@ -16,7 +20,7 @@ export async function generateStaticParams() {
 		const trainingIds = themes.flatMap((theme) =>
 			theme.trainings.map((training) => ({
 				id: training._id,
-			}))
+			})),
 		);
 
 		// On peut limiter à un certain nombre pour éviter de générer trop de pages
@@ -28,7 +32,11 @@ export async function generateStaticParams() {
 	}
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}): Promise<Metadata> {
 	const { id } = await params;
 
 	try {
@@ -46,14 +54,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 			title: `${training.title} - Formation IPSEIS`,
 			description: truncate(
 				training.introduction?.trim() ||
-					`Formation ${training.title} : ${training.program?.slice(0, 2).join(", ")}. Durée : ${training.duration}.`
+					`Formation ${training.title} : ${training.program?.slice(0, 2).join(", ")}. Durée : ${training.duration}.`,
 			),
 			path: `/catalogue/formation/${id}`,
 		});
 	} catch (error) {
 		return buildMetadata({
 			title: "Formation professionnelle - IPSEIS",
-			description: "Détails d'une formation IPSEIS : objectifs pédagogiques, programme, méthodes et modalités.",
+			description:
+				"Détails d'une formation IPSEIS : objectifs pédagogiques, programme, méthodes et modalités.",
 			path: `/catalogue/formation/${id}`,
 		});
 	}
@@ -79,22 +88,37 @@ async function FormationServer({ id }: { id: string }) {
 		"@context": "https://schema.org",
 		"@type": "Course",
 		name: training.title,
-		description: training.introduction?.trim() || training.pedagogical_objectives?.slice(0, 3).join(". ") || training.title,
+		description:
+			training.introduction?.trim() ||
+			training.pedagogical_objectives?.slice(0, 3).join(". ") ||
+			training.title,
 		inLanguage: "fr",
-		url: `https://www.ipseis.fr/catalogue/formation/${training._id}`,
-		teaches: training.pedagogical_objectives?.length ? training.pedagogical_objectives : undefined,
-		audience: training.audience ? { "@type": "Audience", audienceType: training.audience } : undefined,
+		url: `https://ipseis-formation.fr/catalogue/formation/${training._id}`,
+		teaches: training.pedagogical_objectives?.length
+			? training.pedagogical_objectives
+			: undefined,
+		audience: training.audience
+			? { "@type": "Audience", audienceType: training.audience }
+			: undefined,
 		coursePrerequisites: training.prerequisites || undefined,
 		provider: {
 			"@type": "EducationalOrganization",
 			name: "IPSEIS",
-			url: "https://www.ipseis.fr",
+			url: "https://ipseis-formation.fr",
 		},
 		hasCourseInstance: {
 			"@type": "CourseInstance",
 			courseMode: "onsite",
-			courseSchedule: training.duration ? { "@type": "Schedule", repeatCount: 1, description: training.duration } : undefined,
-			instructor: training.trainer ? { "@type": "Person", name: training.trainer } : undefined,
+			courseSchedule: training.duration
+				? {
+						"@type": "Schedule",
+						repeatCount: 1,
+						description: training.duration,
+					}
+				: undefined,
+			instructor: training.trainer
+				? { "@type": "Person", name: training.trainer }
+				: undefined,
 		},
 	};
 
@@ -107,7 +131,11 @@ async function FormationServer({ id }: { id: string }) {
 	);
 }
 
-export default async function FormationPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function FormationPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id } = await params;
 
 	return (

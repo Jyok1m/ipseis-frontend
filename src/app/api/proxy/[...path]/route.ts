@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4001";
+const backendUrl = () => process.env.BACKEND_URL || "http://localhost:3098";
 
 async function proxyRequest(request: NextRequest, method: string) {
 	const path = request.nextUrl.pathname.replace("/api/proxy", "");
 	const search = request.nextUrl.search;
-	const targetUrl = `${BACKEND_URL}${path}${search}`;
+	const targetUrl = `${backendUrl()}${path}${search}`;
 
 	// Read the first-party token cookie
 	const token = request.cookies.get("token")?.value;
