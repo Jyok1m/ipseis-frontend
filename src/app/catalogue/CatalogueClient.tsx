@@ -8,7 +8,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import starOrange from "@/_images/logo/star_orange.svg";
 import ThemeWheel from "./ThemeWheel";
-import { COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
+import { COLUMN_GRID_CLASS, COLUMN_SUBGRID_CLASS, COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
 /** Thématique du catalogue, formations incluses. */
@@ -62,9 +62,19 @@ function EmptyThemePlaceholder() {
 	);
 }
 
-function ThemeColumn({ title, themes, onSelect }: { title: string; themes: CatalogueTheme[]; onSelect: (theme: CatalogueTheme) => void }) {
+function ThemeColumn({
+	title,
+	themes,
+	onSelect,
+	className,
+}: {
+	title: string;
+	themes: CatalogueTheme[];
+	onSelect: (theme: CatalogueTheme) => void;
+	className?: string;
+}) {
 	return (
-		<div className="flex h-full flex-col items-center">
+		<div className={clsx("flex flex-col", COLUMN_SUBGRID_CLASS, className)}>
 			{/* Les intitulés sont maintenant des phrases entières et non plus deux
 			    mots : sans largeur maximale la ligne courait jusqu'aux bords de la
 			    colonne, et les deux titres ne se répondaient plus. */}
@@ -117,13 +127,9 @@ export default function CatalogueClient({
 			    de lg. L'espacement vient du padding des colonnes, pas d'un gap qui
 			    décrocherait le filet du contenu. */}
 			<div className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8">
-				<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
-					<div className="pb-10 lg:pb-0 lg:pr-10">
-						<ThemeColumn title={santeTitle} themes={santeThemes} onSelect={setSelectedTheme} />
-					</div>
-					<div className="pt-10 lg:pl-10 lg:pt-0">
-						<ThemeColumn title={transversalTitle} themes={transversalThemes} onSelect={setSelectedTheme} />
-					</div>
+				<div className={COLUMN_GRID_CLASS}>
+					<ThemeColumn className="pb-10 lg:pb-0 lg:pr-10" title={santeTitle} themes={santeThemes} onSelect={setSelectedTheme} />
+					<ThemeColumn className="pt-10 lg:pl-10 lg:pt-0" title={transversalTitle} themes={transversalThemes} onSelect={setSelectedTheme} />
 				</div>
 			</div>
 
