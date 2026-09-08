@@ -1,5 +1,5 @@
 import { bubbleDiameter, polarPosition, WHEEL_RADIUS } from "./wheelGeometry";
-import { COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
+import { COLUMN_GRID_CLASS, COLUMN_SUBGRID_CLASS, COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
 
 /**
  * Fallback du Suspense du catalogue.
@@ -51,9 +51,9 @@ function SkeletonWheel({ count }: { count: number }) {
 	);
 }
 
-function SkeletonColumn({ title, count }: { title: string; count: number }) {
+function SkeletonColumn({ title, count, className }: { title: string; count: number; className: string }) {
 	return (
-		<div className="flex h-full flex-col items-center">
+		<div className={`flex flex-col ${COLUMN_SUBGRID_CLASS} ${className}`}>
 			<h2 className={`${COLUMN_TITLE_CLASS} text-univers/30`}>{title}</h2>
 
 			<SkeletonWheel count={count} />
@@ -69,13 +69,9 @@ export default function CatalogueSkeleton() {
 			aria-live="polite"
 		>
 			<span className="sr-only">Chargement du catalogue…</span>
-			<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
-				<div className="pb-10 lg:pb-0 lg:pr-10">
-					<SkeletonColumn title={COLUMN_TITLES.sante} count={4} />
-				</div>
-				<div className="pt-10 lg:pl-10 lg:pt-0">
-					<SkeletonColumn title={COLUMN_TITLES.transversal} count={1} />
-				</div>
+			<div className={COLUMN_GRID_CLASS}>
+				<SkeletonColumn className="pb-10 lg:pb-0 lg:pr-10" title={COLUMN_TITLES.sante} count={4} />
+				<SkeletonColumn className="pt-10 lg:pl-10 lg:pt-0" title={COLUMN_TITLES.transversal} count={1} />
 			</div>
 		</div>
 	);

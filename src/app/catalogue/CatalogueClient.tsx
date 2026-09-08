@@ -8,14 +8,36 @@ import clsx from "clsx";
 import Image from "next/image";
 import starOrange from "@/_images/logo/star_orange.svg";
 import ThemeWheel from "./ThemeWheel";
-import { COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
+import { COLUMN_GRID_CLASS, COLUMN_SUBGRID_CLASS, COLUMN_TITLES, COLUMN_TITLE_CLASS } from "./columnTitles";
 import type { Theme, ThemeWithTrainings } from "@/lib/types";
 
 /** Thématique du catalogue, formations incluses. */
 type CatalogueTheme = Theme & ThemeWithTrainings;
 
-/** Un thème relève du secteur santé si son type mentionne « santé », sinon il est transversal. */
-const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
+/**
+ * Secteurs portés par un thème.
+ *
+ * `type` est un champ libre côté backend : il vaut « Santé » ou « Transversal »,
+ * mais peut en lister plusieurs (« Santé, Transversal ») pour un thème qui
+ * s'adresse aux deux publics. C'est le seul moyen de le montrer dans les deux
+ * colonnes sans dupliquer le document : l'admin construit sa carte
+ * formation → thème en supposant une seule appartenance, deux thèmes pointant
+ * sur les mêmes formations lui en feraient afficher un au hasard et le
+ * changement de thème depuis l'admin ne dépilerait qu'une des deux références.
+ */
+const themeSectors = (theme: Theme) =>
+	(theme.type || "")
+		.split(/[,;/]/)
+		.map((sector) => sector.trim())
+		.filter(Boolean);
+
+const isSante = (theme: Theme) => themeSectors(theme).some((sector) => /sant/i.test(sector));
+
+/**
+ * Un thème est transversal s'il l'annonce, ou par défaut s'il n'est pas santé :
+ * la colonne transversale reste le repli des types non reconnus, comme avant.
+ */
+const isTransversal = (theme: Theme) => themeSectors(theme).some((sector) => /transvers/i.test(sector)) || !isSante(theme);
 
 /**
  * Occupe la place d'une bulle quand une colonne n'a pas encore de thématique.
@@ -40,9 +62,19 @@ function EmptyThemePlaceholder() {
 	);
 }
 
-function ThemeColumn({ title, themes, onSelect }: { title: string; themes: CatalogueTheme[]; onSelect: (theme: CatalogueTheme) => void }) {
+function ThemeColumn({
+	title,
+	themes,
+	onSelect,
+	className,
+}: {
+	title: string;
+	themes: CatalogueTheme[];
+	onSelect: (theme: CatalogueTheme) => void;
+	className?: string;
+}) {
 	return (
-		<div className="flex h-full flex-col items-center">
+		<div className={clsx("flex flex-col", COLUMN_SUBGRID_CLASS, className)}>
 			{/* Les intitulés sont maintenant des phrases entières et non plus deux
 			    mots : sans largeur maximale la ligne courait jusqu'aux bords de la
 			    colonne, et les deux titres ne se répondaient plus. */}
@@ -85,7 +117,7 @@ export default function CatalogueClient({
 		setRoutingId(null);
 	};
 
-	const transversalThemes = themes.filter((t) => !isSante(t));
+	const transversalThemes = themes.filter(isTransversal);
 	const santeThemes = themes.filter(isSante);
 
 	return (
@@ -95,13 +127,9 @@ export default function CatalogueClient({
 			    de lg. L'espacement vient du padding des colonnes, pas d'un gap qui
 			    décrocherait le filet du contenu. */}
 			<div className="mx-auto mt-2 max-w-7xl px-5 pb-12 sm:mt-4 sm:px-6 sm:pb-16 lg:px-8">
-				<div className="grid grid-cols-1 divide-y divide-univers/10 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-univers/15">
-					<div className="pb-10 lg:pb-0 lg:pr-10">
-						<ThemeColumn title={santeTitle} themes={santeThemes} onSelect={setSelectedTheme} />
-					</div>
-					<div className="pt-10 lg:pl-10 lg:pt-0">
-						<ThemeColumn title={transversalTitle} themes={transversalThemes} onSelect={setSelectedTheme} />
-					</div>
+				<div className={COLUMN_GRID_CLASS}>
+					<ThemeColumn className="pb-10 lg:pb-0 lg:pr-10" title={santeTitle} themes={santeThemes} onSelect={setSelectedTheme} />
+					<ThemeColumn className="pt-10 lg:pl-10 lg:pt-0" title={transversalTitle} themes={transversalThemes} onSelect={setSelectedTheme} />
 				</div>
 			</div>
 

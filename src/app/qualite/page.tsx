@@ -13,7 +13,9 @@ export const metadata: Metadata = buildMetadata({
 	path: "/qualite",
 });
 
-const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ name: "Qualité", path: "/qualite" }]);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+	{ name: "Qualité", path: "/qualite" },
+]);
 
 export default function Qualite() {
 	return (
@@ -31,55 +33,70 @@ export default function Qualite() {
 				<div className="mt-10 space-y-14 text-base sm:text-lg text-univers">
 					{/* 1. Notre engagement qualité */}
 					<section>
-						<SectionHeading className="mb-4">1. Notre engagement qualité</SectionHeading>
+						<SectionHeading className="mb-4">
+							Notre engagement qualité
+						</SectionHeading>
 						<div className="space-y-4">
 							<p>
-								Depuis sa création en 2024, IPSEIS est engagé dans une démarche globale d&apos;amélioration continue. Cet
-								engagement a pour but de mobiliser tous les collaborateurs et tous les clients de l&apos;organisme dans cette
-								dynamique.
+								Depuis sa création en 2024, IPSEIS est engagé dans une démarche
+								globale d&apos;amélioration continue. Cet engagement a pour but
+								de mobiliser tous les collaborateurs et tous les clients de
+								l&apos;organisme dans cette dynamique.
 							</p>
 							<p>
-								Dans cette perspective, les suggestions d&apos;amélioration émanant de toute personne impliquée au quotidien
-								ou épisodiquement garantiront une optimisation continue de notre système qualité et des prestations
-								proposées.
+								Dans cette perspective, les suggestions d&apos;amélioration
+								émanant de toute personne impliquée au quotidien ou
+								épisodiquement garantiront une optimisation continue de notre
+								système qualité et des prestations proposées.
 							</p>
 						</div>
 					</section>
 
 					{/* 2. Le cadre réglementaire */}
 					<section>
-						<SectionHeading className="mb-4">2. Le cadre réglementaire</SectionHeading>
+						<SectionHeading className="mb-4">
+							Le cadre réglementaire
+						</SectionHeading>
 						<div className="space-y-4">
 							<p>IPSEIS répond aux obligations de grands textes fondateurs :</p>
 							<ul className="list-disc space-y-2 pl-6">
-								<li>La loi du 5 septembre 2018 pour la liberté de choisir son avenir professionnel ;</li>
 								<li>
-									La loi du 5 mars 2014 relative à la formation professionnelle, à l&apos;emploi et à la démocratie sociale et
-									les décrets qui jalonnent sa mise en application.
+									La loi du 5 septembre 2018 pour la liberté de choisir son
+									avenir professionnel ;
+								</li>
+								<li>
+									La loi du 5 mars 2014 relative à la formation professionnelle,
+									à l&apos;emploi et à la démocratie sociale et les décrets qui
+									jalonnent sa mise en application.
 								</li>
 							</ul>
 							<p>
-								IPSEIS s&apos;engage également vis-à-vis de sa conformité au Règlement Européen 2016/679 relatif à la
-								Protection des Données Personnelles.
+								IPSEIS s&apos;engage également vis-à-vis de sa conformité au
+								Règlement Européen 2016/679 relatif à la Protection des Données
+								Personnelles.
 							</p>
 							<p>
-								Une veille réglementaire est en place afin d&apos;assurer la conformité vis-à-vis de toute nouvelle exigence,
-								via la presse spécialisée et un accompagnement juridique.
+								Une veille réglementaire est en place afin d&apos;assurer la
+								conformité vis-à-vis de toute nouvelle exigence, via la presse
+								spécialisée et un accompagnement juridique.
 							</p>
 						</div>
 					</section>
 
 					{/* 3. Nos certifications */}
 					<section>
-						<SectionHeading className="mb-4">3. Nos certifications</SectionHeading>
+						<SectionHeading className="mb-4">Nos certifications</SectionHeading>
 						<div className="space-y-4">
 							<p>
-								IPSEIS est certifié QUALIOPI dans la catégorie «&nbsp;Actions de formation&nbsp;» depuis septembre 2024.
+								IPSEIS est certifié QUALIOPI dans la catégorie «&nbsp;Actions de
+								formation&nbsp;» depuis septembre 2024.
 							</p>
 							<p>
-								Cette certification est non seulement un gage et une garantie supplémentaire quant à la qualité du processus
-								de déroulement de nos actions de formation, mais c&apos;est aussi une reconnaissance de l&apos;implication au
-								quotidien de nos équipes pédagogique, administrative et commerciale.
+								Cette certification est non seulement un gage et une garantie
+								supplémentaire quant à la qualité du processus de déroulement de
+								nos actions de formation, mais c&apos;est aussi une
+								reconnaissance de l&apos;implication au quotidien de nos équipes
+								pédagogique, administrative et commerciale.
 							</p>
 						</div>
 
