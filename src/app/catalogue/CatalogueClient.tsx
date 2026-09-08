@@ -14,8 +14,30 @@ import type { Theme, ThemeWithTrainings } from "@/lib/types";
 /** Thématique du catalogue, formations incluses. */
 type CatalogueTheme = Theme & ThemeWithTrainings;
 
-/** Un thème relève du secteur santé si son type mentionne « santé », sinon il est transversal. */
-const isSante = (theme: Theme) => /sant/i.test(theme.type || "");
+/**
+ * Secteurs portés par un thème.
+ *
+ * `type` est un champ libre côté backend : il vaut « Santé » ou « Transversal »,
+ * mais peut en lister plusieurs (« Santé, Transversal ») pour un thème qui
+ * s'adresse aux deux publics. C'est le seul moyen de le montrer dans les deux
+ * colonnes sans dupliquer le document : l'admin construit sa carte
+ * formation → thème en supposant une seule appartenance, deux thèmes pointant
+ * sur les mêmes formations lui en feraient afficher un au hasard et le
+ * changement de thème depuis l'admin ne dépilerait qu'une des deux références.
+ */
+const themeSectors = (theme: Theme) =>
+	(theme.type || "")
+		.split(/[,;/]/)
+		.map((sector) => sector.trim())
+		.filter(Boolean);
+
+const isSante = (theme: Theme) => themeSectors(theme).some((sector) => /sant/i.test(sector));
+
+/**
+ * Un thème est transversal s'il l'annonce, ou par défaut s'il n'est pas santé :
+ * la colonne transversale reste le repli des types non reconnus, comme avant.
+ */
+const isTransversal = (theme: Theme) => themeSectors(theme).some((sector) => /transvers/i.test(sector)) || !isSante(theme);
 
 /**
  * Occupe la place d'une bulle quand une colonne n'a pas encore de thématique.
@@ -85,7 +107,7 @@ export default function CatalogueClient({
 		setRoutingId(null);
 	};
 
-	const transversalThemes = themes.filter((t) => !isSante(t));
+	const transversalThemes = themes.filter(isTransversal);
 	const santeThemes = themes.filter(isSante);
 
 	return (

@@ -16,10 +16,14 @@ type SectionHeadingProps = {
  * doivent apparaître comme tels dans le plan du document et pour un lecteur
  * d'écran. `items-start` plutôt qu'`items-center` : sur deux lignes, un
  * centrage vertical décrochait l'étoile du premier mot.
+ *
+ * Casse normale et non capitales : les intitulés oranges du site suivent tous
+ * la même règle, celle des `tag` de TitleSection (« Notre approche »). Le
+ * `uppercase` d'origine faisait diverger ces titres-ci du reste de la charte.
  */
 const SectionHeading = ({ children, className = "", as: Tag = "h2" }: SectionHeadingProps) => {
 	return (
-		<Tag className={`flex items-start gap-x-1 text-lg font-bold uppercase tracking-wider text-cohesion sm:text-2xl ${className}`}>
+		<Tag className={`flex items-start gap-x-1 text-lg font-bold tracking-wider text-cohesion sm:text-2xl ${className}`}>
 			<Image src={starOrange} alt="" aria-hidden width={64} height={64} className="-ml-3 w-11 shrink-0 aspect-1 sm:-ml-4 sm:w-14" />
 			<span className="mt-1.5 sm:mt-2.5">{children}</span>
 		</Tag>

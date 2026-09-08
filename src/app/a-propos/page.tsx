@@ -18,12 +18,23 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 	{ name: "À propos", path: "/a-propos" },
 ]);
 
-// TODO (IPSEIS) : chiffres clés 2025 à renseigner par Hélène, avec la méthode de calcul associée.
-const keyFigures2025: { value: string; label: string }[] = [
-	{ value: "- %", label: "Taux de satisfaction" },
-	{ value: "- / - %", label: "Formations Intra / Inter" },
-	{ value: "-", label: "Heures de formation dispensées" },
-	{ value: "-", label: "Stagiaires formés" },
+/** Les deux taux de satisfaction mesurés sur l'année. */
+const satisfactionFigures: { value: string; label: string }[] = [
+	{ value: "83,80 %", label: "Satisfaction générale" },
+	{ value: "89,80 %", label: "Satisfaction pédagogique" },
+];
+
+/**
+ * Typologie des clients : deux répartitions distinctes, chacune à somme 100.
+ *
+ * Elles sont rendues en barres à deux segments et non en quatre tuiles isolées :
+ * quatre « 50 % » alignés ne disent pas de quoi ils sont la moitié, alors que la
+ * paire santé / autre secteur et la paire public / privé sont deux lectures
+ * indépendantes du même portefeuille.
+ */
+const clientBreakdowns: { left: { label: string; share: number }; right: { label: string; share: number } }[] = [
+	{ left: { label: "Secteur santé", share: 50 }, right: { label: "Autre secteur", share: 50 } },
+	{ left: { label: "Secteur public", share: 50 }, right: { label: "Secteur privé", share: 50 } },
 ];
 
 export default function APropos() {
@@ -127,17 +138,15 @@ export default function APropos() {
 				</section>
 
 				{/* 2. Nos chiffres clés 2025 */}
-				{/* TODO (IPSEIS) : remplacer les valeurs ci-dessous par les chiffres réels 2025 et préciser leur mode de calcul. */}
-
-				{/* <section className="mt-16 clear-both">
-					<SectionHeading className="mb-4">
+				{/* clear-both : la photo de la fondatrice flotte à gauche dans la section
+				    précédente et déborderait sinon sur les tuiles. */}
+				<section className="mt-16 clear-both">
+					<SectionHeading className="mb-6">
 						Nos chiffres clés 2025
 					</SectionHeading>
-					<p className="text-sm text-univers/60">
-						Chiffres en cours de consolidation pour l’année 2025.
-					</p>
-					<dl className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-						{keyFigures2025.map(({ value, label }) => (
+
+					<dl className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+						{satisfactionFigures.map(({ value, label }) => (
 							<div
 								key={label}
 								className="rounded-2xl border border-univers/15 bg-support px-6 py-8 text-center shadow-sm"
@@ -151,7 +160,33 @@ export default function APropos() {
 							</div>
 						))}
 					</dl>
-				</section> */}
+
+					<h3 className="mt-10 text-base font-bold text-univers sm:text-lg">
+						Typologie de nos clients
+					</h3>
+					<ul className="mt-5 space-y-6">
+						{clientBreakdowns.map(({ left, right }) => (
+							<li key={left.label}>
+								<div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-sm text-univers sm:text-base">
+									<span>
+										<span className="font-bold text-cohesion">{left.share}&nbsp;%</span>{" "}
+										{left.label}
+									</span>
+									<span>
+										<span className="font-bold text-maitrise">{right.share}&nbsp;%</span>{" "}
+										{right.label}
+									</span>
+								</div>
+								{/* La barre ne fait que doubler visuellement les pourcentages
+								    ci-dessus : rien à annoncer de plus à un lecteur d'écran. */}
+								<div aria-hidden className="mt-2 flex h-3 overflow-hidden rounded-full bg-univers/10">
+									<div className="bg-cohesion" style={{ width: `${left.share}%` }} />
+									<div className="bg-maitrise" style={{ width: `${right.share}%` }} />
+								</div>
+							</li>
+						))}
+					</ul>
+				</section>
 
 				{/* 3. Délai d'accès */}
 				<section className="mt-16">
