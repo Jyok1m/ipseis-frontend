@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import starOrange from "@/_images/logo/star_orange.svg";
+import { STARRED_LABEL_CLASS, STARRED_LABEL_STAR_CLASS, STARRED_LABEL_TEXT_CLASS } from "./global/starredLabel";
 
 type TitleSectionProps = {
 	noPaddingVertical?: boolean;
@@ -50,11 +51,13 @@ export const TitleSection = ({
 			<div className={`text-2xl sm:text-4xl tracking-wider text-univers ${centered ? "text-center" : ""}`}>
 				{/* Le libellé était un <h2> et le titre un <p> : la hiérarchie était
 				    inversée, un intitulé de section passant pour un sous-titre et
-				    l'étiquette qui le surmonte pour un titre. */}
+				    l'étiquette qui le surmonte pour un titre. Il reste donc un <p>,
+				    mais partage l'habillage de SectionHeading : même apparence pour
+				    les deux intitulés oranges du site, sans confondre leurs rôles. */}
 				{tag && (
-					<p className="flex items-center mb-3 text-base sm:text-lg font-semibold leading-6 text-cohesion">
-						<Image src={starOrange} alt="" aria-hidden width={64} height={64} className="-ml-3 w-12 aspect-1 sm:-ml-4 sm:w-16" />
-						<span>{tag}</span>
+					<p className={`${STARRED_LABEL_CLASS} mb-3`}>
+						<Image src={starOrange} alt="" aria-hidden width={64} height={64} className={STARRED_LABEL_STAR_CLASS} />
+						<span className={STARRED_LABEL_TEXT_CLASS}>{tag}</span>
 					</p>
 				)}
 				{titleNode ? titleNode : <TitleTag className="text-2xl sm:text-4xl tracking-wider font-semibold text-univers">{title}</TitleTag>}
