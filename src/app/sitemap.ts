@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllTrainings } from "@/lib/api";
 import { CATALOGUE_PDF_ENABLED } from "@/lib/features";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.eu";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ipseis.fr";
 
 /**
  * Rendu à la demande plutôt qu'au build.

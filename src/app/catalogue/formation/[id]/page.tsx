@@ -87,7 +87,7 @@ async function FormationServer({ id }: { id: string }) {
 			training.pedagogical_objectives?.slice(0, 3).join(". ") ||
 			training.title,
 		inLanguage: "fr",
-		url: `https://ipseis.eu/catalogue/formation/${training._id}`,
+		url: `https://ipseis.fr/catalogue/formation/${training._id}`,
 		teaches: training.pedagogical_objectives?.length
 			? training.pedagogical_objectives
 			: undefined,
@@ -98,7 +98,7 @@ async function FormationServer({ id }: { id: string }) {
 		provider: {
 			"@type": "EducationalOrganization",
 			name: "IPSEIS",
-			url: "https://ipseis.eu",
+			url: "https://ipseis.fr",
 		},
 		hasCourseInstance: {
 			"@type": "CourseInstance",
