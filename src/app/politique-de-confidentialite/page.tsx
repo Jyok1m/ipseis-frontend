@@ -76,7 +76,7 @@ export default function PolitiqueDeConfidentialitePage() {
 								href="/"
 								className="text-cohesion hover:underline underline-offset-4"
 							>
-								ipseis.eu
+								ipseis.fr
 							</Link>{" "}
 							(ci-après &laquo;&nbsp;le Site&nbsp;&raquo;).
 						</p>
@@ -111,10 +111,10 @@ export default function PolitiqueDeConfidentialitePage() {
 							<li>
 								Email de contact :{" "}
 								<a
-									href="mailto:hdemontabert@yahoo.fr"
+									href="mailto:helenedm@ipseis.fr"
 									className="text-cohesion hover:underline underline-offset-4"
 								>
-									hdemontabert@yahoo.fr
+									helenedm@ipseis.fr
 								</a>
 							</li>
 						</ul>
@@ -433,10 +433,10 @@ export default function PolitiqueDeConfidentialitePage() {
 						<p>
 							Pour exercer vos droits, adressez votre demande à{" "}
 							<a
-								href="mailto:hdemontabert@yahoo.fr"
+								href="mailto:helenedm@ipseis.fr"
 								className="text-cohesion hover:underline underline-offset-4"
 							>
-								hdemontabert@yahoo.fr
+								helenedm@ipseis.fr
 							</a>{" "}
 							en joignant un justificatif d&apos;identité si nécessaire. Nous
 							nous engageons à répondre dans un délai d&apos;un mois.
@@ -549,10 +549,10 @@ export default function PolitiqueDeConfidentialitePage() {
 							<li>
 								Email :{" "}
 								<a
-									href="mailto:hdemontabert@yahoo.fr"
+									href="mailto:helenedm@ipseis.fr"
 									className="text-cohesion hover:underline underline-offset-4"
 								>
-									hdemontabert@yahoo.fr
+									helenedm@ipseis.fr
 								</a>
 							</li>
 							<li>

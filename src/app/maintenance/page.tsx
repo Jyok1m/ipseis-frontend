@@ -33,10 +33,10 @@ export default function MaintenancePage() {
 				</p>
 
 				<a
-					href="mailto:hdemontabert@yahoo.fr"
+					href="mailto:helenedm@ipseis.fr"
 					className="text-sm font-semibold text-cohesion transition-colors hover:text-univers"
 				>
-					Une question&nbsp;? hdemontabert@yahoo.fr
+					Une question&nbsp;? helenedm@ipseis.fr
 				</a>
 			</div>
 		</div>
